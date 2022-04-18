@@ -60,30 +60,9 @@ void Shape::measure() {
 
 glm::vec3 Shape::getBSphere(float* radius)
 {
-	float sumX, sumY, sumZ;
-	float r = 0;
-
-	sumX = sumY = sumZ = 0.f;
-
-	for (size_t v = 0; v < posBuf.size() / 3; v++) {
-		sumX += posBuf[3 * v + 0];
-		sumY += posBuf[3 * v + 1];
-		sumZ += posBuf[3 * v + 2];
-	}
-
-	float numVerts = posBuf.size() / 3;
-	glm::vec3 center = glm::vec3(sumX / numVerts, sumY / numVerts, sumZ / numVerts);
-
-	for (size_t v = 0; v < posBuf.size() / 3; v++) {
-		glm::vec3 test = glm::vec3(posBuf[3 * v + 0], posBuf[3 * v + 1], sumZ += posBuf[3 * v + 2]);
-
-		float dist = glm::distance(test, center);
-		if (dist > r)
-			r = dist;
-	}
-
-	*radius = r;
-
+	this->measure();
+	glm::vec3 center = (this->max + this->min) * 0.5f;
+	*radius = glm::length(this->max - center);
 	return center;
 }
 
