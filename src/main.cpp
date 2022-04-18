@@ -168,6 +168,10 @@ public:
 		prog->addAttribute("vertPos");
 		prog->addAttribute("vertNor");
 		prog->addAttribute("vertTex");
+		prog->addUniform("lightPos");
+        prog->addUniform("MatShine");
+        prog->addUniform("flip");
+        prog->addAttribute("vertNor");
 
 		w = World();
 		rp = RenderPipeline(windowManager);
