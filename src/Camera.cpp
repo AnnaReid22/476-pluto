@@ -24,6 +24,7 @@ Camera::Camera(GameObject* d_GameObject) : Component(d_GameObject)
     fall = false;
 
     windowManager = nullptr;
+    input = input->getInstance();
 }
 
 void Camera::setUpCam(WindowManager* wm)
@@ -56,12 +57,30 @@ void Camera::enableCursor(WindowManager* windowManager)
 
 void Camera::Update()
 {
+    updateMoveVars();
     setUpCam(windowManager);
 }
 
 glm::mat4 Camera::getCameraViewMatrix()
 {
     return glm::lookAt(this->gameObject->transform.position + eyeOffset, lookAt, upVector);
+}
+
+void Camera::updateMoveVars()
+{
+    if (input->GetKeyDown(GLFW_KEY_C)) {
+        enableCursor(windowManager);
+    }
+    if (input->GetKeyUp(GLFW_KEY_C)) {
+        glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    dollyF = input->GetKey(GLFW_KEY_W);
+    dollyB = input->GetKey(GLFW_KEY_S);
+    strafeL = input->GetKey(GLFW_KEY_A);
+    strafeR = input->GetKey(GLFW_KEY_D);
+    rise = input->GetKey(GLFW_KEY_SPACE);
+    fall = input->GetKey(GLFW_KEY_LEFT_SHIFT);
 }
 
 void Camera::moveLookAt(WindowManager* windowManager)
