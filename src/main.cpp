@@ -44,16 +44,19 @@ public:
 
 	// Shape to be used (from  file) - modify to support multiple
 	shared_ptr<Shape> mesh;
-	shared_ptr<Shape> theDog;
+	shared_ptr<Shape> theRocket;
+	shared_ptr<Shape> asteroid;
 	shared_ptr<Shape> texcube;
 	shared_ptr<Shape> texSphere;
 
-	shared_ptr<Texture> dog_albedo;
+	shared_ptr<Texture> rocket_albedo;
 	shared_ptr<Texture> grass_albedo;
+	shared_ptr<Texture> asteroid_albedo;
 	shared_ptr<Texture> sky_albedo;
 
-	shared_ptr<Material> dogMat;
+	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> groundMat;
+	shared_ptr<Material> asteroidMat;
 	shared_ptr<Material> skyMat;
 
 	World w;
@@ -136,92 +139,62 @@ public:
 
 	void initGeom(const std::string& resourceDirectory)
 	{
-		string errStr;
+		//load in the rocketmesh and make the shape(s)
+		theRocket = make_shared<Shape>();
+		theRocket->loadMesh(resourceDirectory + "/rocket.obj");
+        theRocket->resize();
+        theRocket->init();
 
-		// Initialize dog mesh.
-		vector<tinyobj::shape_t> TOshapesB;
-		vector<tinyobj::material_t> objMaterialsB;
-		//load in the dogmesh and make the shape(s)
-		bool rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/dog.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		}
-		else {
-			theDog = make_shared<Shape>();
-			theDog->createShape(TOshapesB[0]);
-			theDog->measure();
-			theDog->init();
-		}
+		rocket_albedo = make_shared<Texture>();
+		rocket_albedo->setFilename(resourceDirectory + "/flowers.jpg");
+		rocket_albedo->init();
+		rocket_albedo->setUnit(0);
+		rocket_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
-		dog_albedo = make_shared<Texture>();
-		dog_albedo->setFilename(resourceDirectory + "/cartoonWood.jpg");
-		dog_albedo->init();
-		dog_albedo->setUnit(0);
-		dog_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		rocketMat = make_shared<Material>();
+		rocketMat->t_albedo = rocket_albedo;
+		
+		//make the asteroids
+		asteroid = make_shared<Shape>();
+		asteroid->loadMesh(resourceDirectory + "/asteroid.obj");
+        asteroid->resize();
+        asteroid->init();
 
-		dogMat = make_shared<Material>();
-		dogMat->t_albedo = dog_albedo;
+		asteroid_albedo = make_shared<Texture>();
+		asteroid_albedo->setFilename(resourceDirectory + "/asteroid.jpg");
+		asteroid_albedo->init();
+		asteroid_albedo->setUnit(0);
+		asteroid_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
-		rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/texcube.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		}
-		else {
-			texcube = make_shared<Shape>();
-			texcube->createShape(TOshapesB[0]);
-			texcube->measure();
-			texcube->init();
-		}
+		asteroidMat = make_shared<Material>();
+		asteroidMat->t_albedo = asteroid_albedo;
 
-		rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/texSphere.obj").c_str());
-		if (!rc) {
-				cerr << errStr << endl;
-		}
-		else {
-				texSphere = make_shared<Shape>();
-				texSphere->createShape(TOshapesB[0]);
-				texSphere->measure();
-				texSphere->init();
-		}
-
-		grass_albedo = make_shared<Texture>();
-		grass_albedo->setFilename(resourceDirectory + "/grass.jpg");
-		grass_albedo->init();
-		grass_albedo->setUnit(1);
-		grass_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
+		texSphere = make_shared<Shape>();
+		texSphere->loadMesh(resourceDirectory + "/texSphere.obj");
+        texSphere->resize();
+        texSphere->init();
 
 		sky_albedo = make_shared<Texture>();
-		sky_albedo->setFilename(resourceDirectory + "/spaceSkybox.jpg");
-		sky_albedo->init();
-		sky_albedo->setUnit(1);
-		sky_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
+        sky_albedo->setFilename(resourceDirectory + "/spaceSkybox.jpg");
+        sky_albedo->init();
+        sky_albedo->setUnit(1);
+        sky_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
-		dogMat = make_shared<Material>();
-		dogMat->t_albedo = dog_albedo;
+        skyMat = make_shared<Material>();
+        skyMat->t_albedo = sky_albedo;
 
-		groundMat = make_shared<Material>();
-		groundMat->t_albedo = grass_albedo;
-
-		skyMat = make_shared<Material>();
-		skyMat->t_albedo = sky_albedo;
-
-		rp.skyboxMaterial = skyMat;
-		rp.skyboxMesh = texSphere;
-
-		GameObject* ground = new GameObject("ground");
-		ground->transform.position = glm::vec3(0, -1, 0);
-		ground->transform.scale = glm::vec3(30, 0.1, 30);
-
-		MeshRenderer* gr = ground->addComponentOfType<MeshRenderer>();
-		gr->mesh = texcube;
-		gr->material = groundMat;
-
-		w.addObject(ground);
+        rp.skyboxMaterial = skyMat;
+        rp.skyboxMesh = texSphere;
 
 		GameObject* player = new GameObject("player");
 		Camera* cam = player->addComponentOfType<Camera>();
 		cam->windowManager = windowManager;
-		cam->eyeOffset = glm::vec3(0, 1, 0);
+		cam->eyeOffset = glm::vec3(2, 1, 2);
+
+		MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
+		rocket->mesh = theRocket;
+		rocket->material = rocketMat;
+
 		w.mainCamera = cam;
 
 		BoundingSphereCollider* bsc2 = player->addComponentOfType <BoundingSphereCollider>();
@@ -235,12 +208,11 @@ public:
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
 		es->spawnDelay = 5;
 
-		es->enemyMesh = theDog;
-		es->enemyMat = dogMat;
+		es->enemyMesh = asteroid;
+		es->enemyMat = asteroidMat;
 
 		//Order matters here, because the skybox has to render before anything else.
 		w.addObject(player);
-		w.addObject(ground);
 		w.addObject(spawner);
 	}
 

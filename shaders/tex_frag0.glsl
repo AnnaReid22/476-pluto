@@ -44,11 +44,15 @@ in vec3 ePos;
 
 void main()
 {
+	vec3 normal;
 	vec4 texColor0 = texture(Texture0, vTexCoord);
-	vec3 normal = normalize(fragNor) * flip;
+	if(flip == 0)
+		normal = normalize(fragNor);
+	else
+		normal = normalize(fragNor) * -1;
 	vec3 light = normalize(lightDir);
 	float dC = max(0, dot(normal, light));
 	vec3 halfV = normalize(ePos) + normalize(light);
 	float sC = pow(max(dot(normalize(halfV), normal), 0), MatShine);
-	Outcolor = vec4(0.1*texColor0 + dC*texColor0 + sC*texColor0);
+	Outcolor = vec4(0.5*texColor0 + dC*texColor0 + sC*texColor0);
 }
