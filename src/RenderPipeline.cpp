@@ -28,16 +28,29 @@ void RenderPipeline::renderFrame(std::vector<GameObject*> objectsToRender, Camer
 
     float aspect = width / (float)height;
 
-    glm::mat4 V = cam->getCameraViewMatrix();
-    glm::mat4 P = this->GetProjectionMatrix();
-
     prog->bind();
+
+    glm::mat4 P = this->GetProjectionMatrix();
+    glm::mat4 V = cam->getCameraRotationMatrix();
+    glm::mat4 M = glm::mat4(1);
+
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
+    glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
 
+    glDisable(GL_DEPTH_TEST);
+
+    this->skyboxMaterial->t_albedo->bind(prog->getUniform("Texture0"));
+    this->skyboxMesh->draw(prog);
+    this->skyboxMaterial->t_albedo->unbind();
+
+    glEnable(GL_DEPTH_TEST);
+
+    V = cam->getCameraViewMatrix();
+    glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
     for (GameObject* obj : objectsToRender)
     {
-        glm::mat4 M = obj->transform.genModelMatrix();
+        M = obj->transform.genModelMatrix();
         MeshRenderer* mr = obj->getComponentByType<MeshRenderer>();
 
         std::shared_ptr<Material> mat = mr->material;

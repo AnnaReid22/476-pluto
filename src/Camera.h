@@ -50,5 +50,6 @@ public:
     void Disable() {};
 
     glm::mat4 getCameraViewMatrix();
+    glm::mat4 getCameraRotationMatrix();
 };
 
