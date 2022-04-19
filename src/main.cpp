@@ -182,16 +182,10 @@ public:
 		vector<tinyobj::shape_t> TOshapesB;
 		vector<tinyobj::material_t> objMaterialsB;
 		//load in the dogmesh and make the shape(s)
-		bool rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/dog.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		}
-		else {
-			theDog = make_shared<Shape>();
-			theDog->createShape(TOshapesB[0]);
-			theDog->measure();
-			theDog->init();
-		}
+		theDog = make_shared<Shape>();
+		theDog->loadMesh(resourceDirectory + "/rocket.obj");
+        theDog->resize();
+        theDog->init();
 
 		dog_albedo = make_shared<Texture>();
 		dog_albedo->setFilename(resourceDirectory + "/cartoonWood.jpg");
@@ -202,16 +196,10 @@ public:
 		dogMat = make_shared<Material>();
 		dogMat->t_albedo = dog_albedo;
 
-		rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/texcube.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		}
-		else {
-			texcube = make_shared<Shape>();
-			texcube->createShape(TOshapesB[0]);
-			texcube->measure();
-			texcube->init();
-		}
+		texcube = make_shared<Shape>();
+		texcube->loadMesh(resourceDirectory + "/rocket.obj");
+        texcube->resize();
+        texcube->init();
 
 		grass_albedo = make_shared<Texture>();
 		grass_albedo->setFilename(resourceDirectory + "/grass.jpg");
