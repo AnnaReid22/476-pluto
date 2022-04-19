@@ -29,9 +29,8 @@ Camera::Camera(GameObject* d_GameObject) : Component(d_GameObject)
 
 void Camera::setUpCam(WindowManager* wm)
 {
-    // moveLookAt(wm);
-    lookAt = this->gameObject->transform.position;
     moveEye();
+    lookAt = this->gameObject->transform.position;
 }
 
 void Camera::setEyePos(glm::vec3 pos)
@@ -64,6 +63,10 @@ void Camera::Update()
 glm::mat4 Camera::getCameraViewMatrix()
 {
     return glm::lookAt(this->gameObject->transform.position + eyeOffset, lookAt, upVector);
+}
+glm::mat4 Camera::getCameraRotationMatrix()
+{
+    return glm::lookAt(glm::vec3(0), lookAt - eyeOffset - this->gameObject->transform.position, upVector);
 }
 
 void Camera::updateMoveVars()

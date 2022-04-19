@@ -47,14 +47,17 @@ public:
 	shared_ptr<Shape> theRocket;
 	shared_ptr<Shape> asteroid;
 	shared_ptr<Shape> texcube;
+	shared_ptr<Shape> texSphere;
 
 	shared_ptr<Texture> rocket_albedo;
 	shared_ptr<Texture> grass_albedo;
 	shared_ptr<Texture> asteroid_albedo;
+	shared_ptr<Texture> sky_albedo;
 
 	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> groundMat;
 	shared_ptr<Material> asteroidMat;
+	shared_ptr<Material> skyMat;
 
 	World w;
 	RenderPipeline rp;
@@ -166,6 +169,23 @@ public:
 		asteroidMat = make_shared<Material>();
 		asteroidMat->t_albedo = asteroid_albedo;
 
+		texSphere = make_shared<Shape>();
+		texSphere->loadMesh(resourceDirectory + "/texSphere.obj");
+        texSphere->resize();
+        texSphere->init();
+
+		sky_albedo = make_shared<Texture>();
+        sky_albedo->setFilename(resourceDirectory + "/spaceSkybox.jpg");
+        sky_albedo->init();
+        sky_albedo->setUnit(1);
+        sky_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
+
+        skyMat = make_shared<Material>();
+        skyMat->t_albedo = sky_albedo;
+
+        rp.skyboxMaterial = skyMat;
+        rp.skyboxMesh = texSphere;
+
 		GameObject* player = new GameObject("player");
 		Camera* cam = player->addComponentOfType<Camera>();
 		cam->windowManager = windowManager;
@@ -181,6 +201,9 @@ public:
 
 		w.addObject(player);
 
+		rp.skyboxMesh = texSphere;
+		rp.skyboxMaterial = skyMat;
+
 		GameObject* spawner = new GameObject("spawner");
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
 		es->spawnDelay = 5;
@@ -188,6 +211,8 @@ public:
 		es->enemyMesh = asteroid;
 		es->enemyMat = asteroidMat;
 
+		//Order matters here, because the skybox has to render before anything else.
+		w.addObject(player);
 		w.addObject(spawner);
 	}
 
