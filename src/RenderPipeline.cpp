@@ -37,6 +37,9 @@ void RenderPipeline::renderFrame(std::vector<GameObject*> objectsToRender, Camer
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
     glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
+    glUniform3f(prog->getUniform("lightPos"), 0.0, 0.0, 0.0);
+    glUniform1f(prog->getUniform("MatShine"), 1000);
+    glUniform1i(prog->getUniform("flip"), 0);
 
     glDisable(GL_DEPTH_TEST);
 
@@ -48,6 +51,9 @@ void RenderPipeline::renderFrame(std::vector<GameObject*> objectsToRender, Camer
 
     V = cam->getCameraViewMatrix();
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
+    glUniform3f(prog->getUniform("lightPos"), 0.0, 2.0, 0.0);
+    glUniform1f(prog->getUniform("MatShine"), 23);
+    glUniform1i(prog->getUniform("flip"), 1);
     for (GameObject* obj : objectsToRender)
     {
         M = obj->transform.genModelMatrix();

@@ -251,11 +251,9 @@ public:
 
 		skyMat = make_shared<Material>();
 		skyMat->t_albedo = sky_albedo;
-		skyMat->m_diffuse = glm::vec3(0);
-		skyMat->m_spec = glm::vec3(0);
-		skyMat->m_shine = glm::vec3(0);
-		skyMat->m_ambient = glm::vec3(0);
 
+		rp.skyboxMaterial = skyMat;
+		rp.skyboxMesh = texSphere;
 
 		GameObject* ground = new GameObject("ground");
 		ground->transform.position = glm::vec3(0, -1, 0);
