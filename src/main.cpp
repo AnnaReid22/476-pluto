@@ -19,6 +19,7 @@ Z. Wood + S. Sueda
 #include <glm/gtc/matrix_transform.hpp>
 #include "Time.h"
 #include "Physics.h"
+#include "InputManager.h"
 #include "World.h"
 #include "GameObject.h"
 #include "RenderPipeline.h"
@@ -57,6 +58,9 @@ public:
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
+		InputManager* input = input->getInstance();
+
+		// These inputs bypass the manager and can thus be considered "reserved" for their purposes
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		{
 			glfwSetWindowShouldClose(window, GL_TRUE);
@@ -68,65 +72,14 @@ public:
 			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		}
 
-		if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-			w.mainCamera->enableCursor(windowManager);
-		}
-		if (key == GLFW_KEY_C && action == GLFW_RELEASE) {
-			glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		if (action == GLFW_PRESS)
+		{
+			input->KeyPressed(key);
 		}
 
-		if (key == GLFW_KEY_W && action == GLFW_PRESS)
+		if (action == GLFW_RELEASE)
 		{
-			w.mainCamera->dollyF = true;
-		}
-		if (key == GLFW_KEY_W && action == GLFW_RELEASE)
-		{
-			w.mainCamera->dollyF = false;
-		}
-
-		if (key == GLFW_KEY_S && action == GLFW_PRESS)
-		{
-			w.mainCamera->dollyB = true;
-		}
-		if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-		{
-			w.mainCamera->dollyB = false;
-		}
-
-		if (key == GLFW_KEY_A && action == GLFW_PRESS)
-		{
-			w.mainCamera->strafeL = true;
-		}
-		if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-		{
-			w.mainCamera->strafeL = false;
-		}
-
-		if (key == GLFW_KEY_D && action == GLFW_PRESS)
-		{
-			w.mainCamera->strafeR = true;
-		}
-		if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-		{
-			w.mainCamera->strafeR = false;
-		}
-
-		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-		{
-			w.mainCamera->rise = true;
-		}
-		if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
-		{
-			w.mainCamera->rise = false;
-		}
-
-		if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
-		{
-			w.mainCamera->fall = true;
-		}
-		if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE)
-		{
-			w.mainCamera->fall = false;
+			input->KeyReleased(key);
 		}
 
 	}
@@ -251,7 +204,7 @@ public:
 
 		GameObject* spawner = new GameObject("spawner");
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
-		es->spawnDelay = 1;
+		es->spawnDelay = 5;
 
 		es->enemyMesh = theDog;
 		es->enemyMat = dogMat;
@@ -282,6 +235,7 @@ public:
 
 Time* Time::instance = 0;
 Physics* Physics::instance = 0;
+InputManager* InputManager::instance = 0;
 
 int main(int argc, char *argv[])
 {
