@@ -3,6 +3,7 @@
 #include "WindowManager.h"
 #include "Component.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "InputManager.h"
 
 class Camera : public Component
 {
@@ -15,7 +16,9 @@ private:
     float sensitivity;
     bool firstMouse;
 
+    InputManager* input;
 
+    void updateMoveVars();
     void moveLookAt(WindowManager* windowManager);
     void moveEye();
 
