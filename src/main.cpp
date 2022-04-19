@@ -186,29 +186,14 @@ public:
         theRocket->init();
 
 		rocket_albedo = make_shared<Texture>();
-		rocket_albedo->setFilename(resourceDirectory + "/cartoonWood.jpg");
+		rocket_albedo->setFilename(resourceDirectory + "/flowers.jpg");
 		rocket_albedo->init();
 		rocket_albedo->setUnit(0);
 		rocket_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
 		rocketMat = make_shared<Material>();
 		rocketMat->t_albedo = rocket_albedo;
-
-		//make the ground plane
-		texcube = make_shared<Shape>();
-		texcube->loadMesh(resourceDirectory + "/cube.obj");
-        texcube->resize();
-        texcube->init();
-
-		grass_albedo = make_shared<Texture>();
-		grass_albedo->setFilename(resourceDirectory + "/grass.jpg");
-		grass_albedo->init();
-		grass_albedo->setUnit(1);
-		grass_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
-
-		groundMat = make_shared<Material>();
-		groundMat->t_albedo = grass_albedo;
-
+		
 		//make the asteroids
 		asteroid = make_shared<Shape>();
 		asteroid->loadMesh(resourceDirectory + "/asteroid.obj");
@@ -224,20 +209,15 @@ public:
 		asteroidMat = make_shared<Material>();
 		asteroidMat->t_albedo = asteroid_albedo;
 
-		GameObject* ground = new GameObject("ground");
-		ground->transform.position = glm::vec3(0, -1, 0);
-		ground->transform.scale = glm::vec3(30, 0.1, 30);
-
-		MeshRenderer* gr = ground->addComponentOfType<MeshRenderer>();
-		gr->mesh = texcube;
-		gr->material = groundMat;
-
-		w.addObject(ground);
-
 		GameObject* player = new GameObject("player");
 		Camera* cam = player->addComponentOfType<Camera>();
 		cam->windowManager = windowManager;
-		cam->eyeOffset = glm::vec3(0, 1, 0);
+		cam->eyeOffset = glm::vec3(2, 1, 2);
+
+		MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
+		rocket->mesh = theRocket;
+		rocket->material = rocketMat;
+
 		w.mainCamera = cam;
 
 		BoundingSphereCollider* bsc2 = player->addComponentOfType <BoundingSphereCollider>();

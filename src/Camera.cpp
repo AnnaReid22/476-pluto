@@ -28,7 +28,8 @@ Camera::Camera(GameObject* d_GameObject) : Component(d_GameObject)
 
 void Camera::setUpCam(WindowManager* wm)
 {
-    moveLookAt(wm);
+    // moveLookAt(wm);
+    lookAt = this->gameObject->transform.position;
     moveEye();
 }
 
