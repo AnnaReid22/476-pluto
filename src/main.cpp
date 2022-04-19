@@ -135,6 +135,8 @@ public:
 	{
 		double posX, posY;
 
+		// hello
+
 		if (action == GLFW_PRESS)
 		{
 			glfwGetCursorPos(window, &posX, &posY);
