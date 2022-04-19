@@ -46,12 +46,15 @@ public:
 	shared_ptr<Shape> mesh;
 	shared_ptr<Shape> theDog;
 	shared_ptr<Shape> texcube;
+	shared_ptr<Shape> texSphere;
 
 	shared_ptr<Texture> dog_albedo;
 	shared_ptr<Texture> grass_albedo;
+	shared_ptr<Texture> sky_albedo;
 
 	shared_ptr<Material> dogMat;
 	shared_ptr<Material> groundMat;
+	shared_ptr<Material> skyMat;
 
 	World w;
 	RenderPipeline rp;
@@ -170,17 +173,40 @@ public:
 			texcube->init();
 		}
 
+		rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/texSphere.obj").c_str());
+		if (!rc) {
+				cerr << errStr << endl;
+		}
+		else {
+				texSphere = make_shared<Shape>();
+				texSphere->createShape(TOshapesB[0]);
+				texSphere->measure();
+				texSphere->init();
+		}
+
 		grass_albedo = make_shared<Texture>();
 		grass_albedo->setFilename(resourceDirectory + "/grass.jpg");
 		grass_albedo->init();
 		grass_albedo->setUnit(1);
 		grass_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
+		sky_albedo = make_shared<Texture>();
+		sky_albedo->setFilename(resourceDirectory + "/spaceSkybox.jpg");
+		sky_albedo->init();
+		sky_albedo->setUnit(1);
+		sky_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
+
 		dogMat = make_shared<Material>();
 		dogMat->t_albedo = dog_albedo;
 
 		groundMat = make_shared<Material>();
 		groundMat->t_albedo = grass_albedo;
+
+		skyMat = make_shared<Material>();
+		skyMat->t_albedo = sky_albedo;
+
+		rp.skyboxMaterial = skyMat;
+		rp.skyboxMesh = texSphere;
 
 		GameObject* ground = new GameObject("ground");
 		ground->transform.position = glm::vec3(0, -1, 0);
@@ -202,6 +228,9 @@ public:
 
 		w.addObject(player);
 
+		rp.skyboxMesh = texSphere;
+		rp.skyboxMaterial = skyMat;
+
 		GameObject* spawner = new GameObject("spawner");
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
 		es->spawnDelay = 5;
@@ -209,6 +238,9 @@ public:
 		es->enemyMesh = theDog;
 		es->enemyMat = dogMat;
 
+		//Order matters here, because the skybox has to render before anything else.
+		w.addObject(player);
+		w.addObject(ground);
 		w.addObject(spawner);
 	}
 

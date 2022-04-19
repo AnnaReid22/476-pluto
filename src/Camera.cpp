@@ -64,6 +64,10 @@ glm::mat4 Camera::getCameraViewMatrix()
 {
     return glm::lookAt(this->gameObject->transform.position + eyeOffset, lookAt, upVector);
 }
+glm::mat4 Camera::getCameraRotationMatrix()
+{
+    return glm::lookAt(glm::vec3(0), lookAt - eyeOffset - this->gameObject->transform.position, upVector);
+}
 
 void Camera::updateMoveVars()
 {
