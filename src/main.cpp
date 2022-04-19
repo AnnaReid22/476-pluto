@@ -60,6 +60,7 @@ public:
 	{
 		InputManager* input = input->getInstance();
 
+		// These inputs bypass the manager and can thus be considered "reserved" for their purposes
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		{
 			glfwSetWindowShouldClose(window, GL_TRUE);
