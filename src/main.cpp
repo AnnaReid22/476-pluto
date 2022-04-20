@@ -42,22 +42,43 @@ public:
 	// Our shader program
 	std::shared_ptr<Program> prog;
 
-	// Shape to be used (from  file) - modify to support multiple
+	// Shape to be used (from  file)
 	shared_ptr<Shape> mesh;
 	shared_ptr<Shape> theRocket;
 	shared_ptr<Shape> asteroid;
 	shared_ptr<Shape> texcube;
 	shared_ptr<Shape> texSphere;
+	shared_ptr<Shape> theEarth;
+	shared_ptr<Shape> theMars;
+	shared_ptr<Shape> theJupiter;
+	shared_ptr<Shape> theSaturn;
+	shared_ptr<Shape> theUranus;
+	shared_ptr<Shape> theNeptune;
+	shared_ptr<Shape> thePluto;
 
 	shared_ptr<Texture> rocket_albedo;
 	shared_ptr<Texture> grass_albedo;
 	shared_ptr<Texture> asteroid_albedo;
 	shared_ptr<Texture> sky_albedo;
-
+	shared_ptr<Texture> earth_albedo;
+	shared_ptr<Texture> mars_albedo;
+	shared_ptr<Texture> jupiter_albedo;
+	shared_ptr<Texture> saturn_albedo;
+	shared_ptr<Texture> uranus_albedo;
+	shared_ptr<Texture> neptune_albedo;
+	shared_ptr<Texture> pluto_albedo;
+	
 	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> groundMat;
 	shared_ptr<Material> asteroidMat;
 	shared_ptr<Material> skyMat;
+	shared_ptr<Material> earthMat;
+	shared_ptr<Material> marsMat;
+	shared_ptr<Material> jupiterMat;
+	shared_ptr<Material> saturnMat;
+	shared_ptr<Material> uranusMat;
+	shared_ptr<Material> neptuneMat;
+	shared_ptr<Material> plutoMat;
 
 	World w;
 	RenderPipeline rp;
@@ -139,7 +160,7 @@ public:
 
 	void initGeom(const std::string& resourceDirectory)
 	{
-		//load in the rocketmesh and make the shape(s)
+		//rocket loader
 		theRocket = make_shared<Shape>();
 		theRocket->loadMesh(resourceDirectory + "/rocket.obj");
         theRocket->resize();
@@ -154,7 +175,7 @@ public:
 		rocketMat = make_shared<Material>();
 		rocketMat->t_albedo = rocket_albedo;
 		
-		//make the asteroids
+		//asteroid loader
 		asteroid = make_shared<Shape>();
 		asteroid->loadMesh(resourceDirectory + "/asteroid.obj");
         asteroid->resize();
@@ -169,6 +190,7 @@ public:
 		asteroidMat = make_shared<Material>();
 		asteroidMat->t_albedo = asteroid_albedo;
 
+		//skybox loader
 		texSphere = make_shared<Shape>();
 		texSphere->loadMesh(resourceDirectory + "/texSphere.obj");
         texSphere->resize();
@@ -186,10 +208,11 @@ public:
         rp.skyboxMaterial = skyMat;
         rp.skyboxMesh = texSphere;
 
+		//player loader
 		GameObject* player = new GameObject("player");
 		Camera* cam = player->addComponentOfType<Camera>();
 		cam->windowManager = windowManager;
-		cam->eyeOffset = glm::vec3(2, 1, 2);
+		cam->eyeOffset = glm::vec3(0, 1, 2);
 
 		MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
 		rocket->mesh = theRocket;
@@ -204,6 +227,7 @@ public:
 		rp.skyboxMesh = texSphere;
 		rp.skyboxMaterial = skyMat;
 
+		//enemy loader
 		GameObject* spawner = new GameObject("spawner");
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
 		es->spawnDelay = 5;
@@ -214,6 +238,172 @@ public:
 		//Order matters here, because the skybox has to render before anything else.
 		w.addObject(player);
 		w.addObject(spawner);
+
+		initPlanets(resourceDirectory);
+
+	}
+
+	void initPlanets(const std::string& resourceDirectory){
+		//earth
+		theEarth = make_shared<Shape>();
+		theEarth->loadMesh(resourceDirectory + "/planets/earth.obj");
+        theEarth->resize();
+        theEarth->init();
+
+		earth_albedo = make_shared<Texture>();
+		earth_albedo->setFilename(resourceDirectory + "/planets/earth.png");
+		earth_albedo->init();
+		earth_albedo->setUnit(0);
+		earth_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		earthMat = make_shared<Material>();
+		earthMat->t_albedo = earth_albedo;
+
+		GameObject* earth = new GameObject("earth");
+		earth->transform.position = glm::vec3(0, -2, 0);
+		MeshRenderer* earthMR = earth->addComponentOfType<MeshRenderer>();
+		earthMR->mesh = theEarth;
+		earthMR->material = earthMat;
+
+		w.addObject(earth);
+
+		//mars
+		theMars = make_shared<Shape>();
+		theMars->loadMesh(resourceDirectory + "/planets/mars.obj");
+        theMars->resize();
+        theMars->init();
+
+		mars_albedo = make_shared<Texture>();
+		mars_albedo->setFilename(resourceDirectory + "/planets/mars.png");
+		mars_albedo->init();
+		mars_albedo->setUnit(0);
+		mars_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		marsMat = make_shared<Material>();
+		marsMat->t_albedo = mars_albedo;
+
+		GameObject* mars = new GameObject("mars");
+		mars->transform.position = glm::vec3(3, 0, -20);
+		MeshRenderer* marsMR = mars->addComponentOfType<MeshRenderer>();
+		marsMR->mesh = theMars;
+		marsMR->material = marsMat;
+
+		w.addObject(mars);
+
+		//jupiter
+		theJupiter = make_shared<Shape>();
+		theJupiter->loadMesh(resourceDirectory + "/planets/jupiter.obj");
+        theJupiter->resize();
+        theJupiter->init();
+
+		jupiter_albedo = make_shared<Texture>();
+		jupiter_albedo->setFilename(resourceDirectory + "/planets/jupiter.png");
+		jupiter_albedo->init();
+		jupiter_albedo->setUnit(0);
+		jupiter_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		jupiterMat = make_shared<Material>();
+		jupiterMat->t_albedo = jupiter_albedo;
+
+		GameObject* jupiter = new GameObject("jupiter");
+		jupiter->transform.position = glm::vec3(-3, 0, -80);
+		MeshRenderer* jupiterMR = jupiter->addComponentOfType<MeshRenderer>();
+		jupiterMR->mesh = theJupiter;
+		jupiterMR->material = jupiterMat;
+
+		w.addObject(jupiter);
+
+		//saturn
+		theSaturn = make_shared<Shape>();
+		theSaturn->loadMesh(resourceDirectory + "/planets/saturn.obj");
+        theSaturn->resize();
+        theSaturn->init();
+
+		saturn_albedo = make_shared<Texture>();
+		saturn_albedo->setFilename(resourceDirectory + "/planets/saturn.jpg");
+		saturn_albedo->init();
+		saturn_albedo->setUnit(0);
+		saturn_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		saturnMat = make_shared<Material>();
+		saturnMat->t_albedo = saturn_albedo;
+
+		GameObject* saturn = new GameObject("saturn");
+		saturn->transform.position = glm::vec3(-5, 0, -140);
+		MeshRenderer* saturnMR = saturn->addComponentOfType<MeshRenderer>();
+		saturnMR->mesh = theSaturn;
+		saturnMR->material = saturnMat;
+
+		w.addObject(saturn);
+
+		//uranus
+		theUranus = make_shared<Shape>();
+		theUranus->loadMesh(resourceDirectory + "/planets/uranus.obj");
+        theUranus->resize();
+        theUranus->init();
+
+		uranus_albedo = make_shared<Texture>();
+		uranus_albedo->setFilename(resourceDirectory + "/planets/uranus.jpg");
+		uranus_albedo->init();
+		uranus_albedo->setUnit(0);
+		uranus_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		uranusMat = make_shared<Material>();
+		uranusMat->t_albedo = uranus_albedo;
+
+		GameObject* uranus = new GameObject("uranus");
+		uranus->transform.position = glm::vec3(5, 0, -200);
+		MeshRenderer* uranusMR = uranus->addComponentOfType<MeshRenderer>();
+		uranusMR->mesh = theUranus;
+		uranusMR->material = uranusMat;
+
+		w.addObject(uranus);
+
+		//neptune
+		theNeptune = make_shared<Shape>();
+		theNeptune->loadMesh(resourceDirectory + "/planets/neptune.obj");
+        theNeptune->resize();
+        theNeptune->init();
+
+		neptune_albedo = make_shared<Texture>();
+		neptune_albedo->setFilename(resourceDirectory + "/planets/neptune.png");
+		neptune_albedo->init();
+		neptune_albedo->setUnit(0);
+		neptune_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		neptuneMat = make_shared<Material>();
+		neptuneMat->t_albedo = neptune_albedo;
+
+		GameObject* neptune = new GameObject("neptune");
+		neptune->transform.position = glm::vec3(1, 0, -250);
+		MeshRenderer* neptuneMR = neptune->addComponentOfType<MeshRenderer>();
+		neptuneMR->mesh = theNeptune;
+		neptuneMR->material = neptuneMat;
+
+		w.addObject(neptune);
+
+		//pluto
+		thePluto = make_shared<Shape>();
+		thePluto->loadMesh(resourceDirectory + "/planets/pluto.obj");
+        thePluto->resize();
+        thePluto->init();
+
+		pluto_albedo = make_shared<Texture>();
+		pluto_albedo->setFilename(resourceDirectory + "/planets/pluto.png");
+		pluto_albedo->init();
+		pluto_albedo->setUnit(0);
+		pluto_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		plutoMat = make_shared<Material>();
+		plutoMat->t_albedo = pluto_albedo;
+
+		GameObject* pluto = new GameObject("pluto");
+		pluto->transform.position = glm::vec3(1, 0, -300);
+		MeshRenderer* plutoMR = pluto->addComponentOfType<MeshRenderer>();
+		plutoMR->mesh = thePluto;
+		plutoMR->material = plutoMat;
+
+		w.addObject(pluto);
 	}
 
 	void run()
