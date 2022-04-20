@@ -212,7 +212,7 @@ public:
 		GameObject* player = new GameObject("player");
 		Camera* cam = player->addComponentOfType<Camera>();
 		cam->windowManager = windowManager;
-		cam->eyeOffset = glm::vec3(0, 1, 2);
+		cam->eyeOffset = glm::vec3(0, 1, 4);
 
 		MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
 		rocket->mesh = theRocket;
