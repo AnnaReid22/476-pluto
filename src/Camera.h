@@ -15,7 +15,6 @@ private:
     float speed;
     float sensitivity;
     bool firstMouse;
-    
 
     InputManager* input;
 
