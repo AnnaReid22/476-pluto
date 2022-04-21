@@ -15,6 +15,7 @@ private:
     float speed;
     float sensitivity;
     bool firstMouse;
+    
 
     InputManager* input;
 
@@ -34,6 +35,7 @@ public:
     bool strafeL;
     bool rise;
     bool fall;
+    bool stop;
 
     WindowManager* windowManager;
 
