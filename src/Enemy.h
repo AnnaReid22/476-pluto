@@ -26,6 +26,8 @@ public:
 
     Enemy(GameObject* d_GameObject) : Component(d_GameObject) {};
 
+    float getSpeedBasedOnTime();
+
     void Start();
     void Update();
     void Enable() { this->isEnabled = true; };

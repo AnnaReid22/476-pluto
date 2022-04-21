@@ -233,7 +233,7 @@ public:
 		//enemy loader
 		GameObject* spawner = new GameObject("spawner");
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
-		es->spawnDelay = 5;
+		es->spawnDelay = .7;
 
 		es->enemyMesh = asteroid;
 		es->enemyMat = asteroidMat;

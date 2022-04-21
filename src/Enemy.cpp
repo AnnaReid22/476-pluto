@@ -5,16 +5,29 @@
 
 #include "BoundingSphereCollider.h"
 
+#include <iostream>
+
 glm::vec3 Enemy::genRandomTravelDir()
 {
     std::random_device rd;  // Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dis(-1.0, 1.0);
+    std::uniform_real_distribution<float> dis(0.0, 2.0);
 
-    glm::vec3 dir = glm::vec3(dis(gen), 0, dis(gen));
+    glm::vec3 dir = glm::vec3(0, 0, 1);
     dir = glm::normalize(dir);
 
     return dir;
+}
+
+/*
+Gets speed of instantiated asteroid based on time since the start of the game. The more time has passed, 
+the faster the asteroids move.
+*/
+float Enemy::getSpeedBasedOnTime()
+{
+    Time* time = time->getInstance();
+    double secSinceStart = time->getGlobalTime();
+    return  (secSinceStart+2)/5.0f;
 }
 
 void Enemy::Start()
@@ -23,11 +36,19 @@ void Enemy::Start()
 
     travelDirection = genRandomTravelDir();
 
+    speed = getSpeedBasedOnTime();
+
     initScale = this->gameObject->transform.scale;
 }
 
 void Enemy::Update()
 {
+    // Destroy enemies if they reached beginning of level
+    if (this->gameObject->transform.position.z > 100)
+    {
+        spawner->EnemyKilled(this->gameObject);
+    }
+    // Check if this enemy collided with something
     if (timeHit > 0)
     {
         float t = 1 - (((timeHit + deathTime) - time->getGlobalTime()) / deathTime);
