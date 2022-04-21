@@ -28,6 +28,7 @@ Z. Wood + S. Sueda
 #include "MeshRenderer.h"
 #include "BoundingSphereCollider.h"
 #include "EnemySpawner.h"
+#include "Player.h"
 
 using namespace std;
 using namespace glm;
@@ -210,6 +211,7 @@ public:
 
 		//player loader
 		GameObject* player = new GameObject("player");
+		Player* pl = player->addComponentOfType<Player>();
 		player->transform.scale = glm::vec3(0.2);
 		Camera* cam = player->addComponentOfType<Camera>();
 		cam->windowManager = windowManager;
@@ -263,6 +265,7 @@ public:
 		GameObject* earth = new GameObject("earth");
 		earth->transform.position = glm::vec3(0, -12, 0);
 		earth->transform.scale = glm::vec3(10);
+		earth->tag = "planet";
 		MeshRenderer* earthMR = earth->addComponentOfType<MeshRenderer>();
 		earthMR->mesh = theEarth;
 		earthMR->material = earthMat;
@@ -287,11 +290,15 @@ public:
 		GameObject* mars = new GameObject("mars");
 		mars->transform.position = glm::vec3(10, 0, -100);
 		mars->transform.scale = glm::vec3(5);
+		mars->tag = "planet";
 		MeshRenderer* marsMR = mars->addComponentOfType<MeshRenderer>();
 		marsMR->mesh = theMars;
 		marsMR->material = marsMat;
 
+		BoundingSphereCollider* bsc_mars = mars->addComponentOfType<BoundingSphereCollider>();
+		
 		w.addObject(mars);
+		bsc_mars->radius = 1;
 
 		//jupiter
 		theJupiter = make_shared<Shape>();
@@ -311,11 +318,15 @@ public:
 		GameObject* jupiter = new GameObject("jupiter");
 		jupiter->transform.position = glm::vec3(-30, 0, -200);
 		jupiter->transform.scale = glm::vec3(30);
+		jupiter->tag = "planet";
 		MeshRenderer* jupiterMR = jupiter->addComponentOfType<MeshRenderer>();
 		jupiterMR->mesh = theJupiter;
 		jupiterMR->material = jupiterMat;
 
+		BoundingSphereCollider* bsc_jupiter = jupiter->addComponentOfType<BoundingSphereCollider>();
+
 		w.addObject(jupiter);
+		bsc_jupiter->radius = 1;
 
 		//saturn
 		theSaturn = make_shared<Shape>();
@@ -335,11 +346,15 @@ public:
 		GameObject* saturn = new GameObject("saturn");
 		saturn->transform.position = glm::vec3(40, 0, -450);
 		saturn->transform.scale = glm::vec3(35);
+		saturn->tag = "planet";
 		MeshRenderer* saturnMR = saturn->addComponentOfType<MeshRenderer>();
 		saturnMR->mesh = theSaturn;
 		saturnMR->material = saturnMat;
 
+		BoundingSphereCollider* bsc_saturn = saturn->addComponentOfType<BoundingSphereCollider>();
+
 		w.addObject(saturn);
+		bsc_saturn->radius = 1;
 
 		//uranus
 		theUranus = make_shared<Shape>();
@@ -359,11 +374,15 @@ public:
 		GameObject* uranus = new GameObject("uranus");
 		uranus->transform.position = glm::vec3(50, 0, -600);
 		uranus->transform.scale = glm::vec3(25);
+		uranus->tag = "planet";
 		MeshRenderer* uranusMR = uranus->addComponentOfType<MeshRenderer>();
 		uranusMR->mesh = theUranus;
 		uranusMR->material = uranusMat;
 
+		BoundingSphereCollider* bsc_uranus = uranus->addComponentOfType<BoundingSphereCollider>();
+
 		w.addObject(uranus);
+		bsc_uranus->radius = 1;
 
 		//neptune
 		theNeptune = make_shared<Shape>();
@@ -383,11 +402,15 @@ public:
 		GameObject* neptune = new GameObject("neptune");
 		neptune->transform.position = glm::vec3(-45, 0, -800);
 		neptune->transform.scale = glm::vec3(25);
+		neptune->tag = "planet";
 		MeshRenderer* neptuneMR = neptune->addComponentOfType<MeshRenderer>();
 		neptuneMR->mesh = theNeptune;
 		neptuneMR->material = neptuneMat;
 
+		BoundingSphereCollider* bsc_neptune = neptune->addComponentOfType<BoundingSphereCollider>();
+
 		w.addObject(neptune);
+		bsc_neptune->radius = 1;
 
 		//pluto
 		thePluto = make_shared<Shape>();
@@ -406,11 +429,16 @@ public:
 
 		GameObject* pluto = new GameObject("pluto");
 		pluto->transform.position = glm::vec3(5, 0, -1000);
+		pluto->transform.scale = glm::vec3(1);
+		pluto->tag = "planet";
 		MeshRenderer* plutoMR = pluto->addComponentOfType<MeshRenderer>();
 		plutoMR->mesh = thePluto;
 		plutoMR->material = plutoMat;
 
+		BoundingSphereCollider* bsc_pluto = pluto->addComponentOfType<BoundingSphereCollider>();
+
 		w.addObject(pluto);
+		bsc_pluto->radius = 1;
 	}
 
 	void run()

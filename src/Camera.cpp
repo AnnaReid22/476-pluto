@@ -18,6 +18,7 @@ Camera::Camera(GameObject* d_GameObject) : Component(d_GameObject)
     speed = 5;
     sensitivity = 0.2;
 
+    stop = false;
     dollyB = false;
     dollyF = false;
     strafeR = false;
@@ -31,7 +32,9 @@ Camera::Camera(GameObject* d_GameObject) : Component(d_GameObject)
 
 void Camera::setUpCam(WindowManager* wm)
 {
-    moveEye();
+    if(!stop){
+        moveEye();
+    }
     lookAt = this->gameObject->transform.position;
 }
 

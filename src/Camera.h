@@ -34,6 +34,7 @@ public:
     bool strafeL;
     bool rise;
     bool fall;
+    bool stop;
 
     WindowManager* windowManager;
 
