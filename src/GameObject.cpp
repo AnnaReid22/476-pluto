@@ -8,12 +8,14 @@ GameObject::GameObject(std::string d_Name)
 {
     transform = Transform();
     name = d_Name;
+    tag = "";
 }
 
 GameObject::GameObject(std::string d_Name, Transform d_Transform)
 {
     name = d_Name;
     transform = d_Transform;
+    tag = "";
 }
 
 GameObject::~GameObject()

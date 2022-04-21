@@ -15,6 +15,7 @@ public:
     std::string name;
     bool isEnabled = true;
     bool toBeDestroyed = false;
+    std::string tag;
 
     World * world;
 
