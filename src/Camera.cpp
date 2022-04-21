@@ -13,7 +13,7 @@ Camera::Camera(GameObject* d_GameObject) : Component(d_GameObject)
     lastX = 0;
     lastY = 0;
     firstMouse = true;
-    speed = 10;
+    speed = 5;
     sensitivity = 0.2;
 
     dollyB = false;
