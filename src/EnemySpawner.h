@@ -29,9 +29,11 @@ public:
     std::shared_ptr<Shape> enemyMesh;
     std::shared_ptr<Material> enemyMat;
 
-    double spawnDelay = 12;
+    double spawnDelay = .7;// 12;
 
     EnemySpawner(GameObject* d_GameObject) : Component(d_GameObject) {};
+
+    double getAsteroidPosBasedOnTime();
 
     GameObject* generateEnemy();
 

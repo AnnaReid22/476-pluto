@@ -2,6 +2,8 @@
 #include "Time.h"
 #include "GameObject.h"
 
+#include <iostream>
+
 Camera::Camera(GameObject* d_GameObject) : Component(d_GameObject)
 {
     phi = 0.0;
