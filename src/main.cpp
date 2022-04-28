@@ -42,9 +42,6 @@ public:
 
 	WindowManager * windowManager = nullptr;
 
-	// Our shader program
-	std::shared_ptr<Program> prog;
-
 	// Shape to be used (from  file)
 	shared_ptr<Shape> mesh;
 	shared_ptr<Shape> theRocket;
@@ -138,24 +135,6 @@ public:
 		glClearColor(.12f, .34f, .56f, 1.0f);
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
-
-
-		// Initialize the GLSL program.
-		prog = make_shared<Program>();
-		prog->setVerbose(true);
-		prog->setShaderNames("../shaders/tex_vert.glsl", "../shaders/tex_frag0.glsl");
-		prog->init();
-		prog->addUniform("P");
-		prog->addUniform("V");
-		prog->addUniform("M");
-		prog->addUniform("Texture0");
-		prog->addAttribute("vertPos");
-		prog->addAttribute("vertNor");
-		prog->addAttribute("vertTex");
-		prog->addUniform("lightPos");
-        prog->addUniform("MatShine");
-        prog->addUniform("flip");
-        prog->addAttribute("vertNor");
 
 		w = World();
 		rp = RenderPipeline(windowManager);
