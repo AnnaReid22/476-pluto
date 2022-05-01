@@ -14,10 +14,10 @@ public:
 	void load(vec3 start);
 	void rebirth(float time, vec3 start);
 	void update(float time, float h, const glm::vec3 &g, const vec3 start);
-	const vec3 &getPosition() const { return position; };
-	const vec3 &getVelocity() const { return velocity; };
-	const vec4 &getColor() const { return color; };
-	const float &getLifespan() const { return lifespan; };
+	vec3 getPosition() { return position; };
+	vec3 getVelocity() { return velocity; };
+	vec4 getColor() { return color; };
+	float getLifespan() { return lifespan; };
 	void setLifespan(float dt);
 	
 private:

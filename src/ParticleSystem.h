@@ -19,5 +19,6 @@ public:
     void Update();
     void Enable() { this->isEnabled = true; };
     void Disable() { this->isEnabled = false; };
+    unsigned int deadParticle();
 };
 

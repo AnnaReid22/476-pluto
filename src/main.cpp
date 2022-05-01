@@ -153,6 +153,7 @@ public:
         prog->addUniform("MatShine");
         prog->addUniform("flip");
         prog->addAttribute("vertNor");
+		
 
 		w = World();
 		rp = RenderPipeline(windowManager);
