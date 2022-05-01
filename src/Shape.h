@@ -24,6 +24,8 @@ public:
 	void draw(const std::shared_ptr<Program> prog) const;
 	glm::vec3 min;
 	glm::vec3 max;
+	float radius;
+	glm:: vec3 center;
 	unsigned int* textureIDs = NULL;
 	
 private:
