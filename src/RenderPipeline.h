@@ -8,20 +8,27 @@
 #include "Camera.h"
 #include "Program.h"
 #include "MeshRenderer.h"
+#include "IShader.h"
+#include "ResourceManager.h"
 
 class RenderPipeline
 {
 private:
     WindowManager* windowManager;
-    glm::mat4 GetProjectionMatrix();
+    ResourceManager* rm;
+
+    std::vector<std::shared_ptr<IShader>> renderPasses;
+
+    std::shared_ptr<IShader> outputPass;
+
+    std::vector<GameObject*> viewFrustumCull(std::vector<GameObject*> objectsToRender, Camera* cam);
 public:
-    std::shared_ptr<Material> skyboxMaterial;
-    std::shared_ptr<Shape> skyboxMesh;
-    std::shared_ptr<Program> prog;
 
     RenderPipeline() = default;
     RenderPipeline(WindowManager* wm);
 
-    void renderFrame(std::vector<GameObject*> objectsToRender, Camera* cam);
+    void addRenderPass(std::shared_ptr<IShader> pass);
+
+    void executePipeline();
 };
 

@@ -30,6 +30,8 @@ Z. Wood + S. Sueda
 #include "EnemySpawner.h"
 #include "Player.h"
 
+#include "ForwardRenderPass.h"
+
 using namespace std;
 using namespace glm;
 
@@ -39,9 +41,6 @@ class Application : public EventCallbacks {
 public:
 
 	WindowManager * windowManager = nullptr;
-
-	// Our shader program
-	std::shared_ptr<Program> prog;
 
 	// Shape to be used (from  file)
 	shared_ptr<Shape> mesh;
@@ -137,31 +136,16 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 
-		// Initialize the GLSL program.
-		prog = make_shared<Program>();
-		prog->setVerbose(true);
-		prog->setShaderNames("../shaders/tex_vert.glsl", "../shaders/tex_frag0.glsl");
-		prog->init();
-		prog->addUniform("P");
-		prog->addUniform("V");
-		prog->addUniform("M");
-		prog->addUniform("Texture0");
-		prog->addAttribute("vertPos");
-		prog->addAttribute("vertNor");
-		prog->addAttribute("vertTex");
-		prog->addUniform("lightPos");
-        prog->addUniform("MatShine");
-        prog->addUniform("flip");
-        prog->addAttribute("vertNor");
-		
-
 		w = World();
 		rp = RenderPipeline(windowManager);
-		rp.prog = prog;
+
+		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 	}
 
 	void initGeom(const std::string& resourceDirectory)
 	{
+		ResourceManager* rm = rm->getInstance();
+
 		//rocket loader
 		theRocket = make_shared<Shape>();
 		theRocket->loadMesh(resourceDirectory + "/rocket.obj");
@@ -207,8 +191,9 @@ public:
         skyMat = make_shared<Material>();
         skyMat->t_albedo = sky_albedo;
 
-        rp.skyboxMaterial = skyMat;
-        rp.skyboxMesh = texSphere;
+
+		rm->addMesh("skybox", texSphere);
+		rm->addOther("skyboxMat", &skyMat);
 
 		//player loader
 		GameObject* player = new GameObject("player");
@@ -227,9 +212,6 @@ public:
 		BoundingSphereCollider* bsc2 = player->addComponentOfType <BoundingSphereCollider>();
 
 		w.addObject(player);
-
-		rp.skyboxMesh = texSphere;
-		rp.skyboxMaterial = skyMat;
 
 		//enemy loader
 		GameObject* spawner = new GameObject("spawner");
@@ -446,9 +428,10 @@ public:
 	{
 		// Update frame and global time at the beginning of each frame cycle
 		Time* time = time->getInstance();
-		time->updateTime();
-
+		ResourceManager* rm = rm->getInstance();
 		Physics* physics = physics->getInstance();
+
+		time->updateTime();
 		physics->clearCollideables();
 
 		// Run the world simulation for this frame
@@ -458,14 +441,18 @@ public:
 
 		// Get vector of renderable gameobjects and submit to RenderPipeline
 		std::vector<GameObject*> renderables = w.getRenderables();
-		w.mainCamera->setUpCam(windowManager);
-		rp.renderFrame(renderables, w.mainCamera);
+
+		rm->addOther("renderables", &renderables);
+		rm->addOther("activeCamera", w.mainCamera);
+
+		rp.executePipeline();
 	}
 };
 
 Time* Time::instance = 0;
 Physics* Physics::instance = 0;
 InputManager* InputManager::instance = 0;
+ResourceManager* ResourceManager::instance = 0;
 
 int main(int argc, char *argv[])
 {
