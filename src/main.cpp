@@ -140,6 +140,7 @@ public:
 		rp = RenderPipeline(windowManager);
 
 		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
+		// add render passes with more shaders here
 	}
 
 	void initGeom(const std::string& resourceDirectory)

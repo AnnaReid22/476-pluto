@@ -68,23 +68,24 @@ std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject
     l = length(normal);
     planes[5] = far = far/l;
 
-    // std::vector<GameObject *> objectsToDraw;
-    // for (int i = 0; i < objectsToRender.size(); i++)
-    // {
-    //     for (int j = 0; j < 6; j++)
-    //     {
-    //         glm::vec3 point = rm->getMesh(objectsToRender[i]->name)->center;
-    //         // whenever an object moves, it needs to recalculate center
-    //         // currently unable to find meshes because they are not added to RM in main
-    //         float dist = planes[i].x*point.x + planes[i].y*point.y + planes[i].z*point.z + planes[i].w;
-    //         if(dist >= (-1)*rm->getMesh(objectsToRender[i]->name)->radius)
-    //         {
-    //             objectsToDraw.push_back(objectsToRender[i]);
-    //         }
-    //     }
-    // }
-    // return objectsToDraw;
-    return objectsToRender;
+    std::vector<GameObject *> objectsToDraw;
+    for (int i = 0; i < objectsToRender.size(); i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            float radius;
+            glm::vec3 center = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh->getBSphere(&radius);
+            center += objectsToRender[i]->transform.position;
+            float max_scale = glm::max(objectsToRender[i]->transform.scale.x, glm::max(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
+            radius *= max_scale;
+            float dist = planes[i].x*center.x + planes[i].y*center.y + planes[i].z*center.z + planes[i].w;
+            if(dist >= (-1)*radius)
+            {
+                objectsToDraw.push_back(objectsToRender[i]);
+            }
+        }
+    }
+    return objectsToDraw;
 }
 
 void RenderPipeline::addRenderPass(std::shared_ptr<IShader> pass)
@@ -104,6 +105,7 @@ void RenderPipeline::executePipeline()
     for (std::shared_ptr<IShader> pass : renderPasses)
         pass->execute(windowManager);
 
+    //simple render pass that will combine all the textures
     //outputPass->execute(windowManager);
 
     return;
