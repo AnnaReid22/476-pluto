@@ -190,10 +190,6 @@ void Shape::resize() {
             assert(posBuf[i][3 * v + 2] <= 1.0f + epsilon);
         }
 
-    glm::vec3 resized_max = glm::vec3(maxX, maxY, maxZ);
-    glm::vec3 resized_min = glm::vec3(minX, minY, minZ);
-    center = (resized_max + resized_min) * 0.5f;
-	radius = glm::length(resized_max - center);
 }
 
 void Shape::init() {

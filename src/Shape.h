@@ -24,8 +24,6 @@ public:
 	void draw(const std::shared_ptr<Program> prog) const;
 	glm::vec3 min;
 	glm::vec3 max;
-	float radius;
-	glm:: vec3 center;
 	unsigned int* textureIDs = NULL;
 	
 private:
@@ -43,15 +41,6 @@ private:
 	unsigned int* norBufID = 0;
 	unsigned int* texBufID = 0;
 	unsigned int* vaoID = 0;
-// 	std::vector<unsigned int> eleBuf;
-// 	std::vector<float> posBuf;
-// 	std::vector<float> norBuf;
-// 	std::vector<float> texBuf;
-// 	unsigned eleBufID;
-// 	unsigned posBufID;
-// 	unsigned norBufID;
-// 	unsigned texBufID;
-//    unsigned vaoID;
 };
 
 #endif
