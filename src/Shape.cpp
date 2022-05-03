@@ -16,6 +16,8 @@ Shape::Shape() :
 {
 	min = glm::vec3(0);
 	max = glm::vec3(0);
+    center = glm::vec3(0);
+    radius = 0.0f;
 }
 
 Shape::~Shape()
@@ -95,6 +97,7 @@ void Shape::loadMesh(const string& meshName, string* mtlpath, unsigned char* (lo
 
     int z;
     z = 0;
+    center = getBSphere(&radius);
 }
 
 void Shape::measure() {
@@ -189,6 +192,7 @@ void Shape::resize() {
             assert(posBuf[i][3 * v + 2] >= -1.0f - epsilon);
             assert(posBuf[i][3 * v + 2] <= 1.0f + epsilon);
         }
+
 }
 
 void Shape::init() {
