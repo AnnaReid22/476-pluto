@@ -243,6 +243,7 @@ public:
 		//add particle system game object
 		GameObject* partSystem = new GameObject("particleSystem");
 		ParticleSystem* ps = partSystem->addComponentOfType<ParticleSystem>();
+		partSystem->transform.position = glm::vec3(0, 0, -20);
 		ps->start = vec3(0.0, -5.0, 0.0);
 		ps->numParticles = 100;
 		ps->GPUSetup();

@@ -42,7 +42,6 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
 
     glm::mat4 P = GetTheProjectionMatrix(windowManager);
     glm::mat4 V = cam->getCameraViewMatrix();
-    glm::mat4 M = glm::mat4(1);
 
     particleTexture = (Texture*)rm->getOther("particleTexture");
     
@@ -50,7 +49,6 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
     this->particleTexture->bind(particleProg->getUniform("alphaTexture"));
     glUniformMatrix4fv(particleProg->getUniform("P"), 1, GL_FALSE, value_ptr(P));
     glUniformMatrix4fv(particleProg->getUniform("V"), 1, GL_FALSE, value_ptr(V));
-    glUniformMatrix4fv(particleProg->getUniform("M"), 1, GL_FALSE, value_ptr(M));
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -59,11 +57,10 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
 
     for (GameObject* obj : partSystems)
     {
-        M = obj->transform.genModelMatrix();
+        glm::mat4 M = obj->transform.genModelMatrix();
         ParticleSystem* ps = obj->getComponentByType<ParticleSystem>();
         glUniformMatrix4fv(particleProg->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
         ps->draw(particleProg);
-
     }
 
     glBlendFunc(GL_ONE, GL_ZERO);
