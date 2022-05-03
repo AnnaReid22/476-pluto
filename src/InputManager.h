@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include "Time.h"
+#include "WindowManager.h"
 
 typedef struct _key_status {
     bool isPressed;
@@ -43,6 +44,10 @@ public:
 
     void KeyPressed(int key);
     void KeyReleased(int key);
+
+    void GetMousePos(double* xpos, double* ypos);
+
+    WindowManager* windowManager;
 
 };
 

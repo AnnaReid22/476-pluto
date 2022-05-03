@@ -213,9 +213,9 @@ public:
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
 		player->transform.scale = glm::vec3(0.2);
-		Camera* cam = player->addComponentOfType<Camera>();
-		cam->windowManager = windowManager;
-		cam->eyeOffset = glm::vec3(0, 1, 4);
+		GameObject* camera = new GameObject("camera");
+		Camera* cam = camera->addComponentOfType<Camera>();
+		cam->rocket = pl;
 
 		MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
 		rocket->mesh = theRocket;
@@ -241,6 +241,7 @@ public:
 		//Order matters here, because the skybox has to render before anything else.
 		w.addObject(player);
 		w.addObject(spawner);
+		w.addObject(camera);
 
 		initPlanets(resourceDirectory);
 
@@ -457,7 +458,6 @@ public:
 
 		// Get vector of renderable gameobjects and submit to RenderPipeline
 		std::vector<GameObject*> renderables = w.getRenderables();
-		w.mainCamera->setUpCam(windowManager);
 		rp.renderFrame(renderables, w.mainCamera);
 	}
 };
@@ -485,6 +485,10 @@ int main(int argc, char *argv[])
 	windowManager->init(1920, 1080);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
+
+	InputManager* input = input->getInstance();
+
+	input->windowManager = windowManager;
 
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
