@@ -31,6 +31,7 @@ Z. Wood + S. Sueda
 #include "Player.h"
 
 #include "ForwardRenderPass.h"
+#include "ParticleRenderPass.h"
 
 using namespace std;
 using namespace glm;
@@ -67,6 +68,7 @@ public:
 	shared_ptr<Texture> uranus_albedo;
 	shared_ptr<Texture> neptune_albedo;
 	shared_ptr<Texture> pluto_albedo;
+	shared_ptr<Texture> particleTexture;
 	
 	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> groundMat;
@@ -79,6 +81,7 @@ public:
 	shared_ptr<Material> uranusMat;
 	shared_ptr<Material> neptuneMat;
 	shared_ptr<Material> plutoMat;
+	shared_ptr<Material> particleMat;
 
 	World w;
 	RenderPipeline rp;
@@ -140,6 +143,7 @@ public:
 		rp = RenderPipeline(windowManager);
 
 		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
+		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -191,7 +195,6 @@ public:
         skyMat = make_shared<Material>();
         skyMat->t_albedo = sky_albedo;
 
-
 		rm->addMesh("skybox", texSphere);
 		rm->addOther("skyboxMat", &skyMat);
 
@@ -226,6 +229,15 @@ public:
 		w.addObject(spawner);
 
 		initPlanets(resourceDirectory);
+
+		//add particle system texture
+		particleTexture = make_shared<Texture>();
+		particleTexture->setFilename(resourceDirectory + "/alpha.bmp");
+		particleTexture->init();
+		particleTexture->setUnit(0);
+		particleTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		rm->addOther("particleTexture", &particleTexture);
 
 	}
 

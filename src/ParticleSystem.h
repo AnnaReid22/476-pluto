@@ -11,6 +11,11 @@ private:
     std::vector<Particle> particles;
 	int numParticles;
 	vec3 start;
+    GLfloat points[900];
+	GLfloat pointColors[1200];
+    unsigned vertArrObj;
+	unsigned vertBuffObj;
+	unsigned colorbuff;
 
 public:
 
@@ -20,5 +25,6 @@ public:
     void Enable() { this->isEnabled = true; };
     void Disable() { this->isEnabled = false; };
     unsigned int deadParticle();
+    void GPUSetup();
 };
 

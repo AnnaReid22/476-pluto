@@ -59,3 +59,26 @@ unsigned int ParticleSystem::deadParticle()
     lastDeadParticle = 0;
     return 0;
 }  
+
+
+void ParticleSystem::GPUSetup() {
+
+  // cout << "end: " << start.x << " " << start.y << " " <<start.z << endl;
+	//generate the VAO
+   glGenVertexArrays(1, &vertArrObj);
+   glBindVertexArray(vertArrObj);
+
+   //generate vertex buffer to hand off to OGL - using instancing
+   glGenBuffers(1, &vertBuffObj);
+   //set the current state to focus on our vertex buffer
+   glBindBuffer(GL_ARRAY_BUFFER, vertBuffObj);
+
+   //actually memcopy the data - only do this once
+   glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points[0], GL_STREAM_DRAW);
+
+    glGenBuffers(1, &colorbuff);
+   glBindBuffer(GL_ARRAY_BUFFER, colorbuff);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(pointColors), &pointColors[0], GL_STREAM_DRAW);
+   assert(glGetError() == GL_NO_ERROR);
+	
+}
