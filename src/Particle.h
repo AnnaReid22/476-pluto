@@ -19,6 +19,7 @@ public:
 	vec4 getColor() { return color; };
 	float getLifespan() { return lifespan; };
 	void setLifespan(float dt);
+	void setPosition(vec3 pos);
 	
 private:
 

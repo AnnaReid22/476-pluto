@@ -3,7 +3,7 @@
 
 Particle::Particle(vec3 start) :
 	position(start),
-	velocity(0.0f, 0.0f, 0.0f),
+	velocity(0.5f, 0.5f, 0.5f),
 	lifespan(1.0f),
 	color(1.0f, 1.0f, 1.0f, 1.0f)
 {
@@ -36,4 +36,9 @@ void Particle::rebirth(float time, vec3 start)
 void Particle::setLifespan(float dt)
 {
 	lifespan = lifespan - dt;
+}
+
+void Particle::setPosition(vec3 pos)
+{
+	position -= pos;
 }

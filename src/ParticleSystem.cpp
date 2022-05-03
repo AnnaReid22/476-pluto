@@ -31,9 +31,20 @@ void ParticleSystem::Update()
       p.setLifespan(time->getFrametime());
       if (p.getLifespan() > 0.0f)
       {
-          p.getPosition() -= p.getVelocity() * (float)time->getFrametime();
+            p.setPosition(p.getVelocity() * (float)time->getFrametime());
+            points[i*3+0] =p.getPosition().x; 
+            points[i*3+1] =p.getPosition().y; 
+            points[i*3+2] =p.getPosition().z; 
       }
   }
+
+   glBindBuffer(GL_ARRAY_BUFFER, vertBuffObj);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(points), NULL, GL_STREAM_DRAW);
+   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*numParticles*3, points);
+   glBindBuffer(GL_ARRAY_BUFFER, colorbuff);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(pointColors), NULL, GL_STREAM_DRAW);
+   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*numParticles*4, pointColors);
+   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 unsigned int ParticleSystem::deadParticle()
@@ -97,7 +108,6 @@ void ParticleSystem::GPUSetup() {
         particles.push_back(particle);
         particle.load(start);
 	}
-    std::cout << "particles size: " << particles.size() << std:: endl;
 
     //generate the VAO
     // vertex array for keeping track of the vertices of the particle system
@@ -116,7 +126,4 @@ void ParticleSystem::GPUSetup() {
     glBindBuffer(GL_ARRAY_BUFFER, colorbuff);
     glBufferData(GL_ARRAY_BUFFER, sizeof(pointColors), &pointColors[0], GL_STREAM_DRAW);
     assert(glGetError() == GL_NO_ERROR);
-
-    //code binds vertex buffers and color buffers to GPU
-	
 }
