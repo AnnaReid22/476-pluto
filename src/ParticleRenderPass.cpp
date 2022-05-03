@@ -17,6 +17,7 @@ glm::mat4 GetTheProjectionMatrix(WindowManager * windowManager)
 
 void ParticleRenderPass::init()
 {
+    //initializing the particle system
     particleProg = std::make_shared<Program>();
     particleProg->setVerbose(true);
     particleProg->setShaderNames("../shaders/ps_vert.glsl", "../shaders/ps_frag.glsl");
@@ -35,13 +36,15 @@ void ParticleRenderPass::init()
 
 void ParticleRenderPass::execute(WindowManager * windowManager)
 {
-    // initialize the particle system correctly
     // get all transformation matrices correctly
     Camera* cam = (Camera*)rm->getOther("activeCamera");
+    std::vector<GameObject*> partSystems = *(std::vector<GameObject*> *)rm->getOther("particleSystem");
 
     glm::mat4 P = GetTheProjectionMatrix(windowManager);
-    glm::mat4 V = cam->getCameraRotationMatrix();
+    glm::mat4 V = cam->getCameraViewMatrix();
     glm::mat4 M = glm::mat4(1);
+
+    particleTexture = (Texture*)rm->getOther("particleTexture");
     
     particleProg->bind();
     this->particleTexture->bind(particleProg->getUniform("alphaTexture"));
@@ -53,10 +56,16 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glPointSize(15.0f);
-    // partSystem->drawMe(particleProg);
-    // partSystem->update();
-    // thePartSystem2->drawMe(particleProg);
-    // thePartSystem2->update();
+
+    for (GameObject* obj : partSystems)
+    {
+        M = obj->transform.genModelMatrix();
+        ParticleSystem* ps = obj->getComponentByType<ParticleSystem>();
+        glUniformMatrix4fv(particleProg->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
+        ps->draw(particleProg);
+
+    }
+
     glBlendFunc(GL_ONE, GL_ZERO);
 
     particleProg->unbind();

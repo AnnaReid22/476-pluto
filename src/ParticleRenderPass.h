@@ -16,8 +16,7 @@ public:
         rm = rm->getInstance();
     };
 
-    std::shared_ptr<Texture> partSystem;
-    std::shared_ptr<Texture> particleTexture;
+    Texture* particleTexture;
 
     void init();
     void execute(WindowManager * windowManager);

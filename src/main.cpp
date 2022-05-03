@@ -32,6 +32,7 @@ Z. Wood + S. Sueda
 
 #include "ForwardRenderPass.h"
 #include "ParticleRenderPass.h"
+#include "ParticleSystem.h"
 
 using namespace std;
 using namespace glm;
@@ -238,6 +239,15 @@ public:
 		particleTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
 		rm->addOther("particleTexture", &particleTexture);
+
+		//add particle system game object
+		GameObject* partSystem = new GameObject("particleSystem");
+		ParticleSystem* ps = partSystem->addComponentOfType<ParticleSystem>();
+		ps->start = vec3(0.0, -5.0, 0.0);
+		ps->numParticles = 100;
+		ps->GPUSetup();
+
+		w.addObject(partSystem);
 
 	}
 
@@ -453,7 +463,10 @@ public:
 
 		// Get vector of renderable gameobjects and submit to RenderPipeline
 		std::vector<GameObject*> renderables = w.getRenderables();
+		std::vector<GameObject*> curPS = w.getParticleSystems();
 
+
+		rm->addOther("particleSystem", &curPS);
 		rm->addOther("renderables", &renderables);
 		rm->addOther("activeCamera", w.mainCamera);
 
