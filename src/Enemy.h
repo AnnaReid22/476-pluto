@@ -7,26 +7,16 @@ class Enemy :
     public Component
 {
 private:
-    Time* time = 0;
-
-    glm::vec3 genRandomTravelDir();
-
-    float deathTime = 1;
-    float timeHit = -1;
-
-    glm::vec3 initScale = glm::vec3(0);
-
-
-
+    float rotationSpeed = 0;
+    glm::vec3 rotationAxis = glm::vec3(0, 1, 0);
+    bool collided = false;
 public:
     glm::vec3 travelDirection = glm::vec3(0);
-    float speed = 3;
-
-    EnemySpawner* spawner = nullptr;
+    float speed = 0;
+    int type = 0;
+    int parent = 0;
 
     Enemy(GameObject* d_GameObject) : Component(d_GameObject) {};
-
-    float getSpeedBasedOnTime();
 
     void Start();
     void Update();
@@ -35,4 +25,3 @@ public:
 
     void OnCollide(GameObject* other);
 };
-
