@@ -73,13 +73,16 @@ std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject
     {
         for (int j = 0; j < 6; j++)
         {
-            float radius;
-            glm::vec3 center = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh->getBSphere(&radius);
+            std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
+            glm::vec3 center = mesh->center;
+            std::cout << "centerx" << center.x << std::endl;
+            float rad = mesh->radius;
+            std::cout << "rad" << rad << std::endl;
             center += objectsToRender[i]->transform.position;
             float max_scale = glm::max(objectsToRender[i]->transform.scale.x, glm::max(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
-            radius *= max_scale;
+            rad *= max_scale;
             float dist = planes[i].x*center.x + planes[i].y*center.y + planes[i].z*center.z + planes[i].w;
-            if(dist >= (-1)*radius)
+            if(dist >= (-1)*rad)
             {
                 objectsToDraw.push_back(objectsToRender[i]);
             }
