@@ -43,7 +43,7 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
     glm::mat4 P = GetTheProjectionMatrix(windowManager);
     glm::mat4 V = cam->getCameraViewMatrix();
 
-    particleTexture = (Texture*)rm->getOther("particleTexture");
+    particleTexture = rm->getUserTextureResource("particleTexture");
     
     particleProg->bind();
     this->particleTexture->bind(particleProg->getUniform("alphaTexture"));

@@ -4,6 +4,8 @@
 #include "ResourceManager.h"
 #include "Material.h"
 
+#include <memory>
+
 class ParticleRenderPass :
     public IShader
 {
@@ -16,7 +18,7 @@ public:
         rm = rm->getInstance();
     };
 
-    Texture* particleTexture;
+    std::shared_ptr<Texture> particleTexture;
 
     void init();
     void execute(WindowManager * windowManager);

@@ -238,7 +238,7 @@ public:
 		particleTexture->setUnit(0);
 		particleTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
-		rm->addOther("particleTexture", &particleTexture);
+		rm->addUserTextureResource("particleTexture", particleTexture);
 
 		//add particle system game object
 		GameObject* partSystem = new GameObject("particleSystem");
