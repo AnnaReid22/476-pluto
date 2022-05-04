@@ -18,7 +18,12 @@ private:
 
 public:
 	vec3 start;
+    vec4 color;
+    vec3 max_velocity;
+    vec3 min_velocity;
+    float lifespan;
     int numParticles;
+    float color_modify_value;
     ParticleSystem(GameObject* d_GameObject) : Component(d_GameObject) {};
     void Start();
     void Update();

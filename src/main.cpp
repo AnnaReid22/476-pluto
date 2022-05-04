@@ -246,6 +246,10 @@ public:
 		partSystem->transform.position = glm::vec3(0, 0, -20);
 		ps->start = vec3(0.0, -5.0, 0.0);
 		ps->numParticles = 100;
+		ps->color = vec4(0.1, 0.7, 0.2, 1.0f);
+		ps->max_velocity = vec3(2.0, 2.0, 0.0);
+		ps->min_velocity = vec3(0.0, 1.0, 0.0);
+		ps->lifespan = 1.0f;
 		ps->GPUSetup();
 
 		w.addObject(partSystem);

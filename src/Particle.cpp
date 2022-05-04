@@ -1,17 +1,17 @@
 #include <iostream>
 #include "Particle.h"
 
-Particle::Particle(vec3 start) :
+Particle::Particle(vec3 start, vec3 vel, float life, vec4 col) :
 	position(start),
-	velocity(0.5f, 0.5f, 0.5f),
-	lifespan(1.0f),
-	color(1.0f, 1.0f, 1.0f, 1.0f)
+	velocity(vel),
+	lifespan(life),
+	color(col)
 {
 }
 
-void Particle::load(vec3 start)
+void Particle::load(vec3 start, vec4 color, vec3 vel_max, vec3 vel_min, float life)
 {
-	rebirth(0.0f, start);
+	rebirth(0.0f, start, vel_max, vel_min, color, life);
 }
 
 float randFloat(float l, float h)
@@ -20,17 +20,14 @@ float randFloat(float l, float h)
 	return (1.0f - r) * l + r * h;
 }
 
-void Particle::rebirth(float time, vec3 start)
+void Particle::rebirth(float time, vec3 start, vec3 vel_max, vec3 vel_min, vec4 col, float life)
 {
 	position = start;
-	velocity.x = randFloat(-0.1f, 0.1f);
-	velocity.y = randFloat(0.2f, 0.5f);
-	velocity.z = randFloat(-0.3f, 0.3f);
-	lifespan = randFloat(2.0f, 5.0f); 
-   	color.r = randFloat(0.6f, 1.0f);
-   	color.g = randFloat(0.6f, 1.0f);
-   	color.b = randFloat(0.6f, 1.0f);
-	color.a = 1.0f;
+	velocity.x = randFloat(vel_max.x, -1*vel_min.x);
+	velocity.y = randFloat(vel_max.y, -1*vel_min.y);
+	velocity.z = randFloat(vel_max.z, -1*vel_min.z);
+	lifespan = life; 
+   	color = col;
 }
 
 void Particle::setLifespan(float dt)
@@ -40,5 +37,10 @@ void Particle::setLifespan(float dt)
 
 void Particle::setPosition(vec3 pos)
 {
-	position -= pos;
+	position += pos;
+}
+
+void Particle::setColor(vec4 col)
+{
+	color += col;
 }

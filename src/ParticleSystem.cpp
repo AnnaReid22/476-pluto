@@ -11,6 +11,7 @@ unsigned int lastDeadParticle = 0;
 void ParticleSystem::Start()
 {
   time = time->getInstance();
+  color_modify_value = 1.0f;
 }
 
 void ParticleSystem::Update()
@@ -21,7 +22,7 @@ void ParticleSystem::Update()
   for (unsigned int i = 0; i < new_particles; ++i)
   {
       int dead = deadParticle();
-      particles[dead].load(start);
+      particles[dead].load(start, color, max_velocity, min_velocity, lifespan);
   }
 
   // update other particles
@@ -35,6 +36,12 @@ void ParticleSystem::Update()
             points[i*3+0] =p.getPosition().x; 
             points[i*3+1] =p.getPosition().y; 
             points[i*3+2] =p.getPosition().z; 
+            // p.setColor(p.getColor() * color_modify_value);
+            vec4 col = p.getColor();
+            pointColors[i*4+0] = col.r; 
+            pointColors[i*4+1] = col.g; 
+            pointColors[i*4+2] = col.b;
+            pointColors[i*4+3] = col.a;
       }
   }
 
@@ -99,14 +106,14 @@ void ParticleSystem::GPUSetup() {
         points[i*3+2] = start.z;
         //defining colors for the points in the array buffer for colors
         //matches up to vertex buffer
-        pointColors[i*4+0] = 0.5; 
-        pointColors[i*4+1] = 0.2;
-        pointColors[i*4+2] = 0.7;
-        pointColors[i*4+3] = 0.1;
+        pointColors[i*4+0] = color.r; 
+        pointColors[i*4+1] = color.g;
+        pointColors[i*4+2] = color.b;
+        pointColors[i*4+3] = color.a;
         
-        Particle particle = Particle(start);
+        Particle particle = Particle(start, max_velocity, lifespan, color);
         particles.push_back(particle);
-        particle.load(start);
+        particle.load(start, color, max_velocity, min_velocity, lifespan);
 	}
 
     //generate the VAO
