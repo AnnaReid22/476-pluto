@@ -145,6 +145,7 @@ public:
 
 		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
+		// add render passes with more shaders here
 	}
 
 	void initGeom(const std::string& resourceDirectory)

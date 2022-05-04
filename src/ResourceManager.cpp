@@ -1,5 +1,4 @@
 #include "ResourceManager.h"
-
 #include <iostream>
 
 GLuint ResourceManager::getRenderTextureResource(std::string name)

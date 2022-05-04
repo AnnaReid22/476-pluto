@@ -73,6 +73,14 @@ glm::mat4 Camera::getCameraRotationMatrix()
 {
     return glm::lookAt(glm::vec3(0), lookAt - eyeOffset - this->gameObject->transform.position, upVector);
 }
+glm::mat4 Camera::getCameraProjectionMatrix()
+{
+    int width, height;
+    glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+    float aspect = width / (float)height;
+    glm::mat4 p = glm::perspective(glm::radians(50.0f), aspect, 0.1f, 200.0f);
+    return p;
+}
 
 void Camera::updateMoveVars()
 {
