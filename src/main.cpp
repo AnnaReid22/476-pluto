@@ -31,6 +31,8 @@ Z. Wood + S. Sueda
 #include "Player.h"
 
 #include "ForwardRenderPass.h"
+#include "ParticleRenderPass.h"
+#include "ParticleSystem.h"
 
 using namespace std;
 using namespace glm;
@@ -67,6 +69,7 @@ public:
 	shared_ptr<Texture> uranus_albedo;
 	shared_ptr<Texture> neptune_albedo;
 	shared_ptr<Texture> pluto_albedo;
+	shared_ptr<Texture> particleTexture;
 	
 	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> groundMat;
@@ -79,6 +82,7 @@ public:
 	shared_ptr<Material> uranusMat;
 	shared_ptr<Material> neptuneMat;
 	shared_ptr<Material> plutoMat;
+	shared_ptr<Material> particleMat;
 
 	World w;
 	RenderPipeline rp;
@@ -143,6 +147,7 @@ public:
 		rm->addOther("WindowManager", windowManager);
 
 		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
+		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		// add render passes with more shaders here
 	}
 
@@ -195,7 +200,6 @@ public:
         skyMat = make_shared<Material>();
         skyMat->t_albedo = sky_albedo;
 
-
 		rm->addMesh("skybox", texSphere);
 		rm->addOther("skyboxMat", &skyMat);
 
@@ -231,6 +235,29 @@ public:
 		w.addObject(camera);
 
 		initPlanets(resourceDirectory);
+
+		//add particle system texture
+		particleTexture = make_shared<Texture>();
+		particleTexture->setFilename(resourceDirectory + "/alpha.bmp");
+		particleTexture->init();
+		particleTexture->setUnit(0);
+		particleTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		rm->addUserTextureResource("particleTexture", particleTexture);
+
+		//add particle system game object
+		GameObject* partSystem = new GameObject("particleSystem");
+		ParticleSystem* ps = partSystem->addComponentOfType<ParticleSystem>();
+		partSystem->transform.position = glm::vec3(0, 0, -20);
+		ps->start = vec3(0.0, -5.0, 0.0);
+		ps->numParticles = 100;
+		ps->color = vec4(0.1, 0.7, 0.2, 1.0f);
+		ps->max_velocity = vec3(2.0, 2.0, 0.0);
+		ps->min_velocity = vec3(0.0, 1.0, 0.0);
+		ps->lifespan = 1.0f;
+		ps->GPUSetup();
+
+		w.addObject(partSystem);
 
 	}
 
@@ -446,7 +473,10 @@ public:
 
 		// Get vector of renderable gameobjects and submit to RenderPipeline
 		std::vector<GameObject*> renderables = w.getRenderables();
+		std::vector<GameObject*> curPS = w.getParticleSystems();
 
+
+		rm->addOther("particleSystem", &curPS);
 		rm->addOther("renderables", &renderables);
 		rm->addOther("activeCamera", w.mainCamera);
 

@@ -22,6 +22,7 @@ public:
     void destroyObject(GameObject* entity);
 
     std::vector<GameObject*> getRenderables();
+    std::vector<GameObject*> getParticleSystems();
 
 private:
 
