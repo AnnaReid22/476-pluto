@@ -45,9 +45,9 @@ public:
 	WindowManager * windowManager = nullptr;
 
 	// Shape to be used (from  file)
+	shared_ptr<Shape> asteroid_shapes[15];
 	shared_ptr<Shape> mesh;
 	shared_ptr<Shape> theRocket;
-	shared_ptr<Shape> asteroid;
 	shared_ptr<Shape> texcube;
 	shared_ptr<Shape> texSphere;
 	shared_ptr<Shape> theEarth;
@@ -169,18 +169,25 @@ public:
 
 		rocketMat = make_shared<Material>();
 		rocketMat->t_albedo = rocket_albedo;
-		
-		//asteroid loader
-		asteroid = make_shared<Shape>();
-		asteroid->loadMesh(resourceDirectory + "/asteroid.obj");
-        asteroid->resize();
-        asteroid->init();
 
+		//asteroid loader
 		asteroid_albedo = make_shared<Texture>();
 		asteroid_albedo->setFilename(resourceDirectory + "/asteroid.jpg");
 		asteroid_albedo->init();
 		asteroid_albedo->setUnit(0);
 		asteroid_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		asteroidMat = make_shared<Material>();
+		asteroidMat->t_albedo = asteroid_albedo;
+		string asteroid_names[15] = { "", "0", "1", "00", "01", "10", "11", "000", "001", "010", "011", "100", "101", "110", "111" };
+		for (int i = 0; i < 15; i++) {
+				asteroid_shapes[i] = make_shared<Shape>();
+				asteroid_shapes[i]->loadMesh(resourceDirectory + "/asteroids/asteroid" + asteroid_names[i] + ".obj");
+				//asteroid_shapes[i]->resize();
+				asteroid_shapes[i]->measure();
+				asteroid_shapes[i]->init();
+		}
+		rm->addOther("asteroid_shapes", asteroid_shapes);
+		rm->addOther("asteroid_material", &asteroidMat);
 
 		asteroidMat = make_shared<Material>();
 		asteroidMat->t_albedo = asteroid_albedo;
@@ -215,6 +222,8 @@ public:
 		rocket->mesh = theRocket;
 		rocket->material = rocketMat;
 
+		rm->addOther("player_game_object", player);
+
 		w.mainCamera = cam;
 
 		BoundingSphereCollider* bsc2 = player->addComponentOfType <BoundingSphereCollider>();
@@ -226,8 +235,6 @@ public:
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
 		es->spawnDelay = .7;
 
-		es->enemyMesh = asteroid;
-		es->enemyMat = asteroidMat;
 
 		//Order matters here, because the skybox has to render before anything else.
 		w.addObject(player);
