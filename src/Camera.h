@@ -10,6 +10,7 @@ class Camera : public Component
 {
 private:
     float camDist;
+    WindowManager* windowManager = nullptr;
 
 public:
     glm::vec3 upVector;

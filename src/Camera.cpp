@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Time.h"
 #include "GameObject.h"
+#include "ResourceManager.h"
 
 #include <iostream>
 
@@ -13,6 +14,9 @@ Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 
     // Current camera position
     pos = glm::vec3(0.f);
+
+    ResourceManager* rm = rm->getInstance();
+    windowManager = (WindowManager*)rm->getOther("WindowManager");
 }
 
 /*

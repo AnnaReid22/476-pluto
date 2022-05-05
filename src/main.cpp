@@ -139,6 +139,9 @@ public:
 		w = World();
 		rp = RenderPipeline(windowManager);
 
+		ResourceManager* rm = rm->getInstance();
+		rm->addOther("WindowManager", windowManager);
+
 		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		// add render passes with more shaders here
 	}
