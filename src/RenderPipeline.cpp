@@ -5,74 +5,113 @@
 RenderPipeline::RenderPipeline(WindowManager* wm)
 {
     windowManager = wm;
+    rm = rm->getInstance();
 }
 
-glm::mat4 RenderPipeline::GetProjectionMatrix()
+std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject*> objectsToRender, Camera* cam)
 {
-    int width, height;
-    glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-    float aspect = width / (float)height;
-    glm::mat4 Projection = glm::perspective(glm::radians(50.0f), aspect, 0.1f, 200.0f);
-    return Projection;
-}
+	glm::vec4 left, right, bottom, top, near, far;
+	glm::vec4 planes[6];
 
-void RenderPipeline::renderFrame(std::vector<GameObject*> objectsToRender, Camera* cam)
-{
-    // Get current frame buffer size.
-    int width, height;
-    glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-    glViewport(0, 0, width, height);
+    glm::mat4 view = cam->getCameraViewMatrix();
+    glm::mat4 projection = cam->getCameraProjectionMatrix();
 
-    // Clear framebuffer.
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glm::mat4 composite = projection * view;
+    glm::vec3 normal;
+    float l;
 
-    float aspect = width / (float)height;
+    left.x = composite[0][3] + composite[0][0];
+    left.y = composite[1][3] + composite[1][0];
+    left.z = composite[2][3] + composite[2][0];
+    left.w = composite[3][3] + composite[3][0];
+    normal = glm::vec3(left.x, left.y, left.z);
+    l = length(normal);
+    planes[0] = left = left/l;
 
-    prog->bind();
+    right.x = composite[0][3] - composite[0][0];
+    right.y = composite[1][3] - composite[1][0];
+    right.z = composite[2][3] - composite[2][0];
+    right.w = composite[3][3] - composite[3][0];		
+    normal = glm::vec3(right.x, right.y, right.z);
+    l = length(normal);
+    planes[1] = right = right/l;
 
-    glm::mat4 P = this->GetProjectionMatrix();
-    glm::mat4 V = cam->getCameraRotationMatrix();
-    glm::mat4 M = glm::mat4(1);
+    bottom.x = composite[0][3] + composite[0][1];
+    bottom.y = composite[1][3] + composite[1][1];
+    bottom.z = composite[2][3] + composite[2][1];
+    bottom.w = composite[3][3] + composite[3][1];
+    normal = glm::vec3(bottom.x, bottom.y, bottom.z);
+    l = length(normal);
+    planes[2] = bottom = bottom/l;
 
-    glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
-    glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
-    glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
-    glUniform3f(prog->getUniform("lightPos"), 0.0, 10.0, 0.0);
-    glUniform1f(prog->getUniform("MatShine"), 1000);
-    glUniform1i(prog->getUniform("flip"), 1);
+    top.x = composite[0][3] - composite[0][1]; 
+    top.y = composite[1][3] - composite[1][1];
+    top.z = composite[2][3] - composite[2][1];
+    top.w = composite[3][3] - composite[3][1];	
+    normal = glm::vec3(top.x, top.y, top.z);
+    l = length(normal);
+    planes[3] = top = top/l;
 
-    glDisable(GL_DEPTH_TEST);
+    near.x = composite[0][3] + composite[0][2]; 
+    near.y = composite[1][3] + composite[1][2]; 
+    near.z = composite[2][3] + composite[2][2];
+    near.w = composite[3][3] + composite[3][2];	
+    normal = glm::vec3(near.x, near.y, near.z);
+    l = length(normal);
+    planes[4] = near = near/l;
 
-    this->skyboxMaterial->t_albedo->bind(prog->getUniform("Texture0"));
-    this->skyboxMesh->draw(prog);
-    this->skyboxMaterial->t_albedo->unbind();
+    far.x = composite[0][3] - composite[0][2];
+    far.y = composite[1][3] - composite[1][2]; 
+    far.z = composite[2][3] - composite[2][2];
+    far.w = composite[3][3] - composite[3][2];
+    normal = glm::vec3(far.x, far.y, far.z);
+    l = length(normal);
+    planes[5] = far = far/l;
 
-    glEnable(GL_DEPTH_TEST);
-
-    V = cam->getCameraViewMatrix();
-    glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
-    glUniform3f(prog->getUniform("lightPos"), 0.0, 2.0, 0.0);
-    glUniform1f(prog->getUniform("MatShine"), 23);
-    glUniform1i(prog->getUniform("flip"), 1);
-    for (GameObject* obj : objectsToRender)
+    std::vector<GameObject *> objectsToDraw;
+    for (int i = 0; i < objectsToRender.size(); i++)
     {
-        M = obj->transform.genModelMatrix();
-        MeshRenderer* mr = obj->getComponentByType<MeshRenderer>();
-
-        std::shared_ptr<Material> mat = mr->material;
-        std::shared_ptr<Shape> mesh = mr->mesh;
-
-        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
-
-        mat->t_albedo->bind(prog->getUniform("Texture0"));
-
-        mesh->draw(prog);
-
-        mat->t_albedo->unbind();
+        for (int j = 0; j < 6; j++)
+        {
+            std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
+            glm::vec3 center = mesh->center;
+            std::cout << "centerx" << center.x << std::endl;
+            float rad = mesh->radius;
+            std::cout << "rad" << rad << std::endl;
+            center += objectsToRender[i]->transform.position;
+            float max_scale = glm::max(objectsToRender[i]->transform.scale.x, glm::max(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
+            rad *= max_scale;
+            float dist = planes[i].x*center.x + planes[i].y*center.y + planes[i].z*center.z + planes[i].w;
+            if(dist >= (-1)*rad)
+            {
+                objectsToDraw.push_back(objectsToRender[i]);
+            }
+        }
     }
+    return objectsToDraw;
+}
 
-    prog->unbind();
-    assert(glGetError() == GL_NO_ERROR);
+void RenderPipeline::addRenderPass(std::shared_ptr<IShader> pass)
+{
+    renderPasses.push_back(pass);
+    pass->init();
+}
+
+void RenderPipeline::executePipeline()
+{
+    Camera* cam = (Camera*)rm->getOther("activeCamera");
+    std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
+    renderables = viewFrustumCull(renderables, cam);
+
+    rm->addOther("renderables", &renderables);
+
+    for (std::shared_ptr<IShader> pass : renderPasses)
+        pass->execute(windowManager);
+
+    //simple render pass that will combine all the textures
+    //outputPass->execute(windowManager);
+
+    return;
 }
 
 
