@@ -10,7 +10,7 @@ RenderPipeline::RenderPipeline(WindowManager* wm)
 
 std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject*> objectsToRender, Camera* cam)
 {
-	glm::vec4 left, right, bottom, top, near, far;
+	glm::vec4 left, right, bottom, top, near_, far_;
 	glm::vec4 planes[6];
 
     glm::mat4 view = cam->getCameraViewMatrix();
@@ -52,21 +52,21 @@ std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject
     l = length(normal);
     planes[3] = top = top/l;
 
-    near.x = composite[0][3] + composite[0][2]; 
-    near.y = composite[1][3] + composite[1][2]; 
-    near.z = composite[2][3] + composite[2][2];
-    near.w = composite[3][3] + composite[3][2];	
-    normal = glm::vec3(near.x, near.y, near.z);
+    near_.x = composite[0][3] + composite[0][2]; 
+    near_.y = composite[1][3] + composite[1][2]; 
+    near_.z = composite[2][3] + composite[2][2];
+    near_.w = composite[3][3] + composite[3][2];	
+    normal = glm::vec3(near_.x, near_.y, near_.z);
     l = length(normal);
-    planes[4] = near = near/l;
+    planes[4] = near_ = near_/l;
 
-    far.x = composite[0][3] - composite[0][2];
-    far.y = composite[1][3] - composite[1][2]; 
-    far.z = composite[2][3] - composite[2][2];
-    far.w = composite[3][3] - composite[3][2];
-    normal = glm::vec3(far.x, far.y, far.z);
+    far_.x = composite[0][3] - composite[0][2];
+    far_.y = composite[1][3] - composite[1][2]; 
+    far_.z = composite[2][3] - composite[2][2];
+    far_.w = composite[3][3] - composite[3][2];
+    normal = glm::vec3(far_.x, far_.y, far_.z);
     l = length(normal);
-    planes[5] = far = far/l;
+    planes[5] = far_ = far_/l;
 
     std::vector<GameObject *> objectsToDraw;
     for (int i = 0; i < objectsToRender.size(); i++)
@@ -75,11 +75,9 @@ std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject
         {
             std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
             glm::vec3 center = mesh->center;
-            std::cout << "centerx" << center.x << std::endl;
             float rad = mesh->radius;
-            std::cout << "rad" << rad << std::endl;
             center += objectsToRender[i]->transform.position;
-            float max_scale = glm::max(objectsToRender[i]->transform.scale.x, glm::max(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
+            float max_scale = (glm::max)(objectsToRender[i]->transform.scale.x, (glm::max)(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
             rad *= max_scale;
             float dist = planes[i].x*center.x + planes[i].y*center.y + planes[i].z*center.z + planes[i].w;
             if(dist >= (-1)*rad)

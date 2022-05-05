@@ -1,6 +1,7 @@
 #pragma once
-
+#define _USE_MATH_DEFINES
 #include <glm/gtc/type_ptr.hpp>
+#include <cmath>     //for M_PI
 
 class Transform
 {

@@ -12,7 +12,7 @@ double EnemySpawner::getAsteroidPosBasedOnTime()
 {
 	Time* time = time->getInstance();
 	double secSinceStart = time->getGlobalTime();
-	glm::vec3 camPos = this->gameObject->world->mainCamera->gameObject->transform.position + this->gameObject->world->mainCamera->eyeOffset;
+	glm::vec3 camPos = this->gameObject->world->mainCamera->pos;
 	std::cout << "asteroid pos: " << camPos.z - 205 << std::endl;
 	// Spawn asteroids just outside the far plane
 	return camPos.z - 205;
