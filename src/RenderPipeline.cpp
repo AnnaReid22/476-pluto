@@ -80,9 +80,9 @@ std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject
         {
             std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
             glm::vec3 center = mesh->center;
-            std::cout << "centerx" << center.x << std::endl;
+            //std::cout << "centerx" << center.x << std::endl;
             float rad = mesh->radius;
-            std::cout << "rad" << rad << std::endl;
+            //std::cout << "rad" << rad << std::endl;
             center += objectsToRender[i]->transform.position;
             float max_scale = max_(objectsToRender[i]->transform.scale.x, objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z);
             rad *= max_scale;
@@ -107,7 +107,7 @@ void RenderPipeline::executePipeline()
 {
     Camera* cam = (Camera*)rm->getOther("activeCamera");
     std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
-    renderables = viewFrustumCull(renderables, cam);
+    //renderables = viewFrustumCull(renderables, cam);
 
     rm->addOther("renderables", &renderables);
 

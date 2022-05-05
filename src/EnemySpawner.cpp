@@ -17,7 +17,6 @@ void EnemySpawner::Update()
 			nextTime += spawnDelay;
 			spawnDelay *= 0.999;
 			spawnEnemy();
-			printStats();
 	}
 }
 
@@ -33,7 +32,7 @@ void EnemySpawner::spawnEnemy()
 
 		glm::vec3 playerPos = ((GameObject*)rm->getOther("player_game_object"))->transform.position;
 
-		glm::vec3 startPos = glm::vec3(18 * dist(gen), 10 * dist(gen), -100) + playerPos;
+		glm::vec3 startPos = glm::vec3(36 * dist(gen), 20 * dist(gen), -215) + playerPos;
 
 
 		GameObject* asteroid = new GameObject("asteroid");
@@ -41,7 +40,7 @@ void EnemySpawner::spawnEnemy()
 		asteroid->transform.scale = glm::vec3(3);
 		Enemy* enemy1 = asteroid->addComponentOfType<Enemy>();
 		enemy1->type = 0;
-		enemy1->parent = curId;
+		enemy1->parent = curId++;
 		MeshRenderer* renderer1 = asteroid->addComponentOfType<MeshRenderer>();
 		renderer1->mesh = asteroid_shapes[0];
 		renderer1->material = asteroid_material;
@@ -50,11 +49,6 @@ void EnemySpawner::spawnEnemy()
 
 
 		gameObject->world->addObject(asteroid);
-}
-
-void EnemySpawner::printStats()
-{
-	std::cout << "Current Score: " << playerScore << std::endl;
 }
 
 

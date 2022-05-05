@@ -19,7 +19,8 @@ void Enemy::Start()
 
     if (type == 0) {
         travelDirection = glm::normalize(glm::vec3(dist(gen), dist(gen), 5)) * 3.f;
-        speed = (Time::getInstance()->getGlobalTime() + 2) / 5.0f;
+        //speed = (Time::getInstance()->getGlobalTime() + 2) / 5.0f;
+        speed = 1;
     }
 }
 
@@ -88,9 +89,7 @@ void Enemy::Update()
         glm::vec3 sine = rotationAxis * sin(r);
         gameObject->transform.rotation *= glm::quat(cos(r), sine.x, sine.y, sine.z);
         gameObject->transform.position += travelDirection * speed * dt;
-        if (type != 0) {
-            std::cout << "not0: " << speed << std::endl;
-        }
+        
     }
 }
 
@@ -107,6 +106,9 @@ void Enemy::OnCollide(GameObject* other)
     }
     else if (other->name == "player")
     {
+        collided = true;
+    }
+    else {
         collided = true;
     }
 }
