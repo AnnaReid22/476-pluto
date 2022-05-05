@@ -3,6 +3,7 @@
 #include "World.h"
 #include "MeshRenderer.h"
 #include "GameObject.h"
+#include "ParticleSystem.h"
 
 World::World()
 {}
@@ -32,6 +33,20 @@ std::vector<GameObject*> World::getRenderables()
     }
 
     return renderables;
+}
+
+std::vector<GameObject*> World::getParticleSystems()
+{
+    std::vector<GameObject*> ps;
+
+    for (GameObject* g : entities)
+    {
+        auto renderer = g->getComponentByType<ParticleSystem>();
+        if (renderer != nullptr && renderer->isEnabled)
+            ps.push_back(g);
+    }
+
+    return ps;
 }
 
 void World::handleDestructions()

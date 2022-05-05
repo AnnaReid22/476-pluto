@@ -69,3 +69,9 @@ void InputManager::KeyReleased(int key)
 {
     keys[key] = { false, -1 };
 }
+
+
+void InputManager::GetMousePos(double* xpos, double* ypos)
+{
+    glfwGetCursorPos(windowManager->getHandle(), xpos, ypos);
+}

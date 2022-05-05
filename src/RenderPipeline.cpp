@@ -2,11 +2,6 @@
 #include "MeshRenderer.h"
 #include "GameObject.h"
 
-
-float max_(float a, float b, float c) {
-    return a > b ? (a > c ? a : c) : (b > c ? b : c);
-}
-
 RenderPipeline::RenderPipeline(WindowManager* wm)
 {
     windowManager = wm;
@@ -80,11 +75,9 @@ std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject
         {
             std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
             glm::vec3 center = mesh->center;
-            //std::cout << "centerx" << center.x << std::endl;
             float rad = mesh->radius;
-            //std::cout << "rad" << rad << std::endl;
             center += objectsToRender[i]->transform.position;
-            float max_scale = max_(objectsToRender[i]->transform.scale.x, objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z);
+            float max_scale = (glm::max)(objectsToRender[i]->transform.scale.x, (glm::max)(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
             rad *= max_scale;
             float dist = planes[i].x*center.x + planes[i].y*center.y + planes[i].z*center.z + planes[i].w;
             if(dist >= (-1)*rad)
