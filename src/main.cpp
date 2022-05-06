@@ -237,34 +237,37 @@ public:
 
 
 		//Order matters here, because the skybox has to render before anything else.
-		w.addObject(player);
-		w.addObject(spawner);
-		w.addObject(camera);
 
 		initPlanets(resourceDirectory);
 
 		//add particle system texture
 		particleTexture = make_shared<Texture>();
-		particleTexture->setFilename(resourceDirectory + "/alpha.bmp");
+		particleTexture->setFilename(resourceDirectory + "/particle.bmp");
 		particleTexture->init();
 		particleTexture->setUnit(0);
 		particleTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
 		rm->addUserTextureResource("particleTexture", particleTexture);
 
-		//add particle system game object
-		GameObject* partSystem = new GameObject("particleSystem");
-		ParticleSystem* ps = partSystem->addComponentOfType<ParticleSystem>();
-		partSystem->transform.position = glm::vec3(0, 0, -20);
-		ps->start = vec3(0.0, -5.0, 0.0);
-		ps->numParticles = 100;
-		ps->color = vec4(0.1, 0.7, 0.2, 1.0f);
-		ps->max_velocity = vec3(2.0, 2.0, 0.0);
-		ps->min_velocity = vec3(0.0, 1.0, 0.0);
-		ps->lifespan = 1.0f;
+		ParticleSystem* ps = player->addComponentOfType<ParticleSystem>();
+		// partSystem->transform.position = pl->getForward();
+		//dependent on where the mouse starts, i think, which is why it is not drawing right
+		// std::cout << "fwd x" << pl->getForward().x << std::endl;
+		// std::cout << "fwd y" << pl->getForward().y << std::endl;
+		// std::cout << "fwd z" << pl->getForward().z << std::endl;
+		ps->start = (pl->getPosition()+vec3(0.0, 0.0, 4.1))*pl->getRotation();
+		ps->numParticles = 200;
+		ps->color_modify_value = 1.5;
+		ps->color = vec4(1.0, 0.7, 0.2, 1.0f);
+		ps->max_velocity = vec3(-0.05);
+		ps->min_velocity = vec3(-0.1);
+		ps->lifespan = 1.5f;
 		ps->GPUSetup();
 
-		w.addObject(partSystem);
+		w.addObject(player);
+		w.addObject(spawner);
+		w.addObject(camera);
+
 
 	}
 

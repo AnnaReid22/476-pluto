@@ -53,7 +53,7 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPointSize(15.0f);
+    glPointSize(6.0f);
 
     for (GameObject* obj : partSystems)
     {

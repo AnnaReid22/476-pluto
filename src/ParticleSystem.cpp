@@ -1,12 +1,15 @@
 #include <random>
 #include "ParticleSystem.h"
+#include "Camera.h"
 #include "GameObject.h"
 #include "GLSL.h"
+#include "ResourceManager.h"
 #include <iostream>
 
 //reference: https://learnopengl.com/In-Practice/2D-Game/Particles
 
 unsigned int lastDeadParticle = 0;
+ResourceManager* rm = ResourceManager::getInstance();
 
 void ParticleSystem::Start()
 {
@@ -17,6 +20,11 @@ void ParticleSystem::Start()
 void ParticleSystem::Update()
 {
   unsigned int new_particles = 2;
+  Player* pl = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>();
+//   glm::quat QplayerRot = pl->getRotation();
+//   glm::vec3 playerRot = vec3(QplayerRot.x, QplayerRot.y, QplayerRot.z);
+//   glm::vec3 playerPos = pl->getPosition();
+//   glm::vec3 fwd = pl->getForward();
 
   // add new particles
   for (unsigned int i = 0; i < new_particles; ++i)
@@ -36,9 +44,10 @@ void ParticleSystem::Update()
             points[i*3+0] =p.getPosition().x; 
             points[i*3+1] =p.getPosition().y; 
             points[i*3+2] =p.getPosition().z; 
-            // p.setColor(p.getColor() * color_modify_value);
+            float incRed = p.randFloat(0.0, 4.0);
+            p.setColor(vec4(p.getColor().r + incRed, p.getColor().g, p.getColor().b, (p.getColor().a*time->getFrametime())));
             vec4 col = p.getColor();
-            pointColors[i*4+0] = col.r; 
+            pointColors[i*4+0] = col.r;
             pointColors[i*4+1] = col.g; 
             pointColors[i*4+2] = col.b;
             pointColors[i*4+3] = col.a;

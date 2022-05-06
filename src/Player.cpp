@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Player.h"
+#include "MeshRenderer.h"
 #include <iostream>
 
 
@@ -41,6 +42,8 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
 
     // Instance of InputManager
     input = input->getInstance();
+
+    // fwd = glm::vec3(-0.4323, -0.6849, 0.5865);
 }
 
 /*
@@ -72,6 +75,8 @@ void Player::OnCollide(GameObject* other)
     if (other->tag == "planet")
     {
         stop = true;
+        MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
+        rocket_mesh->Disable();
     }
 }
 
@@ -179,3 +184,10 @@ glm::vec3 Player::getForward()
 {
     return fwd;
 }
+
+// Returns rocket's position
+glm::quat Player::getRotation()
+{
+    return this->gameObject->transform.rotation;
+}
+
