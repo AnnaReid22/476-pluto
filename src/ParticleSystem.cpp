@@ -21,16 +21,16 @@ void ParticleSystem::Update()
 {
   unsigned int new_particles = 2;
   Player* pl = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>();
-//   glm::quat QplayerRot = pl->getRotation();
+//   glm::quat QplayerRot = pl->getForward();
 //   glm::vec3 playerRot = vec3(QplayerRot.x, QplayerRot.y, QplayerRot.z);
-//   glm::vec3 playerPos = pl->getPosition();
-//   glm::vec3 fwd = pl->getForward();
+  glm::vec3 playerPos = pl->getPosition();
+  glm::vec3 fwd = pl->getForward();
 
   // add new particles
   for (unsigned int i = 0; i < new_particles; ++i)
   {
       int dead = deadParticle();
-      particles[dead].load(start, color, max_velocity, min_velocity, lifespan);
+      particles[dead].load(playerPos, color, max_velocity, min_velocity, lifespan);
   }
 
   // update other particles
@@ -40,7 +40,7 @@ void ParticleSystem::Update()
       p.setLifespan(time->getFrametime());
       if (p.getLifespan() > 0.0f)
       {
-            p.setPosition(p.getVelocity() * (float)time->getFrametime());
+            p.setPosition((p.getVelocity() * (float)time->getFrametime()));
             points[i*3+0] =p.getPosition().x; 
             points[i*3+1] =p.getPosition().y; 
             points[i*3+2] =p.getPosition().z; 

@@ -250,25 +250,18 @@ public:
 		rm->addUserTextureResource("particleTexture", particleTexture);
 
 		ParticleSystem* ps = player->addComponentOfType<ParticleSystem>();
-		// partSystem->transform.position = pl->getForward();
-		//dependent on where the mouse starts, i think, which is why it is not drawing right
-		// std::cout << "fwd x" << pl->getForward().x << std::endl;
-		// std::cout << "fwd y" << pl->getForward().y << std::endl;
-		// std::cout << "fwd z" << pl->getForward().z << std::endl;
-		ps->start = (pl->getPosition()+vec3(0.0, 0.0, 4.1))*pl->getRotation();
-		ps->numParticles = 200;
+		ps->start = pl->getPosition()-pl->getForward();
+		ps->numParticles = 300;
 		ps->color_modify_value = 1.5;
 		ps->color = vec4(1.0, 0.7, 0.2, 1.0f);
 		ps->max_velocity = vec3(-0.05);
 		ps->min_velocity = vec3(-0.1);
-		ps->lifespan = 1.5f;
+		ps->lifespan = 2.0f;
 		ps->GPUSetup();
 
 		w.addObject(player);
 		w.addObject(spawner);
 		w.addObject(camera);
-
-
 	}
 
 	void initPlanets(const std::string& resourceDirectory){
