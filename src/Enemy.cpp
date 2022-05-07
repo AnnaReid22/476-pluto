@@ -65,7 +65,6 @@ void Enemy::Update()
             renderer2->material = asteroid_material;
             BoundingSphereCollider* bsc2 = child2->addComponentOfType<BoundingSphereCollider>();
             bsc2->radius = 0.65;
-        
 
             gameObject->world->destroyObject(gameObject);
             gameObject->world->addObject(child1);
@@ -99,10 +98,10 @@ void Enemy::OnCollide(GameObject* other)
 
     if (other->name == "asteroid")
     {
-        Enemy* e = other->getComponentByType<Enemy>();
-        if (e->parent != this->parent) {
-            collided = true;
-        }
+        // Enemy* e = other->getComponentByType<Enemy>();
+        // if (e->parent != this->parent) {
+        //     collided = true;
+        // }
     }
     else if (other->name == "player")
     {

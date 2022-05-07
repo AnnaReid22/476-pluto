@@ -45,7 +45,7 @@ void EnemySpawner::spawnEnemy()
 		renderer1->mesh = asteroid_shapes[0];
 		renderer1->material = asteroid_material;
 		BoundingSphereCollider* bsc1 = asteroid->addComponentOfType<BoundingSphereCollider>();
-		bsc1->radius = 0.65;
+		// bsc1->radius = 0.65;
 
 
 		gameObject->world->addObject(asteroid);

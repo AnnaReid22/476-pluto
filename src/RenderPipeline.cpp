@@ -83,9 +83,12 @@ std::vector<GameObject *> RenderPipeline::viewFrustumCull(std::vector<GameObject
             if(dist >= (-1)*rad)
             {
                 objectsToDraw.push_back(objectsToRender[i]);
+                break;
             }
         }
+
     }
+    std::cout << "objs to draw " << objectsToDraw.size() << std::endl; 
     return objectsToDraw;
 }
 
@@ -99,8 +102,11 @@ void RenderPipeline::addRenderPass(std::shared_ptr<IShader> pass)
 void RenderPipeline::executePipeline()
 {
     Camera* cam = (Camera*)rm->getOther("activeCamera");
+    
     std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
-    //renderables = viewFrustumCull(renderables, cam);
+    std::cout << "before" << renderables.size() << std::endl;
+    renderables = viewFrustumCull(renderables, cam);
+    std::cout << "after" << renderables.size() << std::endl;
 
     rm->addOther("renderables", &renderables);
 

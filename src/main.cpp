@@ -182,8 +182,8 @@ public:
 		for (int i = 0; i < 15; i++) {
 				asteroid_shapes[i] = make_shared<Shape>();
 				asteroid_shapes[i]->loadMesh(resourceDirectory + "/asteroids/asteroid" + asteroid_names[i] + ".obj");
-				//asteroid_shapes[i]->resize();
-				asteroid_shapes[i]->measure();
+				asteroid_shapes[i]->resize();
+				//asteroid_shapes[i]->measure();
 				asteroid_shapes[i]->init();
 		}
 		rm->addOther("asteroid_shapes", asteroid_shapes);
