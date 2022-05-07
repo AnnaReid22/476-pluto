@@ -20,18 +20,28 @@ void ParticleSystem::Start()
 void ParticleSystem::Update()
 {
   unsigned int new_particles = 2;
-  Player* pl = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>();
-//   glm::quat QplayerRot = pl->getForward();
-//   glm::vec3 playerRot = vec3(QplayerRot.x, QplayerRot.y, QplayerRot.z);
-  glm::vec3 playerPos = pl->getPosition();
-  glm::vec3 fwd = pl->getForward();
 
-  // add new particles
-  for (unsigned int i = 0; i < new_particles; ++i)
+  if(type == "moving")
   {
-      int dead = deadParticle();
-      particles[dead].load(playerPos, color, max_velocity, min_velocity, lifespan);
+        Player* pl = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>();
+        glm::vec3 playerPos = pl->getPosition();
+        glm::vec3 fwd = pl->getForward();
+
+        for (unsigned int i = 0; i < new_particles; ++i)
+        {
+            int dead = deadParticle();
+            particles[dead].load(playerPos, color, max_velocity, min_velocity, lifespan);
+        }
   }
+  else if(type == "static")
+  {
+        for (unsigned int i = 0; i < new_particles; ++i)
+        {
+            int dead = deadParticle();
+            particles[dead].load(start, color, max_velocity, min_velocity, lifespan);
+        }
+  }
+
 
   // update other particles
   for (unsigned int i = 0; i < numParticles; ++i)
