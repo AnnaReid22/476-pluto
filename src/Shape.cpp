@@ -8,16 +8,14 @@
 using namespace std;
 
 Shape::Shape() :
-	eleBufID(0),
-	posBufID(0),
-	norBufID(0),
-	texBufID(0), 
-   vaoID(0)
+    eleBufID(0),
+    posBufID(0),
+    norBufID(0),
+    texBufID(0),
+    vaoID(0)
 {
-	min = glm::vec3(0);
-	max = glm::vec3(0);
-    center = glm::vec3(0);
-    radius = 0.0f;
+    min = glm::vec3(0);
+    max = glm::vec3(0);
 }
 
 Shape::~Shape()
@@ -54,6 +52,11 @@ void Shape::loadMesh(const string& meshName, string* mtlpath, unsigned char* (lo
 
         textureIDs = new unsigned int[shapes.size()];
 
+        glm::vec3 scale = glm::vec3(1);
+        glm::vec3 shift = glm::vec3(0);
+        this->max = glm::vec3(-FLT_MAX);
+        this->min = glm::vec3(FLT_MAX);
+
         for (int i = 0; i < obj_count; i++) {
             //load textures
             textureIDs[i] = 0;
@@ -67,6 +70,18 @@ void Shape::loadMesh(const string& meshName, string* mtlpath, unsigned char* (lo
             else
                 materialIDs[i] = -1;
 
+            for (int v = 0; v < posBuf[i].size() / 3; v++) {
+                float x = posBuf[i][3 * v + 0];
+                float y = posBuf[i][3 * v + 1];
+                float z = posBuf[i][3 * v + 2];
+
+                if (x < this->min.x) this->min.x = x;
+                if (x > this->max.x) this->max.x = x;
+                if (y < this->min.y) this->min.y = y;
+                if (y > this->max.y) this->max.y = y;
+                if (z < this->min.z) this->min.z = z;
+                if (z > this->max.z) this->max.z = z;
+            }
         }
     }
     //material:
@@ -94,106 +109,40 @@ void Shape::loadMesh(const string& meshName, string* mtlpath, unsigned char* (lo
             glGenerateMipmap(GL_TEXTURE_2D);
             //delete[] data;
         }
-
-    int z;
-    z = 0;
-    center = getBSphere(&radius);
-}
-
-void Shape::measure() {
-  float minX, minY, minZ;
-   float maxX, maxY, maxZ;
-
-   minX = minY = minZ = 1.1754E+38F;
-   maxX = maxY = maxZ = -1.1754E+38F;
-
-   //Go through all vertices to determine min and max of each dimension
-   for (size_t v = 0; v < posBuf[0].size() / 3; v++) {
-		if(posBuf[0][3*v+0] < minX) minX = posBuf[0][3*v+0];
-		if(posBuf[0][3*v+0] > maxX) maxX = posBuf[0][3*v+0];
-
-		if(posBuf[0][3*v+1] < minY) minY = posBuf[0][3*v+1];
-		if(posBuf[0][3*v+1] > maxY) maxY = posBuf[0][3*v+1];
-
-		if(posBuf[0][3*v+2] < minZ) minZ = posBuf[0][3*v+2];
-		if(posBuf[0][3*v+2] > maxZ) maxZ = posBuf[0][3*v+2];
-	}
-
-	min.x = minX;
-	min.y = minY;
-	min.z = minZ;
-   max.x = maxX;
-   max.y = maxY;
-   max.z = maxZ;
 }
 
 glm::vec3 Shape::getBSphere(float* radius)
 {
-	this->measure();
-	glm::vec3 center = (this->max + this->min) * 0.5f;
-	*radius = glm::length(this->max - center);
-	return center;
+    *radius = this->getRadius();
+    return this->getCenter();
 }
 
+void Shape::shift() {
+    glm::vec3 center = this->getCenter();
+    for (int i = 0; i < obj_count; i++) {
+        for (size_t v = 0; v < posBuf[i].size() / 3; v++) {
+            posBuf[i][3 * v + 0] = (posBuf[i][3 * v + 0] - center.x);
+            posBuf[i][3 * v + 1] = (posBuf[i][3 * v + 1] - center.y);
+            posBuf[i][3 * v + 2] = (posBuf[i][3 * v + 2] - center.z);
+        }
+    }
+}
 void Shape::resize() {
-    float minX, minY, minZ;
-    float maxX, maxY, maxZ;
-    float scaleX, scaleY, scaleZ;
-    float shiftX, shiftY, shiftZ;
-    float epsilon = 0.001f;
+    glm::vec3 center = this->getCenter();
+    float radius = this->getRadius();
+    this->max -= center;
+    this->min -= center;
 
-    minX = minY = minZ = 1.1754E+38F;
-    maxX = maxY = maxZ = -1.1754E+38F;
-
-    // Go through all vertices to determine min and max of each dimension
-    for (int i = 0; i < obj_count; i++)
+    for (int i = 0; i < obj_count; i++) {
         for (size_t v = 0; v < posBuf[i].size() / 3; v++) {
-            if (posBuf[i][3 * v + 0] < minX) minX = posBuf[i][3 * v + 0];
-            if (posBuf[i][3 * v + 0] > maxX) maxX = posBuf[i][3 * v + 0];
-
-            if (posBuf[i][3 * v + 1] < minY) minY = posBuf[i][3 * v + 1];
-            if (posBuf[i][3 * v + 1] > maxY) maxY = posBuf[i][3 * v + 1];
-
-            if (posBuf[i][3 * v + 2] < minZ) minZ = posBuf[i][3 * v + 2];
-            if (posBuf[i][3 * v + 2] > maxZ) maxZ = posBuf[i][3 * v + 2];
+            posBuf[i][3 * v + 0] = (posBuf[i][3 * v + 0] - center.x) / radius;
+            posBuf[i][3 * v + 1] = (posBuf[i][3 * v + 1] - center.y) / radius;
+            posBuf[i][3 * v + 2] = (posBuf[i][3 * v + 2] - center.z) / radius;
         }
-
-    // From min and max compute necessary scale and shift for each dimension
-    float maxExtent, xExtent, yExtent, zExtent;
-    xExtent = maxX - minX;
-    yExtent = maxY - minY;
-    zExtent = maxZ - minZ;
-    if (xExtent >= yExtent && xExtent >= zExtent) {
-        maxExtent = xExtent;
     }
-    if (yExtent >= xExtent && yExtent >= zExtent) {
-        maxExtent = yExtent;
-    }
-    if (zExtent >= xExtent && zExtent >= yExtent) {
-        maxExtent = zExtent;
-    }
-    scaleX = 2.0f / maxExtent;
-    shiftX = minX + (xExtent / 2.0f);
-    scaleY = 2.0f / maxExtent;
-    shiftY = minY + (yExtent / 2.0f);
-    scaleZ = 2.0f / maxExtent;
-    shiftZ = minZ + (zExtent / 2.0f);
-
-    // Go through all verticies shift and scale them
-    for (int i = 0; i < obj_count; i++)
-        for (size_t v = 0; v < posBuf[i].size() / 3; v++) {
-            posBuf[i][3 * v + 0] = (posBuf[i][3 * v + 0] - shiftX) * scaleX;
-            assert(posBuf[i][3 * v + 0] >= -1.0f - epsilon);
-            assert(posBuf[i][3 * v + 0] <= 1.0f + epsilon);
-            posBuf[i][3 * v + 1] = (posBuf[i][3 * v + 1] - shiftY) * scaleY;
-            assert(posBuf[i][3 * v + 1] >= -1.0f - epsilon);
-            assert(posBuf[i][3 * v + 1] <= 1.0f + epsilon);
-            posBuf[i][3 * v + 2] = (posBuf[i][3 * v + 2] - shiftZ) * scaleZ;
-            assert(posBuf[i][3 * v + 2] >= -1.0f - epsilon);
-            assert(posBuf[i][3 * v + 2] <= 1.0f + epsilon);
-        }
-
 }
+
+
 
 void Shape::init() {
     for (int i = 0; i < obj_count; i++) {
