@@ -62,6 +62,7 @@ public:
 	shared_ptr<Texture> grass_albedo;
 	shared_ptr<Texture> asteroid_albedo;
 	shared_ptr<Texture> sky_albedo;
+	shared_ptr<Texture> sky_noise_albedo;
 	shared_ptr<Texture> earth_albedo;
 	shared_ptr<Texture> mars_albedo;
 	shared_ptr<Texture> jupiter_albedo;
@@ -182,8 +183,7 @@ public:
 		for (int i = 0; i < 15; i++) {
 				asteroid_shapes[i] = make_shared<Shape>();
 				asteroid_shapes[i]->loadMesh(resourceDirectory + "/asteroids/asteroid" + asteroid_names[i] + ".obj");
-				//asteroid_shapes[i]->resize();
-				asteroid_shapes[i]->measure();
+				asteroid_shapes[i]->shift();
 				asteroid_shapes[i]->init();
 		}
 		rm->addOther("asteroid_shapes", asteroid_shapes);
@@ -194,7 +194,7 @@ public:
 
 		//skybox loader
 		texSphere = make_shared<Shape>();
-		texSphere->loadMesh(resourceDirectory + "/texSphere.obj");
+		texSphere->loadMesh(resourceDirectory + "/texCube.obj");
         texSphere->resize();
         texSphere->init();
 
@@ -207,8 +207,16 @@ public:
         skyMat = make_shared<Material>();
         skyMat->t_albedo = sky_albedo;
 
+
+		sky_noise_albedo = make_shared<Texture>();
+		sky_noise_albedo->setFilename(resourceDirectory + "/twinkle_noise.jpg");
+		sky_noise_albedo->init();
+		sky_noise_albedo->setUnit(2);
+		sky_noise_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
+
 		rm->addMesh("skybox", texSphere);
-		rm->addOther("skyboxMat", &skyMat);
+		rm->addUserTextureResource("skybox", sky_albedo);
+		rm->addUserTextureResource("skyboxNoise", sky_noise_albedo);
 
 		//player loader
 		GameObject* player = new GameObject("player");
