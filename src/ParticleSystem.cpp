@@ -94,8 +94,8 @@ unsigned int ParticleSystem::deadParticle()
 }  
 
 void ParticleSystem::draw(std::shared_ptr<Program> prog) {
+    glDepthMask(GL_FALSE);
     glBindVertexArray(vertArrObj);
-
     int c_pos = prog->getAttribute("colorPos");
     GLSL::enableVertexAttribArray(c_pos);
     glBindBuffer(GL_ARRAY_BUFFER, colorbuff);
@@ -113,6 +113,7 @@ void ParticleSystem::draw(std::shared_ptr<Program> prog) {
     glVertexAttribDivisor(0, 0);
     glVertexAttribDivisor(1, 0);
     glDisableVertexAttribArray(0);
+    glDepthMask(GL_TRUE);
 }
 
 void ParticleSystem::GPUSetup() {
