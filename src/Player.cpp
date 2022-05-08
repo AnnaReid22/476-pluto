@@ -1,8 +1,11 @@
 #include "GameObject.h"
 #include "Player.h"
+#include "ParticleSystem.h"
+#include "ResourceManager.h"
+#include "MeshRenderer.h"
 #include <iostream>
 
-
+ResourceManager* rm_ = ResourceManager::getInstance();
 
 Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
 {
@@ -41,6 +44,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
 
     // Instance of InputManager
     input = input->getInstance();
+
 }
 
 /*
@@ -72,6 +76,14 @@ void Player::OnCollide(GameObject* other)
     if (other->tag == "planet")
     {
         stop = true;
+        MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
+        rocket_mesh->Disable();
+        
+        GameObject* ps = (GameObject*)rm_->getOther("particle_system_death");
+        ps->transform = this->gameObject->transform;
+        ps->Enable();
+        ParticleSystem* ps_obj = ps->getComponentByType<ParticleSystem>();
+        ps_obj->start = this->gameObject->transform.position;
     }
 }
 
@@ -179,3 +191,10 @@ glm::vec3 Player::getForward()
 {
     return fwd;
 }
+
+// Returns rocket's position
+glm::quat Player::getRotation()
+{
+    return this->gameObject->transform.rotation;
+}
+

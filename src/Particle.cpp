@@ -14,7 +14,7 @@ void Particle::load(vec3 start, vec4 color, vec3 vel_max, vec3 vel_min, float li
 	rebirth(0.0f, start, vel_max, vel_min, color, life);
 }
 
-float randFloat(float l, float h)
+float Particle::randFloat(float l, float h)
 {
 	float r = rand() / (float) RAND_MAX;
 	return (1.0f - r) * l + r * h;
@@ -42,5 +42,5 @@ void Particle::setPosition(vec3 pos)
 
 void Particle::setColor(vec4 col)
 {
-	color += col;
+	color = col;
 }

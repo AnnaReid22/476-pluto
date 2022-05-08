@@ -1,12 +1,15 @@
 #include <random>
 #include "ParticleSystem.h"
+#include "Camera.h"
 #include "GameObject.h"
 #include "GLSL.h"
+#include "ResourceManager.h"
 #include <iostream>
 
 //reference: https://learnopengl.com/In-Practice/2D-Game/Particles
 
 unsigned int lastDeadParticle = 0;
+ResourceManager* rm = ResourceManager::getInstance();
 
 void ParticleSystem::Start()
 {
@@ -18,12 +21,27 @@ void ParticleSystem::Update()
 {
   unsigned int new_particles = 2;
 
-  // add new particles
-  for (unsigned int i = 0; i < new_particles; ++i)
+  if(type == "moving")
   {
-      int dead = deadParticle();
-      particles[dead].load(start, color, max_velocity, min_velocity, lifespan);
+        Player* pl = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>();
+        glm::vec3 playerPos = pl->getPosition();
+        glm::vec3 fwd = pl->getForward();
+
+        for (unsigned int i = 0; i < new_particles; ++i)
+        {
+            int dead = deadParticle();
+            particles[dead].load(playerPos, color, max_velocity, min_velocity, lifespan);
+        }
   }
+  else if(type == "static")
+  {
+        for (unsigned int i = 0; i < new_particles; ++i)
+        {
+            int dead = deadParticle();
+            particles[dead].load(start, color, max_velocity, min_velocity, lifespan);
+        }
+  }
+
 
   // update other particles
   for (unsigned int i = 0; i < numParticles; ++i)
@@ -32,13 +50,14 @@ void ParticleSystem::Update()
       p.setLifespan(time->getFrametime());
       if (p.getLifespan() > 0.0f)
       {
-            p.setPosition(p.getVelocity() * (float)time->getFrametime());
+            p.setPosition((p.getVelocity() * (float)time->getFrametime()));
             points[i*3+0] =p.getPosition().x; 
             points[i*3+1] =p.getPosition().y; 
             points[i*3+2] =p.getPosition().z; 
-            // p.setColor(p.getColor() * color_modify_value);
+            float incRed = p.randFloat(0.0, 4.0);
+            p.setColor(vec4(p.getColor().r + incRed, p.getColor().g, p.getColor().b, (p.getColor().a*time->getFrametime())));
             vec4 col = p.getColor();
-            pointColors[i*4+0] = col.r; 
+            pointColors[i*4+0] = col.r;
             pointColors[i*4+1] = col.g; 
             pointColors[i*4+2] = col.b;
             pointColors[i*4+3] = col.a;
@@ -75,8 +94,8 @@ unsigned int ParticleSystem::deadParticle()
 }  
 
 void ParticleSystem::draw(std::shared_ptr<Program> prog) {
+    glDepthMask(GL_FALSE);
     glBindVertexArray(vertArrObj);
-
     int c_pos = prog->getAttribute("colorPos");
     GLSL::enableVertexAttribArray(c_pos);
     glBindBuffer(GL_ARRAY_BUFFER, colorbuff);
@@ -94,6 +113,7 @@ void ParticleSystem::draw(std::shared_ptr<Program> prog) {
     glVertexAttribDivisor(0, 0);
     glVertexAttribDivisor(1, 0);
     glDisableVertexAttribArray(0);
+    glDepthMask(GL_TRUE);
 }
 
 void ParticleSystem::GPUSetup() {

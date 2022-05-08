@@ -54,8 +54,8 @@ void Shape::loadMesh(const string& meshName, string* mtlpath, unsigned char* (lo
 
         glm::vec3 scale = glm::vec3(1);
         glm::vec3 shift = glm::vec3(0);
-        this->max = glm::vec3(-FLT_MAX);
-        this->min = glm::vec3(FLT_MAX);
+        this->max = glm::vec3(-3.4028234664e+38);
+        this->min = glm::vec3(3.4028234664e+38);
 
         for (int i = 0; i < obj_count; i++) {
             //load textures

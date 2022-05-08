@@ -21,6 +21,7 @@ public:
 	void setLifespan(float dt);
 	void setPosition(vec3 pos);
 	void setColor(vec4 color);
+	float randFloat(float l, float h);
 	
 private:
 

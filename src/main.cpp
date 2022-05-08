@@ -245,35 +245,46 @@ public:
 
 
 		//Order matters here, because the skybox has to render before anything else.
-		w.addObject(player);
-		w.addObject(spawner);
-		w.addObject(camera);
 
 		initPlanets(resourceDirectory);
 
 		//add particle system texture
 		particleTexture = make_shared<Texture>();
-		particleTexture->setFilename(resourceDirectory + "/alpha.bmp");
+		particleTexture->setFilename(resourceDirectory + "/particle.bmp");
 		particleTexture->init();
 		particleTexture->setUnit(0);
 		particleTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
 		rm->addUserTextureResource("particleTexture", particleTexture);
 
-		//add particle system game object
-		GameObject* partSystem = new GameObject("particleSystem");
-		ParticleSystem* ps = partSystem->addComponentOfType<ParticleSystem>();
-		partSystem->transform.position = glm::vec3(0, 0, -20);
-		ps->start = vec3(0.0, -5.0, 0.0);
-		ps->numParticles = 100;
-		ps->color = vec4(0.1, 0.7, 0.2, 1.0f);
-		ps->max_velocity = vec3(2.0, 2.0, 0.0);
-		ps->min_velocity = vec3(0.0, 1.0, 0.0);
-		ps->lifespan = 1.0f;
+		ParticleSystem* ps = player->addComponentOfType<ParticleSystem>();
+		ps->start = pl->getPosition()-pl->getForward();
+		ps->type = "moving";
+		ps->numParticles = 300;
+		ps->color_modify_value = 1.5;
+		ps->color = vec4(1.0, 0.7, 0.2, 1.0f);
+		ps->max_velocity = vec3(-0.05);
+		ps->min_velocity = vec3(-0.1);
+		ps->lifespan = 2.0f;
 		ps->GPUSetup();
 
-		w.addObject(partSystem);
+		GameObject* ps_death = new GameObject("ps_death");
+		ParticleSystem* ps_die = ps_death->addComponentOfType<ParticleSystem>();
+		ps_die->start = vec3(0.0);
+		ps_die->type = "static";
+		ps_die->numParticles = 300;
+		ps_die->color = vec4(1.0, 0.3, 0.2, 1.0f);
+		ps_die->max_velocity = vec3(-0.01);
+		ps_die->min_velocity = vec3(-0.05);
+		ps_die->lifespan = 3.0f;
+		ps_die->GPUSetup();
+		ps_death->Disable();
+		rm->addOther("particle_system_death", ps_death);
 
+		w.addObject(ps_death);
+		w.addObject(player);
+		w.addObject(spawner);
+		w.addObject(camera);
 	}
 
 	void initPlanets(const std::string& resourceDirectory){
