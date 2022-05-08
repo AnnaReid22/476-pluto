@@ -25,7 +25,6 @@ void ParticleSystem::Update()
   {
         Player* pl = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>();
         glm::vec3 playerPos = pl->getPosition();
-        glm::vec3 fwd = pl->getForward();
 
         for (unsigned int i = 0; i < new_particles; ++i)
         {

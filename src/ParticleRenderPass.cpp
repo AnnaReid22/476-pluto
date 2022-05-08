@@ -62,7 +62,7 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
         glm::mat4 fwdMatrix = glm::translate(glm::mat4(1.0f), fwd);
         glm::mat4  M = obj->transform.genModelMatrix() + fwdMatrix;
         ParticleSystem* ps = obj->getComponentByType<ParticleSystem>();
-        glUniformMatrix4fv(particleProg->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
+        glUniformMatrix4fv(particleProg->getUniform("M"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
         ps->draw(particleProg);
     }
 
