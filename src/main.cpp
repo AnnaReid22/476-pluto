@@ -33,6 +33,7 @@ Z. Wood + S. Sueda
 #include "ForwardRenderPass.h"
 #include "ParticleRenderPass.h"
 #include "ParticleSystem.h"
+#include "DeferredSamplingPass.h"
 
 using namespace std;
 using namespace glm;
@@ -130,6 +131,11 @@ public:
 	void resizeCallback(GLFWwindow *window, int width, int height)
 	{
 		glViewport(0, 0, width, height);
+
+		ResourceManager* rm = rm->getInstance();
+
+		rm->addNumericalValue("screenWidth", width);
+		rm->addNumericalValue("screenHeight", height);
 	}
 
 	void init(const std::string& resourceDirectory)
@@ -141,12 +147,20 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 
+		ResourceManager* rm = rm->getInstance();
+		int width, height;
+
+		glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+		rm->addNumericalValue("screenWidth", width);
+		rm->addNumericalValue("screenHeight", height);
+
 		w = World();
 		rp = RenderPipeline(windowManager);
 
-		ResourceManager* rm = rm->getInstance();
+
 		rm->addOther("WindowManager", windowManager);
 
+		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
 		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		// add render passes with more shaders here
@@ -201,7 +215,7 @@ public:
 		sky_albedo = make_shared<Texture>();
         sky_albedo->setFilename(resourceDirectory + "/spaceSkybox.jpg");
         sky_albedo->init();
-        sky_albedo->setUnit(1);
+        sky_albedo->setUnit(0);
         sky_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
         skyMat = make_shared<Material>();
@@ -211,7 +225,7 @@ public:
 		sky_noise_albedo = make_shared<Texture>();
 		sky_noise_albedo->setFilename(resourceDirectory + "/twinkle_noise.jpg");
 		sky_noise_albedo->init();
-		sky_noise_albedo->setUnit(2);
+		sky_noise_albedo->setUnit(0);
 		sky_noise_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		rm->addMesh("skybox", texSphere);

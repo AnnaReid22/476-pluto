@@ -1,0 +1,126 @@
+#include "DeferredSamplingPass.h"
+
+#include "ResourceManager.h"
+#include "GameObject.h"
+#include "Camera.h"
+#include "MeshRenderer.h"
+
+void DeferredSamplingPass::init()
+{
+    this->rm = rm->getInstance();
+    float width = rm->getNumericalValue("screenWidth");
+    float height = rm->getNumericalValue("screenHeight");
+
+    glGenTextures(1, &gColor);
+    glBindTexture(GL_TEXTURE_2D, gColor);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glGenTextures(1, &gBuffer);
+    glBindTexture(GL_TEXTURE_2D, gBuffer);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_BGRA, GL_FLOAT, NULL);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glGenTextures(1, &gNormal);
+    glBindTexture(GL_TEXTURE_2D, gNormal);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_BGRA, GL_FLOAT, NULL);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glGenBuffers(1, &deferredFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColor, 0);
+    glGenRenderbuffers(1, &depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
+
+    rm->addRenderTextureResource("gBuffer", gBuffer);
+    rm->addRenderTextureResource("gNormal", gNormal);
+    rm->addRenderTextureResource("gColor", gColor);
+
+    prog = std::make_shared<Program>();
+    prog->setVerbose(true);
+    prog->setShaderNames("../shaders/defer_samples_vert.glsl", "../shaders/defer_samples_frag.glsl");
+    prog->init();
+    prog->addUniform("P");
+    prog->addUniform("V");
+    prog->addUniform("M");
+    prog->addUniform("albedoMap");
+    prog->addUniform("normalMap");
+    prog->addAttribute("vertPos");
+    prog->addAttribute("vertNor");
+    prog->addAttribute("vertTex");
+}
+
+void DeferredSamplingPass::execute(WindowManager* windowManager)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO);
+
+    GLenum buffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+    glDrawBuffers(3, buffers);
+
+    glClearColor(0.12f, 0.34f, 0.56f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Get current frame buffer size.
+    int width, height;
+    glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+    float aspect = width / (float)height;
+    glViewport(0, 0, width, height);
+
+    Camera* cam = (Camera*)rm->getOther("activeCamera");
+    std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
+
+    glm::mat4 M, V, P;
+
+    P = cam->getCameraProjectionMatrix();
+    V = cam->getCameraViewMatrix();
+
+    prog->bind();
+
+    glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
+    glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
+
+    for (GameObject* obj : renderables)
+    {
+        M = obj->transform.genModelMatrix();
+        MeshRenderer* mr = obj->getComponentByType<MeshRenderer>();
+
+        std::shared_ptr<Material> mat = mr->material;
+        std::shared_ptr<Shape> mesh = mr->mesh;
+
+        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
+
+        mat->t_albedo->bind(prog->getUniform("albedoMap"));
+        mat->t_normal->bind(prog->getUniform("normalMap"));
+
+        mesh->draw(prog);
+
+        mat->t_albedo->unbind();
+        mat->t_normal->unbind();
+    }
+
+    prog->unbind();
+
+    glDrawBuffers(1, buffers);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, gColor);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, gBuffer);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, gNormal);
+    glGenerateMipmap(GL_TEXTURE_2D);
+}
