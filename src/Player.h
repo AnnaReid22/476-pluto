@@ -42,6 +42,7 @@ public:
     // Rocket accessor methods
     glm::vec3 getPosition();
     glm::vec3 getForward();
+    glm::quat getRotation();
     float getXRotation();
 };
 

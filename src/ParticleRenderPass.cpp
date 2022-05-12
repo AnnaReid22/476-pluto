@@ -53,13 +53,16 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPointSize(15.0f);
+    glPointSize(11.0f);
 
     for (GameObject* obj : partSystems)
     {
-        glm::mat4 M = obj->transform.genModelMatrix();
+        Player* pl = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>();
+        glm::vec3 fwd = pl->getForward();
+        glm::mat4 fwdMatrix = glm::translate(glm::mat4(1.0f), fwd);
+        glm::mat4  M = obj->transform.genModelMatrix() + fwdMatrix;
         ParticleSystem* ps = obj->getComponentByType<ParticleSystem>();
-        glUniformMatrix4fv(particleProg->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
+        glUniformMatrix4fv(particleProg->getUniform("M"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
         ps->draw(particleProg);
     }
 

@@ -35,12 +35,25 @@ void ForwardRenderPass::init()
 	prog->addUniform("MatShine");
 	prog->addUniform("flip");
 	prog->addAttribute("vertNor");
+
+  skyProg = std::make_shared<Program>();
+  skyProg->setVerbose(true);
+  skyProg->setShaderNames("../shaders/sky_vert.glsl", "../shaders/sky_frag.glsl");
+  skyProg->init();
+  skyProg->addUniform("SkyMat");
+  skyProg->addUniform("time");
+  skyProg->addUniform("Texture0");
+  skyProg->addUniform("TwinkleNoise");
+  skyProg->addAttribute("vertPos");
+  skyProg->addAttribute("vertNor");
+  skyProg->addAttribute("vertTex");
 }
 
 void ForwardRenderPass::execute(WindowManager * windowManager)
 {
     skyboxMesh = rm->getMesh("skybox");
-    skyboxMaterial = *((std::shared_ptr<Material> *)rm->getOther("skyboxMat"));
+    skyboxTexture = rm->getUserTextureResource("skybox");
+    skyboxNoiseTexture = rm->getUserTextureResource("skyboxNoise");
 
     // Get current frame buffer size.
     int width, height;
@@ -55,28 +68,31 @@ void ForwardRenderPass::execute(WindowManager * windowManager)
     Camera* cam = (Camera*)rm->getOther("activeCamera");
     std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
 
-    prog->bind();
+    skyProg->bind();
 
-    glm::mat4 P = GetProjectionMatrix(windowManager);
-    glm::mat4 V = cam->getCameraRotationMatrix();
-    glm::mat4 M = glm::mat4(1);
+    glm::mat4 SkyMat = GetProjectionMatrix(windowManager)* cam->getCameraRotationMatrix();
 
-    glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
-    glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
-    glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
-    glUniform3f(prog->getUniform("lightPos"), 0.0, 10.0, 0.0);
-    glUniform1f(prog->getUniform("MatShine"), 1000);
-    glUniform1i(prog->getUniform("flip"), 1);
+    glUniformMatrix4fv(skyProg->getUniform("SkyMat"), 1, GL_FALSE, glm::value_ptr(SkyMat));
+    glUniform1f(skyProg->getUniform("time"), Time::getInstance()->getGlobalTime());
 
     glDisable(GL_DEPTH_TEST);
 
-    this->skyboxMaterial->t_albedo->bind(prog->getUniform("Texture0"));
-    this->skyboxMesh->draw(prog);
-    this->skyboxMaterial->t_albedo->unbind();
+    this->skyboxTexture->bind(skyProg->getUniform("Texture0")); 
+    this->skyboxNoiseTexture->bind(skyProg->getUniform("TwinkleNoise"));
+    this->skyboxMesh->draw(skyProg);
+    this->skyboxNoiseTexture->unbind();
+    this->skyboxTexture->unbind();
 
     glEnable(GL_DEPTH_TEST);
 
-    V = cam->getCameraViewMatrix();
+    skyProg->unbind();
+    prog->bind();
+
+    glm::mat4 P = GetProjectionMatrix(windowManager);
+    glm::mat4 V = cam->getCameraViewMatrix();
+    glm::mat4 M = glm::mat4(1);
+
+    glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
     glUniform3f(prog->getUniform("lightPos"), 0.0, 2.0, 0.0);
     glUniform1f(prog->getUniform("MatShine"), 23);

@@ -32,7 +32,7 @@ void EnemySpawner::spawnEnemy()
 
 		glm::vec3 playerPos = ((GameObject*)rm->getOther("player_game_object"))->transform.position;
 
-		glm::vec3 startPos = glm::vec3(36 * dist(gen), 20 * dist(gen), -215) + playerPos;
+		glm::vec3 startPos = glm::vec3(36 * dist(gen), 20 * dist(gen), -100) + playerPos;
 
 
 		GameObject* asteroid = new GameObject("asteroid");

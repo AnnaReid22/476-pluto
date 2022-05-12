@@ -13,36 +13,37 @@ class Program;
 class Shape
 {
 public:
-	Shape();//no
-	virtual ~Shape();//no
-	void loadMesh(const std::string& meshName, std::string* mtlName = NULL, unsigned char* (loadimage)(char const*, int*, int*, int*, int) = NULL);
-	void resize();//no
-	void createShape(tinyobj::shape_t & shape);//no
-	void init();
-	void measure();//no
-	glm::vec3 getBSphere(float* radius);
-	void draw(const std::shared_ptr<Program> prog) const;
-	glm::vec3 min;
-	glm::vec3 max;
-	glm::vec3 center;
-	float radius;
-	unsigned int* textureIDs = NULL;
-	
+		Shape();//no
+		virtual ~Shape();//no
+		void loadMesh(const std::string& meshName, std::string* mtlName = NULL, unsigned char* (loadimage)(char const*, int*, int*, int*, int) = NULL);
+		void resize(); //also centeres
+		void shift();
+		void createShape(tinyobj::shape_t& shape);//no
+		void init();
+		glm::vec3 getBSphere(float* radius);
+		void draw(const std::shared_ptr<Program> prog) const;
+		unsigned int* textureIDs = NULL;
+		glm::vec3 getCenter() { return (this->max + this->min) * 0.5f; }
+		float getRadius() { return glm::length(this->max - this->min) * 0.5f; }
+
 private:
 
-	int obj_count = 0;
-	std::vector<unsigned int>* eleBuf = NULL;
-	std::vector<float>* posBuf = NULL;
-	std::vector<float>* norBuf = NULL;
-	std::vector<float>* texBuf = NULL;
-	unsigned int* materialIDs = NULL;
+		glm::vec3 min;
+		glm::vec3 max;
+
+		int obj_count = 0;
+		std::vector<unsigned int>* eleBuf = NULL;
+		std::vector<float>* posBuf = NULL;
+		std::vector<float>* norBuf = NULL;
+		std::vector<float>* texBuf = NULL;
+		unsigned int* materialIDs = NULL;
 
 
-	unsigned int* eleBufID = 0;
-	unsigned int* posBufID = 0;
-	unsigned int* norBufID = 0;
-	unsigned int* texBufID = 0;
-	unsigned int* vaoID = 0;
+		unsigned int* eleBufID = 0;
+		unsigned int* posBufID = 0;
+		unsigned int* norBufID = 0;
+		unsigned int* texBufID = 0;
+		unsigned int* vaoID = 0;
 };
 
 #endif

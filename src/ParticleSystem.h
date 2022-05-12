@@ -4,6 +4,8 @@
 #include "Particle.h"
 #include "Program.h"
 
+#include <memory>
+
 class ParticleSystem :
     public Component
 {
@@ -23,6 +25,7 @@ public:
     vec3 min_velocity;
     float lifespan;
     int numParticles;
+    std::string type;
     float color_modify_value;
     ParticleSystem(GameObject* d_GameObject) : Component(d_GameObject) {};
     void Start();
