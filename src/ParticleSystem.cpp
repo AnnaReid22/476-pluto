@@ -30,7 +30,7 @@ void ParticleSystem::Update()
         for (unsigned int i = 0; i < new_particles; ++i)
         {
             int dead = deadParticle();
-            particles[dead].load(playerPos+fwd/10.0f, color, max_velocity, min_velocity, lifespan);
+            particles[dead].load(playerPos+fwd/2.5f, color, max_velocity, min_velocity, lifespan);
         }
   }
   else if(type == "static")

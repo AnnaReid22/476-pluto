@@ -221,7 +221,7 @@ public:
 		//player loader
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
-		player->transform.scale = glm::vec3(0.2);
+		player->transform.scale = glm::vec3(0.8);
 		GameObject* camera = new GameObject("camera");
 		Camera* cam = camera->addComponentOfType<Camera>();
 		cam->rocket = pl;
@@ -402,10 +402,10 @@ public:
 		marsMat->t_albedo = mars_albedo;
 
 		GameObject* mars = new GameObject("mars");
-		// mars->transform.position = glm::vec3(120, 0, -200);
-		// mars->transform.scale = glm::vec3(80);
-		mars->transform.position = glm::vec3(10, 0, -100);
-		mars->transform.scale = glm::vec3(5);
+		mars->transform.position = glm::vec3(190, 0, -200);
+		mars->transform.scale = glm::vec3(80);
+		// mars->transform.position = glm::vec3(10, 0, -100);
+		// mars->transform.scale = glm::vec3(5);
 		mars->tag = "planet";
 		MeshRenderer* marsMR = mars->addComponentOfType<MeshRenderer>();
 		marsMR->mesh = theMars;
@@ -432,10 +432,10 @@ public:
 		jupiterMat->t_albedo = jupiter_albedo;
 
 		GameObject* jupiter = new GameObject("jupiter");
-		// jupiter->transform.position = glm::vec3(-190, 0, -300);
-		// jupiter->transform.scale = glm::vec3(175);
-		jupiter->transform.position = glm::vec3(-30, 0, -200);
-		jupiter->transform.scale = glm::vec3(30);
+		jupiter->transform.position = glm::vec3(-280, 0, -300);
+		jupiter->transform.scale = glm::vec3(175);
+		// jupiter->transform.position = glm::vec3(-30, 0, -200);
+		// jupiter->transform.scale = glm::vec3(30);
 		jupiter->tag = "planet";
 		MeshRenderer* jupiterMR = jupiter->addComponentOfType<MeshRenderer>();
 		jupiterMR->mesh = theJupiter;
@@ -462,10 +462,10 @@ public:
 		saturnMat->t_albedo = saturn_albedo;
 
 		GameObject* saturn = new GameObject("saturn");
-		// saturn->transform.position = glm::vec3(140, 0, -450);
-		// saturn->transform.scale = glm::vec3(150);
-		saturn->transform.position = glm::vec3(40, 0, -450);
-		saturn->transform.scale = glm::vec3(35);
+		saturn->transform.position = glm::vec3(250, 0, -450);
+		saturn->transform.scale = glm::vec3(150);
+		// saturn->transform.position = glm::vec3(40, 0, -450);
+		// saturn->transform.scale = glm::vec3(35);
 		saturn->tag = "planet";
 		MeshRenderer* saturnMR = saturn->addComponentOfType<MeshRenderer>();
 		saturnMR->mesh = theSaturn;
@@ -492,10 +492,10 @@ public:
 		uranusMat->t_albedo = uranus_albedo;
 
 		GameObject* uranus = new GameObject("uranus");
-		// uranus->transform.position = glm::vec3(90, 0, -700);
-		// uranus->transform.scale = glm::vec3(110);
-		uranus->transform.position = glm::vec3(50, 0, -600);
-		uranus->transform.scale = glm::vec3(25);
+		uranus->transform.position = glm::vec3(120, 0, -700);
+		uranus->transform.scale = glm::vec3(110);
+		// uranus->transform.position = glm::vec3(50, 0, -600);
+		// uranus->transform.scale = glm::vec3(25);
 		uranus->tag = "planet";
 		MeshRenderer* uranusMR = uranus->addComponentOfType<MeshRenderer>();
 		uranusMR->mesh = theUranus;
@@ -522,10 +522,10 @@ public:
 		neptuneMat->t_albedo = neptune_albedo;
 
 		GameObject* neptune = new GameObject("neptune");
-		// neptune->transform.position = glm::vec3(-60, 0, -800);
-		// neptune->transform.scale = glm::vec3(100);
-		neptune->transform.position = glm::vec3(-45, 0, -800);
-		neptune->transform.scale = glm::vec3(25);
+		neptune->transform.position = glm::vec3(-120, 0, -800);
+		neptune->transform.scale = glm::vec3(100);
+		// neptune->transform.position = glm::vec3(-45, 0, -800);
+		// neptune->transform.scale = glm::vec3(25);
 		neptune->tag = "planet";
 		MeshRenderer* neptuneMR = neptune->addComponentOfType<MeshRenderer>();
 		neptuneMR->mesh = theNeptune;
@@ -552,10 +552,10 @@ public:
 		plutoMat->t_albedo = pluto_albedo;
 
 		GameObject* pluto = new GameObject("pluto");
-		// pluto->transform.position = glm::vec3(0, 0, -1000);
-		// pluto->transform.scale = glm::vec3(15);
-		pluto->transform.position = glm::vec3(5, 0, -1000);
-		pluto->transform.scale = glm::vec3(1);
+		pluto->transform.position = glm::vec3(0, 0, -1000);
+		pluto->transform.scale = glm::vec3(15);
+		// pluto->transform.position = glm::vec3(5, 0, -1000);
+		// pluto->transform.scale = glm::vec3(1);
 		pluto->tag = "planet";
 		MeshRenderer* plutoMR = pluto->addComponentOfType<MeshRenderer>();
 		plutoMR->mesh = thePluto;
