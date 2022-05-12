@@ -24,10 +24,6 @@ public:
     // Movement variables
     bool dollyF;
     bool dollyB;
-    bool strafeR;
-    bool strafeL;
-    bool rise;
-    bool fall;
     bool stop;
 
     // Rotation variables
@@ -47,5 +43,6 @@ public:
     glm::vec3 getPosition();
     glm::vec3 getForward();
     glm::quat getRotation();
+    float getXRotation();
 };
 
