@@ -24,10 +24,6 @@ public:
     // Movement variables
     bool dollyF;
     bool dollyB;
-    bool strafeR;
-    bool strafeL;
-    bool rise;
-    bool fall;
     bool stop;
 
     // Rotation variables
@@ -46,5 +42,6 @@ public:
     // Rocket accessor methods
     glm::vec3 getPosition();
     glm::vec3 getForward();
+    float getXRotation();
 };
 

@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "Player.h"
 #include <iostream>
+#define PI 3.14159265
 
 
 
@@ -13,16 +14,8 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     dollyB = false;
     dollyF = false;
 
-    // Move left and right
-    strafeR = false;
-    strafeL = false;
-
-    // Move up and down
-    rise = false;
-    fall = false;
-
     // Speed for any of the above movements
-    speed = -1000.0f;
+    speed = -10.0f;
 
     // Rocket rotation sensitivity
     sensitivity = 0.1;
@@ -36,8 +29,8 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     // Initial and current X and Y mouse positions
     initXPos = initYPos = currentXPos = currentYPos = 0;
 
-    // Initial rocket rotation
-    rotation = glm::vec3(0, -3.14159265/2.0f, 0);
+    // Initial rocket rotation. A rotation in x is a rotation about the x-axis
+    rotation = glm::vec3(-PI / 2.0f, 0, 0);
 
     // Instance of InputManager
     input = input->getInstance();
@@ -61,6 +54,7 @@ void Player::Update()
     {
         moveRocket();
     }
+
 }
 
 
@@ -108,10 +102,6 @@ void Player::updateMoveVars()
     // Update movement variables
     dollyF = input->GetKey(GLFW_KEY_W);
     dollyB = input->GetKey(GLFW_KEY_S);
-    strafeL = input->GetKey(GLFW_KEY_A);
-    strafeR = input->GetKey(GLFW_KEY_D);
-    rise = input->GetKey(GLFW_KEY_SPACE);
-    fall = input->GetKey(GLFW_KEY_LEFT_SHIFT);
 }
 
 /*
@@ -133,30 +123,28 @@ void Player::moveRocket()
     {
         rocketMove.y -= frametime * speed;
     }
-    if (strafeR)
-    {
-        rocketMove.x += frametime * speed;
-    }
-    if (strafeL)
-    {
-        rocketMove.x -= frametime * speed;
-    }
-    if (rise)
-    {
-        rocketMove.z -= frametime * speed;
-    }
-    if (fall)
-    {
-        rocketMove.z += frametime * speed;
-    }
 
-    // Update rocket rotation
-    rotation.z += deltaXPos * frametime * sensitivity;
-    rotation.y += deltaYPos * frametime * sensitivity;
+    // Update rocket rotation about the y-axis
+    rotation.y += deltaXPos * frametime * sensitivity;
+    
+    // Update rocket rotation about the x-axis
+    rotation.x += deltaYPos * frametime * sensitivity;
+    
+    // Limit rotation about the x-axis to prevent camera from flipping
+    if (rotation.x > glm::radians(-10.0))
+    {
+        rotation.x = glm::radians(-10.0);
+    }
+    if (rotation.x < glm::radians(-170.0))
+    {
+        rotation.x = glm::radians(-170.0);
+    }
 
     // Used to calculate position
-    glm::mat4 rotMat = glm::rotate(glm::mat4(1.f), rotation.x, glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.f), rotation.y, glm::vec3(1, 0, 0)) * glm::rotate(glm::mat4(1.f), rotation.z, glm::vec3(0, 0, 1));
-    
+    //glm::mat4 rotMat = glm::rotate(glm::mat4(1.f), rotation.x, glm::vec3(1, 0, 0)) * glm::rotate(glm::mat4(1.f), rotation.y, glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.f), (float) - PI / 2.0f, glm::vec3(1, 0, 0));
+    glm::mat4 rotMat = glm::rotate(glm::mat4(1.f), rotation.y, glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.f), rotation.x, glm::vec3(1, 0, 0));
+
+
     // Adjust movement based on the rocket's rotation
     glm::vec4 posUpdate = rotMat * glm::vec4(rocketMove, 0); //glm::vec4(0, -10, 0, 0) if you want constant forward movement
     
@@ -164,9 +152,10 @@ void Player::moveRocket()
     fwd = normalize(rotMat * glm::vec4(0, -1, 0, 0));
 
     // Update the Rocket's Transform position matrix and rotation quaternion
-    this->gameObject->transform.position -= glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z) * 0.001f;
+    this->gameObject->transform.position -= glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
     this->gameObject->transform.rotation = glm::quat(rotMat);
 }
+
 
 // Returns rocket's position
 glm::vec3 Player::getPosition()
@@ -179,3 +168,10 @@ glm::vec3 Player::getForward()
 {
     return fwd;
 }
+
+// Returns the rocket's x rotation
+float Player::getXRotation()
+{
+    return rotation.x;
+}
+
