@@ -3,6 +3,9 @@
 #include "ParticleSystem.h"
 #include "ResourceManager.h"
 #include "MeshRenderer.h"
+#include "BoundingSphereCollider.h"
+#include "PhysicsObject.h"
+#include "World.h"
 #include <iostream>
 
 ResourceManager* rm_ = ResourceManager::getInstance();
@@ -161,6 +164,7 @@ void Player::moveRocket()
     {
         rocketMove.z += frametime * speed;
     }
+    
 
     // Update rocket rotation
     rotation.z += deltaXPos * frametime * sensitivity;
@@ -178,6 +182,28 @@ void Player::moveRocket()
     // Update the Rocket's Transform position matrix and rotation quaternion
     this->gameObject->transform.position -= glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z) * 0.001f;
     this->gameObject->transform.rotation = glm::quat(rotMat);
+
+    bulletCooldown -= Time::getInstance()->getFrametime();
+    if (InputManager::getInstance()->GetKey(GLFW_KEY_E) && bulletCooldown <= 0)
+    {
+        bulletCooldown = 0.5f;
+        GameObject* bullet = new GameObject("bullet");
+        bullet->transform.position = gameObject->transform.position - this->getForward();
+        bullet->transform.scale = gameObject->transform.scale;
+        bullet->transform.rotation = gameObject->transform.rotation;
+        BoundingSphereCollider* bsc = bullet->addComponentOfType<BoundingSphereCollider>();
+        MeshRenderer* meshRenderer = bullet->addComponentOfType<MeshRenderer>();
+        ResourceManager* rm = ResourceManager::getInstance();
+        meshRenderer->mesh = rm->getMesh("skybox");
+        std::shared_ptr<Material> mat = std::make_shared<Material>();
+        mat->t_albedo = rm->getUserTextureResource("particleTexture");
+        meshRenderer->material = mat;
+        PhysicsObject* physicsObject = bullet->addComponentOfType<PhysicsObject>();
+        physicsObject->vel = this->getForward() * -10.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
+        physicsObject->acc = glm::vec3(0.0f);
+
+        gameObject->world->addObject(bullet);
+    }
 }
 
 // Returns rocket's position

@@ -14,7 +14,7 @@ public:
     glm::vec3 travelDirection = glm::vec3(0);
     float speed = 0;
     int type = 0;
-    int parent = 0;
+    float cooldown = 1;
 
     Enemy(GameObject* d_GameObject) : Component(d_GameObject) {};
 

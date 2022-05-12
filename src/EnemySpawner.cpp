@@ -15,7 +15,7 @@ void EnemySpawner::Update()
 	if (time >= nextTime)
 	{
 			nextTime += spawnDelay;
-			spawnDelay *= 0.999;
+			//spawnDelay *= 0.999;
 			spawnEnemy();
 	}
 }
@@ -40,7 +40,7 @@ void EnemySpawner::spawnEnemy()
 		asteroid->transform.scale = glm::vec3(3);
 		Enemy* enemy1 = asteroid->addComponentOfType<Enemy>();
 		enemy1->type = 0;
-		enemy1->parent = curId++;
+
 		MeshRenderer* renderer1 = asteroid->addComponentOfType<MeshRenderer>();
 		renderer1->mesh = asteroid_shapes[0];
 		renderer1->material = asteroid_material;
