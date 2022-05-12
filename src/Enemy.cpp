@@ -26,46 +26,64 @@ void Enemy::Start()
 
 void Enemy::Update()
 {
+    this->cooldown -= Time::getInstance()->getFrametime();
+    ResourceManager* rm = ResourceManager::getInstance();
+    glm::vec3 campos = ((Camera*)rm->getOther("activeCamera"))->pos;
+    if (glm::length(gameObject->transform.position - campos) > 250.0f)
+    {
+        gameObject->toBeDestroyed = true;
+    }
+    float dt = Time::getInstance()->getFrametime();
+    float r = dt * rotationSpeed * 0.5;
+    glm::vec3 sine = rotationAxis * sin(r);
+    gameObject->transform.rotation *= glm::quat(cos(r), sine.x, sine.y, sine.z);
+    gameObject->transform.position += travelDirection * speed * dt;
+
     if (collided) {
         collided = false;
         if (this->type < 7) {
-            glm::vec3 offsetDir = glm::vec3(3, 1, 0);
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_real_distribution<float> dist(-1, 1);
 
-            ResourceManager* rm = ResourceManager::getInstance();
+            glm::vec3 offVec1 = normalize(glm::vec3(dist(gen), dist(gen), 0));
+            glm::vec3 offVec2 = glm::vec3(-offVec1.x, -offVec1.y, 0);
+
             std::shared_ptr<Shape>* asteroid_shapes = (std::shared_ptr<Shape>*) (rm->getOther("asteroid_shapes"));
             std::shared_ptr<Material> asteroid_material = *(std::shared_ptr<Material> *) rm->getOther("asteroid_material");
 
             GameObject* child1 = new GameObject("asteroid");
-            child1->transform.position = gameObject->transform.position + glm::vec3(1, 0, -1);
+            child1->transform.position = gameObject->transform.position;
             child1->transform.scale = gameObject->transform.scale;
             child1->transform.rotation = gameObject->transform.rotation;
             Enemy* enemy1 = child1->addComponentOfType<Enemy>();
             enemy1->type = 2 * type + 1;
-            enemy1->travelDirection = normalize(travelDirection + offsetDir);
-            enemy1->speed = speed;
-            enemy1->parent = parent;
+            enemy1->travelDirection = normalize(travelDirection + offVec1);
+            enemy1->speed = speed + 1;
+            enemy1->cooldown = 2;
             MeshRenderer* renderer1 = child1->addComponentOfType<MeshRenderer>();
             renderer1->mesh = asteroid_shapes[enemy1->type];
             renderer1->material = asteroid_material;
             BoundingSphereCollider* bsc1 = child1->addComponentOfType<BoundingSphereCollider>();
             bsc1->radius = 0.65;
-
         
             GameObject* child2 = new GameObject("asteroid");
-            child2->transform.position = gameObject->transform.position + glm::vec3(-1, 0, -1);
+            child2->transform.position = gameObject->transform.position;
             child2->transform.scale = gameObject->transform.scale;
             child2->transform.rotation = gameObject->transform.rotation;
             Enemy* enemy2 = child2->addComponentOfType<Enemy>();
             enemy2->type = 2 * type + 2;
-            enemy2->travelDirection = normalize(travelDirection - offsetDir);
-            enemy2->speed = speed;
-            enemy2->parent = parent;
+            enemy2->travelDirection = normalize(travelDirection + offVec2);
+            enemy2->speed = speed + 1;
+            enemy2->cooldown = 2;
             MeshRenderer* renderer2 = child2->addComponentOfType<MeshRenderer>();
             renderer2->mesh = asteroid_shapes[enemy2->type];
             renderer2->material = asteroid_material;
             BoundingSphereCollider* bsc2 = child2->addComponentOfType<BoundingSphereCollider>();
             bsc2->radius = 0.65;
-        
+
+            child1->transform.position += enemy1->travelDirection;
+            child2->transform.position += enemy2->travelDirection;
 
             gameObject->world->destroyObject(gameObject);
             gameObject->world->addObject(child1);
@@ -77,38 +95,12 @@ void Enemy::Update()
             this->gameObject->world->destroyObject(gameObject);
         }
     }
-    else {
-
-        // Destroy enemies if they reached beginning of level
-        if (gameObject->transform.position.z > 100)
-        {
-            gameObject->toBeDestroyed = true;
-        }
-        float dt = Time::getInstance()->getFrametime();
-        float r = dt * rotationSpeed * 0.5;
-        glm::vec3 sine = rotationAxis * sin(r);
-        gameObject->transform.rotation *= glm::quat(cos(r), sine.x, sine.y, sine.z);
-        gameObject->transform.position += travelDirection * speed * dt;
-        
-    }
 }
 
 
 void Enemy::OnCollide(GameObject* other) 
 {
-
-    if (other->name == "asteroid")
-    {
-        Enemy* e = other->getComponentByType<Enemy>();
-        if (e->parent != this->parent) {
-            collided = true;
-        }
-    }
-    else if (other->name == "player")
-    {
-        collided = true;
-    }
-    else {
+    if (this->cooldown < 0) {
         collided = true;
     }
 }

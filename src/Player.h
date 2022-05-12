@@ -15,6 +15,7 @@ private:
     glm::vec3 rotation, fwd;
     
     float speed;
+    float bulletCooldown;
 
     // Rocket movement vectors
     void updateMoveVars();
@@ -25,6 +26,7 @@ public:
     bool dollyF;
     bool dollyB;
     bool stop;
+    bool shoot;
 
     // Rotation variables
     bool initMousePosSet;
