@@ -30,7 +30,7 @@ void ParticleSystem::Update()
         for (unsigned int i = 0; i < new_particles; ++i)
         {
             int dead = deadParticle();
-            particles[dead].load(playerPos+fwd/10.0f, color, max_velocity, min_velocity, lifespan);
+            particles[dead].load(playerPos+fwd/2.5f, color, max_velocity, min_velocity, lifespan);
         }
   }
   else if(type == "static")
@@ -51,11 +51,10 @@ void ParticleSystem::Update()
       if (p.getLifespan() > 0.0f)
       {
             p.setPosition((p.getVelocity() * (float)time->getFrametime()));
-            points[i*3+0] =p.getPosition().x; 
-            points[i*3+1] =p.getPosition().y; 
-            points[i*3+2] =p.getPosition().z; 
-            float incRed = p.randFloat(0.0, 4.0);
-            p.setColor(vec4(p.getColor().r + incRed, p.getColor().g, p.getColor().b, (p.getColor().a*time->getFrametime())));
+            points[i*3+0] =p.getPosition().x;
+            points[i*3+1] =p.getPosition().y;
+            points[i*3+2] =p.getPosition().z;
+            p.setColor(vec4(p.getColor().r, p.getColor().g, p.getColor().b, (p.getColor().a*time->getFrametime())));
             vec4 col = p.getColor();
             pointColors[i*4+0] = col.r;
             pointColors[i*4+1] = col.g; 
@@ -117,7 +116,6 @@ void ParticleSystem::draw(std::shared_ptr<Program> prog) {
 }
 
 void ParticleSystem::GPUSetup() {
-
 	for (int i=0; i < numParticles; i++) 
     {
         //defining locations for the points in the array buffer for vertices

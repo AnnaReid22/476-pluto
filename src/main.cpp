@@ -221,7 +221,7 @@ public:
 		//player loader
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
-		player->transform.scale = glm::vec3(0.2);
+		player->transform.scale = glm::vec3(0.4);
 		GameObject* camera = new GameObject("camera");
 		Camera* cam = camera->addComponentOfType<Camera>();
 		cam->rocket = pl;
@@ -261,10 +261,9 @@ public:
 		ps->start = pl->getPosition()-pl->getForward();
 		ps->type = "moving";
 		ps->numParticles = 300;
-		ps->color_modify_value = 1.5;
 		ps->color = vec4(1.0, 0.7, 0.2, 1.0f);
-		ps->max_velocity = vec3(-0.05);
-		ps->min_velocity = vec3(-0.1);
+		ps->max_velocity = vec3(-0.05, -0.02, -0.04);
+		ps->min_velocity = vec3(-0.1, -0.05, -0.1);
 		ps->lifespan = 2.0f;
 		ps->GPUSetup();
 
@@ -281,7 +280,79 @@ public:
 		ps_death->Disable();
 		rm->addOther("particle_system_death", ps_death);
 
+		//add celebration code
+		GameObject* ps_celebrate1 = new GameObject("ps_celebrate1");
+		ParticleSystem* ps_c1 = ps_celebrate1->addComponentOfType<ParticleSystem>();
+		ps_c1->start = vec3(1.0);
+		ps_c1->type = "static";
+		ps_c1->numParticles = 300;
+		ps_c1->color = vec4(2.0, 0.7, 0.2, 1.0f);
+		ps_c1->max_velocity = vec3(-0.01);
+		ps_c1->min_velocity = vec3(-0.05);
+		ps_c1->lifespan = 8.0f;
+		ps_c1->GPUSetup();
+		ps_celebrate1->Disable();
+		rm->addOther("particle_system_c1", ps_celebrate1);
+
+		GameObject* ps_celebrate2 = new GameObject("ps_celebrate2");
+		ParticleSystem* ps_c2 = ps_celebrate2->addComponentOfType<ParticleSystem>();
+		ps_c2->start = vec3(2.0);
+		ps_c2->type = "static";
+		ps_c2->numParticles = 300;
+		ps_c2->color = vec4(1.0, 0.1, 0.4, 1.0f);
+		ps_c2->max_velocity = vec3(-0.01);
+		ps_c2->min_velocity = vec3(-0.03);
+		ps_c2->lifespan = 5.0f;
+		ps_c2->GPUSetup();
+		ps_celebrate2->Disable();
+		rm->addOther("particle_system_c2", ps_celebrate2);
+
+		GameObject* ps_celebrate3 = new GameObject("ps_celebrate3");
+		ParticleSystem* ps_c3 = ps_celebrate3->addComponentOfType<ParticleSystem>();
+		ps_c3->start = vec3(0.0);
+		ps_c3->type = "static";
+		ps_c3->numParticles = 300;
+		ps_c3->color = vec4(0.9, 0.0, 0.9, 1.0f);
+		ps_c3->max_velocity = vec3(-0.05);
+		ps_c3->min_velocity = vec3(-0.1);
+		ps_c3->lifespan = 7.0f;
+		ps_c3->GPUSetup();
+		ps_celebrate3->Disable();
+		rm->addOther("particle_system_c3", ps_celebrate3);
+
+		GameObject* ps_celebrate4 = new GameObject("ps_celebrate4");
+		ParticleSystem* ps_c4 = ps_celebrate4->addComponentOfType<ParticleSystem>();
+		ps_c4->start = vec3(2.0);
+		ps_c4->type = "static";
+		ps_c4->numParticles = 300;
+		ps_c4->color = vec4(1.0, 0.0, 0.0, 1.0f);
+		ps_c4->max_velocity = vec3(-0.01);
+		ps_c4->min_velocity = vec3(-0.06);
+		ps_c4->lifespan = 7.0f;
+		ps_c4->GPUSetup();
+		ps_celebrate4->Disable();
+		rm->addOther("particle_system_c4", ps_celebrate4);
+
+		GameObject* ps_celebrate5 = new GameObject("ps_celebrate5");
+		ParticleSystem* ps_c5 = ps_celebrate5->addComponentOfType<ParticleSystem>();
+		ps_c5->start = vec3(2.0);
+		ps_c5->type = "static";
+		ps_c5->numParticles = 300;
+		ps_c5->color = vec4(0.0, 1.0, 1.0, 1.0f);
+		ps_c5->max_velocity = vec3(-0.02);
+		ps_c5->min_velocity = vec3(-0.08);
+		ps_c5->lifespan = 6.0f;
+		ps_c5->GPUSetup();
+		ps_celebrate5->Disable();
+		rm->addOther("particle_system_c5", ps_celebrate5);
+
+
 		w.addObject(ps_death);
+		w.addObject(ps_celebrate1);
+		w.addObject(ps_celebrate2);
+		w.addObject(ps_celebrate3);
+		w.addObject(ps_celebrate4);
+		w.addObject(ps_celebrate5);
 		w.addObject(player);
 		w.addObject(spawner);
 		w.addObject(camera);
@@ -304,6 +375,8 @@ public:
 		earthMat->t_albedo = earth_albedo;
 
 		GameObject* earth = new GameObject("earth");
+		// earth->transform.position = glm::vec3(0, -30, 0);
+		// earth->transform.scale = glm::vec3(45);
 		earth->transform.position = glm::vec3(0, -12, 0);
 		earth->transform.scale = glm::vec3(10);
 		earth->tag = "planet";
@@ -329,8 +402,10 @@ public:
 		marsMat->t_albedo = mars_albedo;
 
 		GameObject* mars = new GameObject("mars");
-		mars->transform.position = glm::vec3(10, 0, -100);
-		mars->transform.scale = glm::vec3(5);
+		mars->transform.position = glm::vec3(190, 0, -200);
+		mars->transform.scale = glm::vec3(80);
+		// mars->transform.position = glm::vec3(10, 0, -100);
+		// mars->transform.scale = glm::vec3(5);
 		mars->tag = "planet";
 		MeshRenderer* marsMR = mars->addComponentOfType<MeshRenderer>();
 		marsMR->mesh = theMars;
@@ -357,8 +432,10 @@ public:
 		jupiterMat->t_albedo = jupiter_albedo;
 
 		GameObject* jupiter = new GameObject("jupiter");
-		jupiter->transform.position = glm::vec3(-30, 0, -200);
-		jupiter->transform.scale = glm::vec3(30);
+		jupiter->transform.position = glm::vec3(-280, 0, -300);
+		jupiter->transform.scale = glm::vec3(175);
+		// jupiter->transform.position = glm::vec3(-30, 0, -200);
+		// jupiter->transform.scale = glm::vec3(30);
 		jupiter->tag = "planet";
 		MeshRenderer* jupiterMR = jupiter->addComponentOfType<MeshRenderer>();
 		jupiterMR->mesh = theJupiter;
@@ -385,8 +462,10 @@ public:
 		saturnMat->t_albedo = saturn_albedo;
 
 		GameObject* saturn = new GameObject("saturn");
-		saturn->transform.position = glm::vec3(40, 0, -450);
-		saturn->transform.scale = glm::vec3(35);
+		saturn->transform.position = glm::vec3(250, 0, -450);
+		saturn->transform.scale = glm::vec3(150);
+		// saturn->transform.position = glm::vec3(40, 0, -450);
+		// saturn->transform.scale = glm::vec3(35);
 		saturn->tag = "planet";
 		MeshRenderer* saturnMR = saturn->addComponentOfType<MeshRenderer>();
 		saturnMR->mesh = theSaturn;
@@ -413,8 +492,10 @@ public:
 		uranusMat->t_albedo = uranus_albedo;
 
 		GameObject* uranus = new GameObject("uranus");
-		uranus->transform.position = glm::vec3(50, 0, -600);
-		uranus->transform.scale = glm::vec3(25);
+		uranus->transform.position = glm::vec3(120, 0, -700);
+		uranus->transform.scale = glm::vec3(110);
+		// uranus->transform.position = glm::vec3(50, 0, -600);
+		// uranus->transform.scale = glm::vec3(25);
 		uranus->tag = "planet";
 		MeshRenderer* uranusMR = uranus->addComponentOfType<MeshRenderer>();
 		uranusMR->mesh = theUranus;
@@ -441,8 +522,10 @@ public:
 		neptuneMat->t_albedo = neptune_albedo;
 
 		GameObject* neptune = new GameObject("neptune");
-		neptune->transform.position = glm::vec3(-45, 0, -800);
-		neptune->transform.scale = glm::vec3(25);
+		neptune->transform.position = glm::vec3(-120, 0, -800);
+		neptune->transform.scale = glm::vec3(100);
+		// neptune->transform.position = glm::vec3(-45, 0, -800);
+		// neptune->transform.scale = glm::vec3(25);
 		neptune->tag = "planet";
 		MeshRenderer* neptuneMR = neptune->addComponentOfType<MeshRenderer>();
 		neptuneMR->mesh = theNeptune;
@@ -469,8 +552,10 @@ public:
 		plutoMat->t_albedo = pluto_albedo;
 
 		GameObject* pluto = new GameObject("pluto");
-		pluto->transform.position = glm::vec3(5, 0, -1000);
-		pluto->transform.scale = glm::vec3(1);
+		pluto->transform.position = glm::vec3(0, 0, -1000);
+		pluto->transform.scale = glm::vec3(15);
+		// pluto->transform.position = glm::vec3(5, 0, -1000);
+		// pluto->transform.scale = glm::vec3(1);
 		pluto->tag = "planet";
 		MeshRenderer* plutoMR = pluto->addComponentOfType<MeshRenderer>();
 		plutoMR->mesh = thePluto;

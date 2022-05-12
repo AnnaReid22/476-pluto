@@ -6,15 +6,6 @@
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 
-glm::mat4 GetTheProjectionMatrix(WindowManager * windowManager)
-{
-    int width, height;
-    glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-    float aspect = width / (float)height;
-    glm::mat4 Projection = glm::perspective(glm::radians(50.0f), aspect, 0.1f, 200.0f);
-    return Projection;
-}
-
 void ParticleRenderPass::init()
 {
     //initializing the particle system
@@ -40,7 +31,7 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
     Camera* cam = (Camera*)rm->getOther("activeCamera");
     std::vector<GameObject*> partSystems = *(std::vector<GameObject*> *)rm->getOther("particleSystem");
 
-    glm::mat4 P = GetTheProjectionMatrix(windowManager);
+    glm::mat4 P = cam->getCameraProjectionMatrix();
     glm::mat4 V = cam->getCameraViewMatrix();
 
     particleTexture = rm->getUserTextureResource("particleTexture");
@@ -58,12 +49,12 @@ void ParticleRenderPass::execute(WindowManager * windowManager)
     for (GameObject* obj : partSystems)
     {
         Player* pl = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>();
-        glm::vec3 fwd = pl->getForward();
-        glm::mat4 fwdMatrix = glm::translate(glm::mat4(1.0f), fwd);
-        glm::mat4  M = obj->transform.genModelMatrix() + fwdMatrix;
         ParticleSystem* ps = obj->getComponentByType<ParticleSystem>();
         glUniformMatrix4fv(particleProg->getUniform("M"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
-        ps->draw(particleProg);
+        if(obj->isEnabled)
+        {
+            ps->draw(particleProg);
+        }
     }
 
     glBlendFunc(GL_ONE, GL_ZERO);
