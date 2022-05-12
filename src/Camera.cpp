@@ -47,12 +47,13 @@ glm::mat4 Camera::getCameraViewMatrix()
     glm::vec3 rocketFwd = rocket->getForward();
     return glm::lookAt(pos, rocketPos, upVector);
 }
+
 glm::mat4 Camera::getCameraProjectionMatrix()
 {
     int width, height;
     glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
     float aspect = width / (float)height;
-    glm::mat4 p = glm::perspective(glm::radians(50.0f), aspect, 0.1f, 200.0f);
+    glm::mat4 p = glm::perspective(glm::radians(50.0f), aspect, 0.1f, 1000.0f);
     return p;
 }
 

@@ -3,6 +3,7 @@
 #include "ParticleSystem.h"
 #include "ResourceManager.h"
 #include "MeshRenderer.h"
+#include "World.h"
 #include <iostream>
 #define PI 3.14159265
 
@@ -18,7 +19,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     dollyF = false;
 
     // Speed for any of the above movements
-    speed = -10.0f;
+    speed = -7.0f;
 
     // Rocket rotation sensitivity
     sensitivity = 0.1;
@@ -67,17 +68,56 @@ void Player::Update()
 */
 void Player::OnCollide(GameObject* other) 
 {
-    if (other->tag == "planet")
+    if (other->tag == "planet" && other->name != "pluto" || other->name == "asteroid")
     {
         stop = true;
         MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
         rocket_mesh->Disable();
         
         GameObject* ps = (GameObject*)rm_->getOther("particle_system_death");
+        
         ps->transform = this->gameObject->transform;
         ps->Enable();
         ParticleSystem* ps_obj = ps->getComponentByType<ParticleSystem>();
         ps_obj->start = this->gameObject->transform.position;
+
+        std::cout << "You crashed :(" << std::endl;
+    }
+    if (other->name == "pluto")
+    {
+        stop = true;
+        
+        GameObject* ps1 = (GameObject*)rm_->getOther("particle_system_c1");
+        ps1->transform = this->gameObject->transform;
+        ps1->Enable();
+        ParticleSystem* ps_obj1 = ps1->getComponentByType<ParticleSystem>();
+        ps_obj1->start = this->gameObject->transform.position + vec3(1.5f, 0.0f, 0.0f);
+
+        GameObject* ps2 = (GameObject*)rm_->getOther("particle_system_c2");
+        ps2->transform = this->gameObject->transform;
+        ps2->Enable();
+        ParticleSystem* ps_obj2 = ps2->getComponentByType<ParticleSystem>();
+        ps_obj2->start = this->gameObject->transform.position + vec3(-1.5f, 0.0f, 0.0f);
+
+        GameObject* ps3 = (GameObject*)rm_->getOther("particle_system_c3");
+        ps3->transform = this->gameObject->transform;
+        ps3->Enable();
+        ParticleSystem* ps_obj3 = ps3->getComponentByType<ParticleSystem>();
+        ps_obj3->start = this->gameObject->transform.position + vec3(0.0f, 1.0f, 0.0f);
+
+        GameObject* ps4 = (GameObject*)rm_->getOther("particle_system_c4");
+        ps4->transform = this->gameObject->transform;
+        ps4->Enable();
+        ParticleSystem* ps_obj4 = ps4->getComponentByType<ParticleSystem>();
+        ps_obj4->start = this->gameObject->transform.position + vec3(0.7f, -1.0f, 0.0f);
+
+        GameObject* ps5 = (GameObject*)rm_->getOther("particle_system_c5");
+        ps5->transform = this->gameObject->transform;
+        ps5->Enable();
+        ParticleSystem* ps_obj5 = ps5->getComponentByType<ParticleSystem>();
+        ps_obj5->start = this->gameObject->transform.position + vec3(-0.7f, -1.0f, 0.0f);
+
+        std::cout << "YOU WON!!" << std::endl;
     }
 }
 

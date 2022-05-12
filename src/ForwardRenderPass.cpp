@@ -70,7 +70,7 @@ void ForwardRenderPass::execute(WindowManager * windowManager)
 
     skyProg->bind();
 
-    glm::mat4 SkyMat = GetProjectionMatrix(windowManager)* cam->getCameraRotationMatrix();
+    glm::mat4 SkyMat = cam->getCameraProjectionMatrix() * cam->getCameraRotationMatrix();
 
     glUniformMatrix4fv(skyProg->getUniform("SkyMat"), 1, GL_FALSE, glm::value_ptr(SkyMat));
     glUniform1f(skyProg->getUniform("time"), Time::getInstance()->getGlobalTime());
@@ -88,7 +88,7 @@ void ForwardRenderPass::execute(WindowManager * windowManager)
     skyProg->unbind();
     prog->bind();
 
-    glm::mat4 P = GetProjectionMatrix(windowManager);
+    glm::mat4 P = cam->getCameraProjectionMatrix();
     glm::mat4 V = cam->getCameraViewMatrix();
     glm::mat4 M = glm::mat4(1);
 
