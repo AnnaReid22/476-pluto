@@ -19,7 +19,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     dollyF = false;
 
     // Speed for any of the above movements
-    speed = -2.0f;
+    speed = -7.0f;
 
     // Rocket rotation sensitivity
     sensitivity = 0.1;
@@ -68,7 +68,7 @@ void Player::Update()
 */
 void Player::OnCollide(GameObject* other) 
 {
-    if (other->tag == "planet" && other->name != "pluto")
+    if (other->tag == "planet" && other->name != "pluto" || other->name == "asteroid")
     {
         stop = true;
         MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
