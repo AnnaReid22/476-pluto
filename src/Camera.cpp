@@ -2,6 +2,8 @@
 #include "Time.h"
 #include "GameObject.h"
 #include "ResourceManager.h"
+#define PI 3.14159265
+
 
 #include <iostream>
 
@@ -24,7 +26,7 @@ Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 */
 void Camera::setUpCam()
 {
-    float f = 0.01;
+    float f = 0.08;//0.01;
     pos = pos + ((rocket->getPosition() + rocket->getForward() * camDist) - pos) * f;
 }
 
@@ -32,6 +34,8 @@ void Camera::setUpCam()
 void Camera::Update()
 {
     setUpCam();
+    //upVector = glm::vec4(0, 1, 0, 0) * glm::rotate(glm::mat4(1.f), rocket->getXRotation(), glm::vec3(1, 0, 0));
+
 }
 
 /*

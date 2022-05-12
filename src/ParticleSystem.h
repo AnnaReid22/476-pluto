@@ -4,6 +4,8 @@
 #include "Particle.h"
 #include "Program.h"
 
+#include <memory>
+
 class ParticleSystem :
     public Component
 {

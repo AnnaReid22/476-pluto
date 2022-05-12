@@ -221,7 +221,7 @@ public:
 		//player loader
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
-		player->transform.scale = glm::vec3(0.8);
+		player->transform.scale = glm::vec3(0.4);
 		GameObject* camera = new GameObject("camera");
 		Camera* cam = camera->addComponentOfType<Camera>();
 		cam->rocket = pl;
