@@ -34,6 +34,7 @@ Z. Wood + S. Sueda
 #include "ParticleRenderPass.h"
 #include "ParticleSystem.h"
 #include "DeferredSamplingPass.h"
+#include "DeferredLightingPass.h"
 
 using namespace std;
 using namespace glm;
@@ -161,8 +162,9 @@ public:
 		rm->addOther("WindowManager", windowManager);
 
 		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
-		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
-		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
+		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
+		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
+		//rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		// add render passes with more shaders here
 	}
 

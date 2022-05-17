@@ -11,42 +11,41 @@ void DeferredSamplingPass::init()
     float width = rm->getNumericalValue("screenWidth");
     float height = rm->getNumericalValue("screenHeight");
 
-    glGenTextures(1, &gColor);
-    glBindTexture(GL_TEXTURE_2D, gColor);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-    glGenerateMipmap(GL_TEXTURE_2D);
+   
+    glGenFramebuffers(1, &deferredFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO);
+    
 
+    // - position buffer
     glGenTextures(1, &gBuffer);
     glBindTexture(GL_TEXTURE_2D, gBuffer);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_BGRA, GL_FLOAT, NULL);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gBuffer, 0);
+    
+    // - normal buffer
     glGenTextures(1, &gNormal);
     glBindTexture(GL_TEXTURE_2D, gNormal);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_BGRA, GL_FLOAT, NULL);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glGenBuffers(1, &deferredFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gBuffer, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+    
+    // - color buffer
+    glGenTextures(1, &gColor);
+    glBindTexture(GL_TEXTURE_2D, gColor);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColor, 0);
+
     glGenRenderbuffers(1, &depthRenderBuffer);
+    //set up depth necessary as rendering a mesh that needs depth test
     glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
+    
 
     rm->addRenderTextureResource("gBuffer", gBuffer);
     rm->addRenderTextureResource("gNormal", gNormal);
@@ -60,10 +59,12 @@ void DeferredSamplingPass::init()
     prog->addUniform("V");
     prog->addUniform("M");
     prog->addUniform("albedoMap");
-    prog->addUniform("normalMap");
+    //prog->addUniform("normalMap");
     prog->addAttribute("vertPos");
     prog->addAttribute("vertNor");
     prog->addAttribute("vertTex");
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void DeferredSamplingPass::execute(WindowManager* windowManager)
@@ -73,7 +74,7 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
     GLenum buffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
     glDrawBuffers(3, buffers);
 
-    glClearColor(0.12f, 0.34f, 0.56f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Get current frame buffer size.
     int width, height;
@@ -105,12 +106,12 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
         glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
 
         mat->t_albedo->bind(prog->getUniform("albedoMap"));
-        mat->t_normal->bind(prog->getUniform("normalMap"));
+        //mat->t_normal->bind(prog->getUniform("normalMap"));
 
         mesh->draw(prog);
 
         mat->t_albedo->unbind();
-        mat->t_normal->unbind();
+        //mat->t_normal->unbind();
     }
 
     prog->unbind();
