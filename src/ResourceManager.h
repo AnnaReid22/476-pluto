@@ -58,12 +58,12 @@ public:
 template<typename T>
 inline T ResourceManager::getGeneric(std::string name, std::unordered_map<std::string, T> mapToSearch)
 {
-    try {
-        return mapToSearch.at(name);
-    }
-    catch (int num)
+
+    if (mapToSearch.find(name) == mapToSearch.end())
     {
         std::cout << "Requested resource: " << name << " is not known by the Resource Manager." << std::endl;
-        exit(num);
+        exit(0);
     }
+
+    return mapToSearch.at(name);
 }
