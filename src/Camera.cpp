@@ -45,7 +45,9 @@ glm::mat4 Camera::getCameraViewMatrix()
 {
     glm::vec3 rocketPos = rocket->getPosition();
     glm::vec3 rocketFwd = rocket->getForward();
-    return glm::lookAt(pos, rocketPos, upVector);
+    glm::vec3 posAbove = rocket->getPosition() + rocket->getForward() * camDist;
+    posAbove = glm::vec3(posAbove.x, posAbove.y + 3.0f, posAbove.z + 3.0f);
+    return glm::lookAt(posAbove, rocketPos, upVector);
 }
 
 glm::mat4 Camera::getCameraProjectionMatrix()

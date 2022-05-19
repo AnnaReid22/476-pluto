@@ -12,7 +12,7 @@ private:
     double currentXPos, currentYPos, initXPos, initYPos;
     double deltaXPos, deltaYPos;
     float sensitivity;
-    glm::vec3 rotation, fwd;
+    glm::vec3 rotation, fwd, originalScale;
     
     float speed;
     float bulletCooldown;
@@ -25,6 +25,8 @@ public:
     // Movement variables
     bool dollyF;
     bool dollyB;
+    float dollyFTime;
+    bool prevDollyF;
     bool stop;
     bool shoot;
 

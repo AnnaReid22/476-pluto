@@ -8,6 +8,7 @@
 #include "World.h"
 #include <iostream>
 #define PI 3.14159265
+#define MAXDOLLYFTIME 1.3
 
 ResourceManager* rm_ = ResourceManager::getInstance();
 
@@ -19,6 +20,8 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     // Move forward and backwards
     dollyB = false;
     dollyF = false;
+    prevDollyF = false;
+    dollyFTime = 0;
 
     // Speed for any of the above movements
     speed = -7.0f;
@@ -41,6 +44,11 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     // Instance of InputManager
     input = input->getInstance();
 
+    // Store the original transform information
+    originalScale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    //std::cout << "Original Transform: " << originalTransform.x << ", " << originalTransform.y << ", " << originalTransform.z << std::endl;
+
 }
 
 /*
@@ -49,6 +57,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
 void Player::Start()
 {
     this->gameObject->transform.position = glm::vec3(0, 0, -4);
+    this->gameObject->transform.scale = originalScale;
 }
 
 /*
@@ -154,8 +163,18 @@ void Player::updateMoveVars()
     initYPos = currentYPos;
     
     // Update movement variables
+
     dollyF = input->GetKey(GLFW_KEY_W);
-    dollyB = input->GetKey(GLFW_KEY_S);
+    if (dollyF && dollyFTime < MAXDOLLYFTIME)
+    {
+        Time* time = time->getInstance();
+        dollyFTime += time->getFrametime();
+    }
+    else if(!dollyF)
+    {
+        dollyFTime = 0;
+    }
+    //dollyB = input->GetKey(GLFW_KEY_S);
 }
 
 /*
@@ -169,9 +188,33 @@ void Player::moveRocket()
 
     // Determine direction of rocket movement
     glm::vec3 rocketMove = glm::vec3(0.0f, 0.0f, 0.0f);
+   
+    float t = dollyFTime;
+    if (t > 1.2)
+    {
+        t = 1.2;
+    }
+    float widthChange = 2 - (3 * pow((t - 0.52), 2) + 0.2);
+
+    if (t > 1.033)
+    {
+        t = 1.033;
+    }
+
+    float squashCalculation = 3 * pow((t - 0.52), 2) + 0.2;
+    this->gameObject->transform.scale.x = widthChange;
+    this->gameObject->transform.scale.z = widthChange;
+    this->gameObject->transform.scale.y = squashCalculation;
+    std::cout << this->gameObject->transform.scale.x << ", " << this->gameObject->transform.scale.y << ", " << this->gameObject->transform.scale.z << std::endl;
+    //this->gameObject->transform.scale.x = 1.0f;
+    //this->gameObject->transform.scale.y = 1.0f;
+    //this->gameObject->transform.scale.z = 1.0f;
+   
+
     if (dollyF)
     {
         rocketMove.y += frametime * speed;
+        
     }
     if (dollyB)
     {
@@ -194,6 +237,7 @@ void Player::moveRocket()
         rotation.x = glm::radians(-170.0);
     }
 
+
     // Used to calculate position
     //glm::mat4 rotMat = glm::rotate(glm::mat4(1.f), rotation.x, glm::vec3(1, 0, 0)) * glm::rotate(glm::mat4(1.f), rotation.y, glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.f), (float) - PI / 2.0f, glm::vec3(1, 0, 0));
     glm::mat4 rotMat = glm::rotate(glm::mat4(1.f), rotation.y, glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.f), rotation.x, glm::vec3(1, 0, 0));
@@ -208,6 +252,7 @@ void Player::moveRocket()
     // Update the Rocket's Transform position matrix and rotation quaternion
     this->gameObject->transform.position -= glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
     this->gameObject->transform.rotation = glm::quat(rotMat);
+   
 
     bulletCooldown -= Time::getInstance()->getFrametime();
     if (InputManager::getInstance()->GetKey(GLFW_KEY_E) && bulletCooldown <= 0)
@@ -225,7 +270,7 @@ void Player::moveRocket()
         mat->t_albedo = rm->getUserTextureResource("particleTexture");
         meshRenderer->material = mat;
         PhysicsObject* physicsObject = bullet->addComponentOfType<PhysicsObject>();
-        physicsObject->vel = this->getForward() * -10.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
+        physicsObject->vel = this->getForward() * speed + this->getForward() * -10.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
         physicsObject->acc = glm::vec3(0.0f);
 
         gameObject->world->addObject(bullet);
