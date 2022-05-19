@@ -16,6 +16,7 @@ private:
     
     float speed;
     float bulletCooldown;
+    float stopTime;
 
     // Rocket movement vectors
     void updateMoveVars();

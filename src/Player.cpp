@@ -22,6 +22,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     dollyF = false;
     prevDollyF = false;
     dollyFTime = 0;
+    stopTime = 0;
 
     // Speed for any of the above movements
     speed = -7.0f;
@@ -165,15 +166,25 @@ void Player::updateMoveVars()
     // Update movement variables
 
     dollyF = input->GetKey(GLFW_KEY_W);
+    Time* time = time->getInstance();
     if (dollyF && dollyFTime < MAXDOLLYFTIME)
     {
-        Time* time = time->getInstance();
         dollyFTime += time->getFrametime();
     }
     else if(!dollyF)
     {
+        if (prevDollyF)
+        {
+            stopTime = 1.3;
+        }
+        else if (stopTime > 0)
+        {
+            stopTime -= time->getFrametime();
+        }
         dollyFTime = 0;
+
     }
+    prevDollyF = dollyF;
     //dollyB = input->GetKey(GLFW_KEY_S);
 }
 
@@ -189,7 +200,16 @@ void Player::moveRocket()
     // Determine direction of rocket movement
     glm::vec3 rocketMove = glm::vec3(0.0f, 0.0f, 0.0f);
    
-    float t = dollyFTime;
+    float t;
+    if (dollyFTime > 0)
+    {
+        t = dollyFTime;
+    }
+    else
+    {
+        t = stopTime;
+    }
+    //float t = dollyFTime;
     if (t > 1.2)
     {
         t = 1.2;
@@ -206,10 +226,7 @@ void Player::moveRocket()
     this->gameObject->transform.scale.z = widthChange;
     this->gameObject->transform.scale.y = squashCalculation;
     std::cout << this->gameObject->transform.scale.x << ", " << this->gameObject->transform.scale.y << ", " << this->gameObject->transform.scale.z << std::endl;
-    //this->gameObject->transform.scale.x = 1.0f;
-    //this->gameObject->transform.scale.y = 1.0f;
-    //this->gameObject->transform.scale.z = 1.0f;
-   
+  
 
     if (dollyF)
     {
