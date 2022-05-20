@@ -164,7 +164,7 @@ public:
 		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
 		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
-		//rp.addRenderPass(std::make_shared<ParticleRenderPass>());
+		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		// add render passes with more shaders here
 	}
 
@@ -266,7 +266,7 @@ public:
 
 		//add particle system texture
 		particleTexture = make_shared<Texture>();
-		particleTexture->setFilename(resourceDirectory + "/particle.bmp");
+		particleTexture->setFilename(resourceDirectory + "/fire.png");
 		particleTexture->init();
 		particleTexture->setUnit(0);
 		particleTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
