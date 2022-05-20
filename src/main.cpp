@@ -266,7 +266,7 @@ public:
 
 		//add particle system texture
 		particleTexture = make_shared<Texture>();
-		particleTexture->setFilename(resourceDirectory + "/fire.png");
+		particleTexture->setFilename(resourceDirectory + "/particle.bmp");
 		particleTexture->init();
 		particleTexture->setUnit(0);
 		particleTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
