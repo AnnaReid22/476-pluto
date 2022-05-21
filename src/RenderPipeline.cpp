@@ -10,7 +10,10 @@ RenderPipeline::RenderPipeline(WindowManager* wm)
 
 std::vector<GameObject*> RenderPipeline::viewFrustumCull(std::vector<GameObject*> objectsToRender, Camera* cam)
 {
-    glm::mat4 PV = cam->getCameraProjectionMatrix() * cam->getCameraViewMatrix();
+    int width, height;
+    glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+    float aspect = width / (float)height;
+    glm::mat4 PV = glm::perspective(glm::radians(50.0f), aspect, 0.01f, 1000.0f) * cam->getCameraViewMatrix();// cam->getCameraProjectionMatrix() * cam->getCameraViewMatrix();
      
     glm::vec4 left =   glm::vec4(PV[0][3] + PV[0][0], PV[1][3] + PV[1][0], PV[2][3] + PV[2][0], PV[3][3] + PV[3][0]);
     glm::vec4 right =  glm::vec4(PV[0][3] - PV[0][0], PV[1][3] - PV[1][0], PV[2][3] - PV[2][0], PV[3][3] - PV[3][0]);
@@ -31,23 +34,25 @@ std::vector<GameObject*> RenderPipeline::viewFrustumCull(std::vector<GameObject*
     std::vector<GameObject*> objectsToDraw;
     for (int i = 0; i < objectsToRender.size(); i++)
     {
-        std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
-        glm::vec3 center = objectsToRender[i]->transform.position + mesh->getCenter();
-        float radius = mesh->getRadius() * (glm::max)(objectsToRender[i]->transform.scale.x, (glm::max)(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
-
-        bool cullable = false;
-        for (int j = 0; j < 6; j++)
-        {
-            float dist = planes[j].x * center.x + planes[j].y * center.y + planes[j].z * center.z + planes[j].w;
-            if (dist + radius < 0)
+        
+            std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
+            glm::vec3 center = objectsToRender[i]->transform.position + mesh->getCenter();
+            float radius = mesh->getRadius() * (glm::max)(objectsToRender[i]->transform.scale.x, (glm::max)(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
+    std::cout << "center: " << objectsToRender[i]->name << " " << center.x << ", " << center.y << ", " << center.z << std::endl;
+            bool cullable = false;
+            for (int j = 0; j < 6; j++)
             {
-                cullable = true;
-                break;
+                    float dist = planes[j].x * center.x + planes[j].y * center.y + planes[j].z * center.z + planes[j].w;
+                    if (dist + radius < 0)
+                    {
+                        cullable = true;
+                        break;
+                    }
             }
-        }
-        if (!cullable) {
-            objectsToDraw.push_back(objectsToRender[i]);
-        }
+            if (!cullable) {
+                objectsToDraw.push_back(objectsToRender[i]);
+            }
+        
     }
     return objectsToDraw;
 }
@@ -63,9 +68,9 @@ void RenderPipeline::executePipeline()
 {
     Camera* cam = (Camera*)rm->getOther("activeCamera");
     std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
-    renderables = viewFrustumCull(renderables, cam);
+    //renderables = viewFrustumCull(renderables, cam);
 
-    rm->addOther("renderables", &renderables);
+    //rm->addOther("renderables", &renderables);
 
     for (std::shared_ptr<IShader> pass : renderPasses)
         pass->execute(windowManager);

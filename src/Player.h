@@ -2,6 +2,7 @@
 #include "WindowManager.h"
 #include "Component.h"
 #include "InputManager.h"
+#include "Shape.h"
 
 class Player : public Component
 {
@@ -49,5 +50,12 @@ public:
     glm::vec3 getForward();
     glm::quat getRotation();
     float getXRotation();
+
+    // Rockets fin mesh
+    std::shared_ptr<Shape> finMesh;
+
+    GameObject* fin1;
+    GameObject* fin2;
+    GameObject* fin3;
 };
 

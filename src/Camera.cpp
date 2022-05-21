@@ -47,7 +47,7 @@ glm::mat4 Camera::getCameraViewMatrix()
     glm::vec3 rocketFwd = rocket->getForward();
     glm::vec3 posAbove = rocket->getPosition() + rocket->getForward() * camDist;
     posAbove = glm::vec3(posAbove.x, posAbove.y + 3.0f, posAbove.z + 3.0f);
-    return glm::lookAt(posAbove, rocketPos, upVector);
+    return glm::lookAt(pos, rocketPos, upVector);
 }
 
 glm::mat4 Camera::getCameraProjectionMatrix()
@@ -55,7 +55,7 @@ glm::mat4 Camera::getCameraProjectionMatrix()
     int width, height;
     glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
     float aspect = width / (float)height;
-    glm::mat4 p = glm::perspective(glm::radians(50.0f), aspect, 0.1f, 1000.0f);
+    glm::mat4 p = glm::perspective(glm::radians(50.0f), aspect, 0.01f, 1000.0f);
     return p;
 }
 

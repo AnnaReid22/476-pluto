@@ -59,6 +59,7 @@ void Player::Start()
 {
     this->gameObject->transform.position = glm::vec3(0, 0, -4);
     this->gameObject->transform.scale = originalScale;
+    //fin1->transform.scale = glm::vec3(0.4, 0.4, 0.4);
 }
 
 /*
@@ -131,6 +132,7 @@ void Player::OnCollide(GameObject* other)
 
         std::cout << "YOU WON!!" << std::endl;
     }
+    //stop = false;
 }
 
 
@@ -268,7 +270,28 @@ void Player::moveRocket()
 
     // Update the Rocket's Transform position matrix and rotation quaternion
     this->gameObject->transform.position -= glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
-    this->gameObject->transform.rotation = glm::quat(rotMat);
+    this->gameObject->transform.rotation = glm::quat(1.0, 0.0, 0.0, 0.0);//glm::quat(rotMat); // glm::quat(1.0, 0.0, 0.0, 0.0);
+
+    fin1->transform.position = glm::vec3(0.4, -0.78, 0.15);
+    fin1->transform.rotation = glm::vec3(0.0f, glm::radians(-130.0f), 0.0f);//glm::radians(10.0f));
+    fin1->transform.scale = glm::vec3(0.5, 0.5, 0.5);
+
+    fin2->transform.position = glm::vec3(-0.4, -0.78, 0.15);
+    fin2->transform.rotation = glm::vec3(0.0f, glm::radians(130.0f), 0.0f);//glm::radians(-10.0f));
+    fin2->transform.scale = glm::vec3(0.5, 0.5, 0.5);
+
+    fin3->transform.position = glm::vec3(0.0, -0.7, -0.4);
+    fin3->transform.rotation = glm::vec3(0.0f, glm::radians(0.0f), glm::radians(0.0f));
+    fin3->transform.scale = glm::vec3(0.5, 0.5, 0.5);
+    
+
+    //fin1->transform.position = glm::vec3(1, 0, 1);
+    std::cout << "fin1: " << fin1 << std::endl;
+    std::cout << "player: " << this->gameObject << std::endl;
+    glm::mat4 MPlayer = this->gameObject->transform.genModelMatrix();
+    glm::mat4 MFin = this->gameObject->transform.genModelMatrix();
+    
+
    
 
     bulletCooldown -= Time::getInstance()->getFrametime();

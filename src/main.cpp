@@ -48,6 +48,7 @@ public:
 	shared_ptr<Shape> asteroid_shapes[15];
 	shared_ptr<Shape> mesh;
 	shared_ptr<Shape> theRocket;
+	shared_ptr<Shape> theFin;
 	shared_ptr<Shape> texcube;
 	shared_ptr<Shape> texSphere;
 	shared_ptr<Shape> theEarth;
@@ -59,6 +60,7 @@ public:
 	shared_ptr<Shape> thePluto;
 
 	shared_ptr<Texture> rocket_albedo;
+	shared_ptr<Texture> fin_albedo;
 	shared_ptr<Texture> grass_albedo;
 	shared_ptr<Texture> asteroid_albedo;
 	shared_ptr<Texture> sky_albedo;
@@ -73,6 +75,7 @@ public:
 	shared_ptr<Texture> particleTexture;
 	
 	shared_ptr<Material> rocketMat;
+	shared_ptr<Material> finMat;
 	shared_ptr<Material> groundMat;
 	shared_ptr<Material> asteroidMat;
 	shared_ptr<Material> skyMat;
@@ -158,18 +161,33 @@ public:
 
 		//rocket loader
 		theRocket = make_shared<Shape>();
-		theRocket->loadMesh(resourceDirectory + "/rocket.obj");
+		theRocket->loadMesh(resourceDirectory + "/rocketBody.obj");
         theRocket->resize();
         theRocket->init();
 
 		rocket_albedo = make_shared<Texture>();
-		rocket_albedo->setFilename(resourceDirectory + "/flowers.jpg");
+		rocket_albedo->setFilename(resourceDirectory + "/gray.jfif");
 		rocket_albedo->init();
 		rocket_albedo->setUnit(0);
 		rocket_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
 		rocketMat = make_shared<Material>();
 		rocketMat->t_albedo = rocket_albedo;
+
+		//rocket fin's loader
+		theFin = make_shared<Shape>();
+		theFin->loadMesh(resourceDirectory + "/fin.obj");
+		theFin->resize();
+		theFin->init();
+
+		fin_albedo = make_shared<Texture>();
+		fin_albedo->setFilename(resourceDirectory + "/gray.jfif");
+		fin_albedo->init();
+		fin_albedo->setUnit(0);
+		fin_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		finMat = make_shared<Material>();
+		finMat->t_albedo = fin_albedo;
 
 		//asteroid loader
 		asteroid_albedo = make_shared<Texture>();
@@ -221,7 +239,8 @@ public:
 		//player loader
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
-		player->transform.scale = glm::vec3(0.4);
+		//pl->finMesh = theFin;
+		player->transform.scale = glm::vec3(1.0f);
 		GameObject* camera = new GameObject("camera");
 		Camera* cam = camera->addComponentOfType<Camera>();
 		cam->rocket = pl;
@@ -237,6 +256,47 @@ public:
 		BoundingSphereCollider* bsc2 = player->addComponentOfType <BoundingSphereCollider>();
 
 		w.addObject(player);
+
+		// fin loader
+		// fin1
+		GameObject* fin1Object = new GameObject("fin");
+		fin1Object->transform.scale = glm::vec3(1.0f);
+		fin1Object->parent = true;
+		fin1Object->parentObj = player;
+		MeshRenderer* fin1Mesh = fin1Object->addComponentOfType<MeshRenderer>();
+		fin1Mesh->mesh = theFin;
+		fin1Mesh->material = finMat;
+		rm->addOther("fin1_game_object", fin1Object);
+		BoundingSphereCollider* fin1Collider = fin1Object->addComponentOfType <BoundingSphereCollider>();
+		w.addObject(fin1Object);
+		pl->fin1 = fin1Object;
+
+		// fin2
+		GameObject* fin2Object = new GameObject("fin");
+		fin2Object->transform.scale = glm::vec3(1.0f);
+		fin2Object->parent = true;
+		fin2Object->parentObj = player;
+		MeshRenderer* fin2Mesh = fin2Object->addComponentOfType<MeshRenderer>();
+		rm->addOther("fin2_game_object", fin2Object);
+		fin2Mesh->mesh = theFin;
+		fin2Mesh->material = finMat;
+		BoundingSphereCollider* fin2Collider = fin2Object->addComponentOfType <BoundingSphereCollider>();
+		w.addObject(fin2Object);
+		pl->fin2 = fin2Object;
+
+		// fin3
+		GameObject* fin3Object = new GameObject("fin");
+		fin3Object->transform.scale = glm::vec3(1.0f);
+		fin3Object->parent = true;
+		fin3Object->parentObj = player;
+		MeshRenderer* fin3Mesh = fin3Object->addComponentOfType<MeshRenderer>();
+		rm->addOther("fin3_game_object", fin3Object);
+		fin3Mesh->mesh = theFin;
+		fin3Mesh->material = finMat;
+		BoundingSphereCollider* fin3Collider = fin3Object->addComponentOfType <BoundingSphereCollider>();
+		w.addObject(fin3Object);
+		pl->fin3 = fin3Object;
+		
 
 		//enemy loader
 		GameObject* spawner = new GameObject("spawner");
