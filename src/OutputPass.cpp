@@ -1,4 +1,5 @@
 #include "OutputPass.h"
+#include "Camera.h"
 
 /**** geometry set up for a quad *****/
 void OutputPass::initQuad() {
@@ -32,8 +33,10 @@ void OutputPass::init()
 	prog->setShaderNames("../shaders/deferred_pass_vert.glsl", "../shaders/output_frag.glsl");
 	prog->init();
 	prog->addUniform("gLightOutput");
+	prog->addUniform("psColorOutput");
+	prog->addUniform("psPositionOutput");
+	prog->addUniform("V");
 	prog->addUniform("gBuffer");
-	prog->addUniform("skyboxRenderTexture");
 
 	initQuad();
 }
@@ -42,8 +45,12 @@ void OutputPass::execute(WindowManager* windowManager)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GLuint gLightOutput = rm->getRenderTextureResource("gLightOutput");
+	GLuint psColorOutput = rm->getRenderTextureResource("psColorOutput");
+	GLuint psPositionOutput = rm->getRenderTextureResource("psPositionOutput");
 	GLuint gBuffer = rm->getRenderTextureResource("gBuffer");
-	GLuint skyboxRenderTexture = rm->getRenderTextureResource("skyboxRenderTexture");
+
+	Camera* cam = (Camera*)rm->getOther("activeCamera");
+    glm::mat4 V = cam->getCameraViewMatrix();
 
 	int width, height;
 
@@ -59,15 +66,25 @@ void OutputPass::execute(WindowManager* windowManager)
 
 
 	prog->bind();
+
+
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, gLightOutput);
-		glUniform1i(prog->getUniform("gLightOutput"), 0);
+		glBindTexture(GL_TEXTURE_2D, psColorOutput);
+		glUniform1i(prog->getUniform("psColorOutput"), 0);
+
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, gBuffer);
-		glUniform1i(prog->getUniform("gBuffer"), 1);
+		glBindTexture(GL_TEXTURE_2D, gLightOutput);
+		glUniform1i(prog->getUniform("gLightOutput"), 1);
+
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, skyboxRenderTexture);
-		glUniform1i(prog->getUniform("skyboxRenderTexture"), 2);
+		glBindTexture(GL_TEXTURE_2D, psPositionOutput);
+		glUniform1i(prog->getUniform("psPositionOutput"), 2);
+
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, gBuffer);
+		glUniform1i(prog->getUniform("gBuffer"), 3);
+
+		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);

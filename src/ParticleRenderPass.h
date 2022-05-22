@@ -18,6 +18,12 @@ public:
         rm = rm->getInstance();
     };
 
+    GLuint particleSysFBO;
+    GLuint psPositionOutput;
+    GLuint psColorOutput;
+
+    GLuint quad_VertexArrayID, quad_vertexbuffer;
+
     std::shared_ptr<Texture> particleTexture;
 
     void init();
