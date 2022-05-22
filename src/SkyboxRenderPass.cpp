@@ -18,21 +18,21 @@ void SkyboxRenderPass::init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, colorBuffer, 0);
 
-    rm->addRenderTextureResource("skyboxRenderTexture", colorBuffer);
+    rm->addRenderTextureResource("skyColorOutput", colorBuffer);
 
 		texSphere = std::make_shared<Shape>();
-		texSphere->loadMesh("resources/texCube.obj");
+		texSphere->loadMesh("../resources/texCube.obj");
 		texSphere->resize();
 		texSphere->init();
 
 		sky_texture_albedo = std::make_shared<Texture>();
-    sky_texture_albedo->setFilename("resources/spaceSkybox.jpg");
+    sky_texture_albedo->setFilename("../resources/spaceSkybox.jpg");
     sky_texture_albedo->init();
     sky_texture_albedo->setUnit(0);
     sky_texture_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		sky_noise_albedo = std::make_shared<Texture>();
-		sky_noise_albedo->setFilename("resources/twinkle_noise.jpg");
+		sky_noise_albedo->setFilename("../resources/twinkle_noise.jpg");
 		sky_noise_albedo->init();
 		sky_noise_albedo->setUnit(0);
 		sky_noise_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
@@ -70,26 +70,20 @@ void SkyboxRenderPass::execute(WindowManager* windowManager) {
     // Clear framebuffer.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float aspect = width / (float)height;
-
     Camera* cam = (Camera*)rm->getOther("activeCamera");
-
-    prog->bind();
 
     glm::mat4 SkyMat = cam->getCameraProjectionMatrix() * cam->getCameraRotationMatrix();
 
+    prog->bind();
+
     glUniformMatrix4fv(prog->getUniform("SkyMat"), 1, GL_FALSE, glm::value_ptr(SkyMat));
     glUniform1f(prog->getUniform("time"), Time::getInstance()->getGlobalTime());
-
-    glDisable(GL_DEPTH_TEST);
 
     sky_texture_albedo->bind(prog->getUniform("Texture0"));
     sky_noise_albedo->bind(prog->getUniform("TwinkleNoise"));
     texSphere->draw(prog);
     sky_noise_albedo->unbind();
     sky_texture_albedo->unbind();
-
-    glEnable(GL_DEPTH_TEST);
 
     prog->unbind();
 

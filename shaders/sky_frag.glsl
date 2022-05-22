@@ -36,6 +36,8 @@ void main()
 
 
 		outColor = vec4(col, 1);
+		outColor = vec4(1, 0, 0, 1);
+		//outColor = vec4(1);
 		//random rgb
 		//time
 		//col

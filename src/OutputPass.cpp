@@ -35,8 +35,11 @@ void OutputPass::init()
 	prog->addUniform("gLightOutput");
 	prog->addUniform("psColorOutput");
 	prog->addUniform("psPositionOutput");
+	prog->addUniform("skyColorOutput");
 	prog->addUniform("V");
 	prog->addUniform("gBuffer");
+
+	
 
 	initQuad();
 }
@@ -44,6 +47,7 @@ void OutputPass::init()
 void OutputPass::execute(WindowManager* windowManager)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	GLuint skyColorOutput = rm->getRenderTextureResource("skyColorOutput");
 	GLuint gLightOutput = rm->getRenderTextureResource("gLightOutput");
 	GLuint psColorOutput = rm->getRenderTextureResource("psColorOutput");
 	GLuint psPositionOutput = rm->getRenderTextureResource("psPositionOutput");
@@ -83,6 +87,10 @@ void OutputPass::execute(WindowManager* windowManager)
 		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, gBuffer);
 		glUniform1i(prog->getUniform("gBuffer"), 3);
+
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, skyColorOutput);
+		glUniform1i(prog->getUniform("skyColorOutput"), 4);
 
 		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
 
