@@ -10,6 +10,7 @@ Z. Wood + S. Sueda
 #include "Shape.h"
 #include "MatrixStack.h"
 #include "WindowManager.h"
+#include "SkyboxRenderPass.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -51,7 +52,6 @@ public:
 	shared_ptr<Shape> mesh;
 	shared_ptr<Shape> theRocket;
 	shared_ptr<Shape> texcube;
-	shared_ptr<Shape> texSphere;
 	shared_ptr<Shape> theEarth;
 	shared_ptr<Shape> theMars;
 	shared_ptr<Shape> theJupiter;
@@ -63,8 +63,6 @@ public:
 	shared_ptr<Texture> rocket_albedo;
 	shared_ptr<Texture> grass_albedo;
 	shared_ptr<Texture> asteroid_albedo;
-	shared_ptr<Texture> sky_albedo;
-	shared_ptr<Texture> sky_noise_albedo;
 	shared_ptr<Texture> earth_albedo;
 	shared_ptr<Texture> mars_albedo;
 	shared_ptr<Texture> jupiter_albedo;
@@ -77,7 +75,6 @@ public:
 	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> groundMat;
 	shared_ptr<Material> asteroidMat;
-	shared_ptr<Material> skyMat;
 	shared_ptr<Material> earthMat;
 	shared_ptr<Material> marsMat;
 	shared_ptr<Material> jupiterMat;
@@ -163,6 +160,7 @@ public:
 
 		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
 		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
+		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		//rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		// add render passes with more shaders here
@@ -208,31 +206,6 @@ public:
 		asteroidMat = make_shared<Material>();
 		asteroidMat->t_albedo = asteroid_albedo;
 
-		//skybox loader
-		texSphere = make_shared<Shape>();
-		texSphere->loadMesh(resourceDirectory + "/texCube.obj");
-        texSphere->resize();
-        texSphere->init();
-
-		sky_albedo = make_shared<Texture>();
-        sky_albedo->setFilename(resourceDirectory + "/spaceSkybox.jpg");
-        sky_albedo->init();
-        sky_albedo->setUnit(0);
-        sky_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
-
-        skyMat = make_shared<Material>();
-        skyMat->t_albedo = sky_albedo;
-
-
-		sky_noise_albedo = make_shared<Texture>();
-		sky_noise_albedo->setFilename(resourceDirectory + "/twinkle_noise.jpg");
-		sky_noise_albedo->init();
-		sky_noise_albedo->setUnit(0);
-		sky_noise_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
-
-		rm->addMesh("skybox", texSphere);
-		rm->addUserTextureResource("skybox", sky_albedo);
-		rm->addUserTextureResource("skyboxNoise", sky_noise_albedo);
 
 		//player loader
 		GameObject* player = new GameObject("player");
@@ -260,7 +233,6 @@ public:
 		es->spawnDelay = .7;
 
 
-		//Order matters here, because the skybox has to render before anything else.
 
 		initPlanets(resourceDirectory);
 

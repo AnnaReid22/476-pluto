@@ -40,4 +40,5 @@ void main()
 		//time
 		//col
 		//
+		//outColor = vec4(1);
 }

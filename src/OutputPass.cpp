@@ -32,6 +32,8 @@ void OutputPass::init()
 	prog->setShaderNames("../shaders/deferred_pass_vert.glsl", "../shaders/output_frag.glsl");
 	prog->init();
 	prog->addUniform("gLightOutput");
+	prog->addUniform("gBuffer");
+	prog->addUniform("skyboxRenderTexture");
 
 	initQuad();
 }
@@ -40,6 +42,8 @@ void OutputPass::execute(WindowManager* windowManager)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GLuint gLightOutput = rm->getRenderTextureResource("gLightOutput");
+	GLuint gBuffer = rm->getRenderTextureResource("gBuffer");
+	GLuint skyboxRenderTexture = rm->getRenderTextureResource("skyboxRenderTexture");
 
 	int width, height;
 
@@ -58,6 +62,12 @@ void OutputPass::execute(WindowManager* windowManager)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, gLightOutput);
 		glUniform1i(prog->getUniform("gLightOutput"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, gBuffer);
+		glUniform1i(prog->getUniform("gBuffer"), 1);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, skyboxRenderTexture);
+		glUniform1i(prog->getUniform("skyboxRenderTexture"), 2);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
