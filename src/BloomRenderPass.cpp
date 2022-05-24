@@ -100,7 +100,7 @@ void BloomRenderPass::execute(WindowManager* windowManager)
     glDisableVertexAttribArray(0);
     filterBrightProg->unbind();
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 64; i++)
     {
         int horizontal = i % 2;
         execute_blur_pass(horizontal);

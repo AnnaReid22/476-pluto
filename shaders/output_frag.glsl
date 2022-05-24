@@ -16,9 +16,10 @@ void main()
     vec4 gLight = texture(gLightOutput, fragTex);
     vec4 psPos = texture(psPositionOutput, fragTex);
     vec4 gPos = texture(gBuffer, fragTex);
+    vec4 bloomColor = texture(bloomOutput, fragTex);
     vec4 viewPos = V*vec4(gPos.xyz, 1.0);
 
-    color.rgb = psCol.rgb*psCol.a + (gLight.rgb + texture(bloomOutput, fragTex).rgb)*(1.0f-psCol.a);
+    color.rgb = psCol.rgb*psCol.a + (gLight.rgb + bloomColor.rgb)*(1.0f-psCol.a);
 
     // color.a = 1.0f;
     // color = psCol;
