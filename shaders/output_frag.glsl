@@ -20,9 +20,12 @@ void main()
     vec4 skyCol = texture(skyColorOutput, fragTex);
     vec4 viewPos = V*vec4(gPos.xyz, 1.0);
 
-    color.rgb = psCol.rgb*psCol.a + gLight.rgb*(1.0f-psCol.a);
-
-    color.rgb = skyCol.rgb;
-    // color.a = 1.0f;
-    // color = psCol;
+    if(gPos.a == 0)
+    {
+        color.rgb = skyCol.rgb;
+    }
+    else
+    {
+        color.rgb = psCol.rgb*psCol.a + gLight.rgb*(1.0f-psCol.a);
+    }
 }
