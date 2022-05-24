@@ -10,6 +10,7 @@ public:
     glm::vec3 scale;
     glm::quat rotation;
     glm::quat hierarchicalRot;
+    //Transform* parentTransform
 
     Transform();
     Transform(glm::vec3 d_Pos, glm::vec3 d_Scale);

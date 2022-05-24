@@ -169,7 +169,7 @@ void Player::updateMoveVars()
 
     dollyF = input->GetKey(GLFW_KEY_W);
     Time* time = time->getInstance();
-    if (dollyF && dollyFTime < MAXDOLLYFTIME)
+    if (dollyF)// && dollyFTime < MAXDOLLYFTIME)
     {
         dollyFTime += time->getFrametime();
     }
@@ -205,7 +205,7 @@ void Player::moveRocket()
     float t;
     if (dollyFTime > 0)
     {
-        t = dollyFTime;
+        t = min(dollyFTime, MAXDOLLYFTIME);
     }
     else
     {
@@ -227,7 +227,7 @@ void Player::moveRocket()
     this->gameObject->transform.scale.x = widthChange;
     this->gameObject->transform.scale.z = widthChange;
     this->gameObject->transform.scale.y = squashCalculation;
-    std::cout << this->gameObject->transform.scale.x << ", " << this->gameObject->transform.scale.y << ", " << this->gameObject->transform.scale.z << std::endl;
+   // std::cout << this->gameObject->transform.scale.x << ", " << this->gameObject->transform.scale.y << ", " << this->gameObject->transform.scale.z << std::endl;
   
 
     if (dollyF)
@@ -272,6 +272,8 @@ void Player::moveRocket()
     this->gameObject->transform.position -= glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
     this->gameObject->transform.rotation = glm::quat(1.0, 0.0, 0.0, 0.0);//glm::quat(rotMat); // glm::quat(1.0, 0.0, 0.0, 0.0);
 
+
+    // Fin animation
     fin1->transform.position = glm::vec3(0.4, -0.78, 0.15);
     fin1->transform.rotation = glm::vec3(0.0f, glm::radians(-130.0f), 0.0f);//glm::radians(10.0f));
     fin1->transform.scale = glm::vec3(0.5, 0.5, 0.5);
@@ -283,11 +285,24 @@ void Player::moveRocket()
     fin3->transform.position = glm::vec3(0.0, -0.7, -0.4);
     fin3->transform.rotation = glm::vec3(0.0f, glm::radians(0.0f), glm::radians(0.0f));
     fin3->transform.scale = glm::vec3(0.5, 0.5, 0.5);
+
+    if (dollyFTime > 0)
+    {
+        glm::vec3 finRot = glm::vec3(0, dollyFTime*4, 0.0f);
+        std::cout << "dollyFTime: " << dollyFTime << std::endl;
+        fin1->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
+        fin1->transform.position = glm::vec3(0.5, -0.78, 0.20);
+        fin2->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
+        fin2->transform.position = glm::vec3(-0.5, -0.78, 0.20);
+        fin3->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
+        fin3->transform.position = glm::vec3(0.0, -0.7, -0.5);
+        //t = dollyFTime;
+    }
     
 
     //fin1->transform.position = glm::vec3(1, 0, 1);
-    std::cout << "fin1: " << fin1 << std::endl;
-    std::cout << "player: " << this->gameObject << std::endl;
+    //std::cout << "fin1: " << fin1 << std::endl;
+    //std::cout << "player: " << this->gameObject << std::endl;
     glm::mat4 MPlayer = this->gameObject->transform.genModelMatrix();
     glm::mat4 MFin = this->gameObject->transform.genModelMatrix();
     
