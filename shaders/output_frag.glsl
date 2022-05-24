@@ -7,6 +7,7 @@ uniform sampler2D psColorOutput;
 uniform sampler2D gLightOutput;
 uniform sampler2D psPositionOutput;
 uniform sampler2D gBuffer;
+uniform sampler2D bloomOutput;
 uniform mat4 V;
 
 void main()
@@ -17,7 +18,8 @@ void main()
     vec4 gPos = texture(gBuffer, fragTex);
     vec4 viewPos = V*vec4(gPos.xyz, 1.0);
 
-    color.rgb = psCol.rgb*psCol.a + gLight.rgb*(1.0f-psCol.a);
+    color.rgb = psCol.rgb*psCol.a + (gLight.rgb + texture(bloomOutput, fragTex).rgb)*(1.0f-psCol.a);
+
     // color.a = 1.0f;
     // color = psCol;
 }

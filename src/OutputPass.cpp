@@ -37,6 +37,7 @@ void OutputPass::init()
 	prog->addUniform("psPositionOutput");
 	prog->addUniform("V");
 	prog->addUniform("gBuffer");
+	prog->addUniform("bloomOutput");
 
 	initQuad();
 }
@@ -48,6 +49,7 @@ void OutputPass::execute(WindowManager* windowManager)
 	GLuint psColorOutput = rm->getRenderTextureResource("psColorOutput");
 	GLuint psPositionOutput = rm->getRenderTextureResource("psPositionOutput");
 	GLuint gBuffer = rm->getRenderTextureResource("gBuffer");
+	GLuint bloomOutput = rm->getRenderTextureResource("bloomColor");
 
 	Camera* cam = (Camera*)rm->getOther("activeCamera");
     glm::mat4 V = cam->getCameraViewMatrix();
@@ -83,6 +85,10 @@ void OutputPass::execute(WindowManager* windowManager)
 		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, gBuffer);
 		glUniform1i(prog->getUniform("gBuffer"), 3);
+
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, bloomOutput);
+		glUniform1i(prog->getUniform("bloomOutput"), 4);
 
 		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
 
