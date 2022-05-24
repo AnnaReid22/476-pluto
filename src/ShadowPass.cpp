@@ -9,6 +9,13 @@
 
 void ShadowPass::init() 
 {
+	this->rm = rm->getInstance();
+	float width = rm->getNumericalValue("screenWidth");
+	float height = rm->getNumericalValue("screenHeight");
+	// Set background color.
+  	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
+	 // Enable z-buffer test.
+  	glEnable(GL_DEPTH_TEST);
     // Initialize programs
   	depthProg = std::make_shared<Program>();
   	depthProg->setVerbose(true);
@@ -62,15 +69,13 @@ void ShadowPass::init()
     //generate the FBO for the shadow depth
   	glGenFramebuffers(1, &depthMapFBO);
 
+
     //generate the texture
   	glGenTextures(1, &depthMap);
   	glBindTexture(GL_TEXTURE_2D, depthMap);
-  	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, S_WIDTH, S_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
+  	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     //bind with framebuffer's depth buffer
   	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -78,39 +83,43 @@ void ShadowPass::init()
   	glDrawBuffer(GL_NONE);
   	glReadBuffer(GL_NONE);
   	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	rm->addRenderTextureResource("shadowOutput", depthMapFBO);
 }
 
 void ShadowPass::execute(WindowManager * windowManager)
 {
-    int width, height;
-    glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+	float width = rm->getNumericalValue("screenWidth");
+	float height = rm->getNumericalValue("screenHeight");
     //light lookat and y vector
-    vec3 lightLA = vec3(0.0);
+    vec3 lightLA = vec3(0.0, 0.0, -1000.0);
     vec3 lightUp = vec3(0, 1, 0);
 
     mat4 LO, LV, LSpace;
     if (SHADOW) {
-    //set up light's depth map
-  	 glViewport(0, 0, S_WIDTH, S_HEIGHT);
-  	 glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-  	 glClear(GL_DEPTH_BUFFER_BIT);
-  	 glCullFace(GL_FRONT);
+		glViewport(0, 0, width, height);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glCullFace(GL_FRONT);
 
-    //set up shadow shader and render the scene
-    depthProg->bind();
+		depthProg->bind();
 
-    //light orthogonal view
-    LO = glm::ortho(-25.0f, 25.0f, -25.0f, 25.0f, -10.0f, 500.0f);
-    glUniformMatrix4fv(depthProg->getUniform("LP"), 1, GL_FALSE, glm::value_ptr(LO));
+			//light orthogonal view
+			LO = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 5.0f);
+			glUniformMatrix4fv(depthProg->getUniform("LP"), 1, GL_FALSE, glm::value_ptr(LO));
 
-    //light view
-    LV = glm::lookAt(g_light, lightLA, lightUp);
-    glUniformMatrix4fv(depthProg->getUniform("LV"), 1, GL_FALSE, glm::value_ptr(LV));
-    draw(depthProg, 0);
+			//light view
+			LV = glm::lookAt(g_light, lightLA, lightUp);
+			glUniformMatrix4fv(depthProg->getUniform("LV"), 1, GL_FALSE, glm::value_ptr(LV));
+			draw(depthProg, 0);
 
-    depthProg->unbind();
-    glCullFace(GL_BACK);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		depthProg->unbind();
+		glCullFace(GL_BACK);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
     }
 
     glViewport(0, 0, width, height);
@@ -119,42 +128,42 @@ void ShadowPass::execute(WindowManager * windowManager)
     if (DEBUG_LIGHT) {	
   		if (GEOM_DEBUG) { 
   			depthProgDebug->bind();
-            mat4 ortho = glm::ortho(-25.0f, 25.0f, -25.0f, 25.0f, -10.0f, 500.0f);
-            glUniformMatrix4fv(depthProgDebug->getUniform("LP"), 1, GL_FALSE, glm::value_ptr(ortho));
-            mat4 camera = glm::lookAt(g_light, lightLA, lightUp);
-            glUniformMatrix4fv(depthProgDebug->getUniform("LV"), 1, GL_FALSE, glm::value_ptr(camera));
-  			draw(depthProgDebug, shadowProg->getUniform("Texture0"));
+				mat4 ortho = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, -50.0f, 1000.0f);
+				glUniformMatrix4fv(depthProgDebug->getUniform("LP"), 1, GL_FALSE, glm::value_ptr(ortho));
+				mat4 camera = glm::lookAt(g_light, lightLA, lightUp);
+				glUniformMatrix4fv(depthProgDebug->getUniform("LV"), 1, GL_FALSE, glm::value_ptr(camera));
+				draw(depthProgDebug, shadowProg->getUniform("Texture0"));
   			depthProgDebug->unbind();
   		} else {
   			shadowDebugProg->bind();
-  			glActiveTexture(GL_TEXTURE0);
-  			glBindTexture(GL_TEXTURE_2D, depthMap);
-  			glUniform1i(shadowDebugProg->getUniform("texBuf"), 0);
-  			glEnableVertexAttribArray(0);
-  			// glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-  			// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-  			// glDrawArrays(GL_TRIANGLES, 0, 6);
-  			// glDisableVertexAttribArray(0);
+				glActiveTexture(GL_TEXTURE4);
+				glBindTexture(GL_TEXTURE_2D, depthMap);
+				glUniform1i(shadowDebugProg->getUniform("texBuf"), 0);
+				glEnableVertexAttribArray(0);
+				glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+				glDrawArrays(GL_TRIANGLES, 0, 6);
+				glDisableVertexAttribArray(0);
   			shadowDebugProg->unbind();
   		}
   	} else {
   		shadowProg->bind();
-  		glActiveTexture(GL_TEXTURE1);
-  		glBindTexture(GL_TEXTURE_2D, depthMap);
-  		glUniform1i(shadowProg->getUniform("shadowDepth"), 1);
-  		glUniform3f(shadowProg->getUniform("lightDir"), g_light.x, g_light.y, g_light.z);
+			glActiveTexture(GL_TEXTURE4);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+			glUniform1i(shadowProg->getUniform("shadowDepth"), 1);
+			glUniform3f(shadowProg->getUniform("lightDir"), g_light.x, g_light.y, g_light.z);
 
-        Camera* cam = (Camera*)rm->getOther("activeCamera");
-        mat4 P = cam->getCameraProjectionMatrix();
-        mat4 V = cam->getCameraViewMatrix();
+			Camera* cam = (Camera*)rm->getOther("activeCamera");
+			mat4 P = cam->getCameraProjectionMatrix();
+			mat4 V = cam->getCameraViewMatrix();
 
-        glUniformMatrix4fv(shadowProg->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
-        glUniformMatrix4fv(shadowProg->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
+			glUniformMatrix4fv(shadowProg->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
+			glUniformMatrix4fv(shadowProg->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
 
-        LSpace = LO*LV;
-        glUniformMatrix4fv(shadowProg->getUniform("LS"), 1, GL_FALSE, glm::value_ptr(LSpace));
+			LSpace = LO*LV;
+			glUniformMatrix4fv(shadowProg->getUniform("LS"), 1, GL_FALSE, glm::value_ptr(LSpace));
 
-  		draw(shadowProg, shadowProg->getUniform("Texture0"));
+			draw(shadowProg, shadowProg->getUniform("Texture0"));
   		shadowProg->unbind();
   	}
 }
@@ -173,10 +182,10 @@ void ShadowPass::draw(std::shared_ptr<Program> prog, GLint texID)
 
         glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
 
-        mat->t_albedo->bind(prog->getUniform("albedoMap"));
+        // mat->t_albedo->bind(prog->getUniform("albedoMap"));
 
         mesh->draw(prog);
 
-        mat->t_albedo->unbind();
+        // mat->t_albedo->unbind();
     }
 }

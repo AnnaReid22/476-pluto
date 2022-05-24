@@ -32,6 +32,7 @@ Z. Wood + S. Sueda
 
 #include "ForwardRenderPass.h"
 #include "ParticleRenderPass.h"
+#include "ShadowPass.h"
 #include "ParticleSystem.h"
 #include "DeferredSamplingPass.h"
 #include "DeferredLightingPass.h"
@@ -165,6 +166,7 @@ public:
 		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
+		rp.addRenderPass(std::make_shared<ShadowPass>());
 		// add render passes with more shaders here
 	}
 
