@@ -18,6 +18,8 @@ private:
     float speed;
     float bulletCooldown;
     float stopTime;
+    float prepareShootTime;
+    bool alreadyShot;
 
     // Rocket movement vectors
     void updateMoveVars();
@@ -36,6 +38,7 @@ public:
     float collideTime;
     glm::mat4 rotMat;
     Time* time;
+    glm::vec4 posUpdate;
 
     // Rotation variables
     bool initMousePosSet;
@@ -52,6 +55,8 @@ public:
     void KillRocket();
     void ShakeRocket();
     void DisassembleRocket();
+    void PrepareShoot();
+    void Shoot();
 
     // Rocket accessor methods
     glm::vec3 getPosition();

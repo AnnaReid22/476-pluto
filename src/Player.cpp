@@ -29,6 +29,9 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     shakeTime = 0;
     collideTime = 3.0f;
     dead = false;
+    alreadyShot = false;
+    posUpdate = glm::vec4(0, 0, 0, 1);
+    prepareShootTime = 0;
 
     // Speed for any of the above movements
     speed = -7.0f;
@@ -89,6 +92,14 @@ void Player::Update()
         dead = true;
 
     }
+    if (prepareShootTime > 0)
+    {
+        PrepareShoot();
+    }
+    else if (!alreadyShot)
+    {
+        Shoot();
+    }
     if (shakeTime > 0)
     {
         //DisassembleRocket();//grac
@@ -142,6 +153,37 @@ void Player::KillRocket()
     ps_obj->start = this->gameObject->transform.position;
 
     std::cout << "You crashed :(" << std::endl;
+}
+
+// Rocket gets fact before it shoots
+void Player::PrepareShoot()
+{
+    this->gameObject->transform.scale.x += (2.0*(0.5-prepareShootTime));
+    prepareShootTime -= time->getFrametime();
+}
+
+void Player::Shoot()
+{
+    alreadyShot = true;
+    shakeTime = 1.0f;
+    bulletCooldown = 0.5f;
+    GameObject* bullet = new GameObject("bullet");
+    bullet->transform.position = gameObject->transform.position - this->getForward();
+    bullet->transform.scale = gameObject->transform.scale;
+    bullet->transform.rotation = gameObject->transform.rotation;
+    BoundingSphereCollider* bsc = bullet->addComponentOfType<BoundingSphereCollider>();
+    MeshRenderer* meshRenderer = bullet->addComponentOfType<MeshRenderer>();
+    ResourceManager* rm = ResourceManager::getInstance();
+    meshRenderer->mesh = rm->getMesh("skybox");
+    std::shared_ptr<Material> mat = std::make_shared<Material>();
+    mat->t_albedo = rm->getUserTextureResource("particleTexture");
+    meshRenderer->material = mat;
+    PhysicsObject* physicsObject = bullet->addComponentOfType<PhysicsObject>();
+    physicsObject->vel = this->getForward() * speed + this->getForward() * -10.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
+    physicsObject->acc = glm::vec3(0.0f);
+
+    gameObject->world->addObject(bullet);
+
 }
 
 
@@ -332,7 +374,7 @@ void Player::moveRocket()
 
 
     // Adjust movement based on the rocket's rotation
-    glm::vec4 posUpdate = rotMat * glm::vec4(rocketMove, 0); //glm::vec4(0, -10, 0, 0) if you want constant forward movement
+    posUpdate = rotMat * glm::vec4(rocketMove, 0); //glm::vec4(0, -10, 0, 0) if you want constant forward movement
     
     // Store fwd vector of the rocket
     fwd = normalize(rotMat * glm::vec4(0, -1, 0, 0));
@@ -381,25 +423,9 @@ void Player::moveRocket()
     bulletCooldown -= Time::getInstance()->getFrametime();
     if (InputManager::getInstance()->GetKey(GLFW_KEY_E) && bulletCooldown <= 0)
     {
-        //prepareShoot
-        shakeTime = 1.0f;
-        bulletCooldown = 0.5f;
-        GameObject* bullet = new GameObject("bullet");
-        bullet->transform.position = gameObject->transform.position - this->getForward();
-        bullet->transform.scale = gameObject->transform.scale;
-        bullet->transform.rotation = gameObject->transform.rotation;
-        BoundingSphereCollider* bsc = bullet->addComponentOfType<BoundingSphereCollider>();
-        MeshRenderer* meshRenderer = bullet->addComponentOfType<MeshRenderer>();
-        ResourceManager* rm = ResourceManager::getInstance();
-        meshRenderer->mesh = rm->getMesh("skybox");
-        std::shared_ptr<Material> mat = std::make_shared<Material>();
-        mat->t_albedo = rm->getUserTextureResource("particleTexture");
-        meshRenderer->material = mat;
-        PhysicsObject* physicsObject = bullet->addComponentOfType<PhysicsObject>();
-        physicsObject->vel = this->getForward() * speed + this->getForward() * -10.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
-        physicsObject->acc = glm::vec3(0.0f);
-
-        gameObject->world->addObject(bullet);
+        prepareShootTime = 0.5f;
+        alreadyShot = false;
+   
     }
 }
 
