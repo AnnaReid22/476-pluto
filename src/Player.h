@@ -32,7 +32,10 @@ public:
     bool stop;
     bool shoot;
     bool dead;
+    float shakeTime;
     float collideTime;
+    glm::mat4 rotMat;
+    Time* time;
 
     // Rotation variables
     bool initMousePosSet;
@@ -48,11 +51,15 @@ public:
     void OnCollide(GameObject* other);
     void KillRocket();
     void ShakeRocket();
+    void DisassembleRocket();
 
     // Rocket accessor methods
     glm::vec3 getPosition();
     glm::vec3 getForward();
     glm::quat getRotation();
+    glm::vec3 getRightVector();
+    glm::vec3 getUpVector();
+
     float getXRotation();
 
     // Rockets fin mesh

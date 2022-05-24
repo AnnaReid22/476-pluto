@@ -9,6 +9,9 @@
 #include <iostream>
 #define PI 3.14159265
 #define MAXDOLLYFTIME 1.3
+#define DISASSEMBLE_ANIM 0
+#define ROTATE_FINS_ANIM 1
+
 
 ResourceManager* rm_ = ResourceManager::getInstance();
 
@@ -23,6 +26,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     prevDollyF = false;
     dollyFTime = 0;
     stopTime = 0;
+    shakeTime = 0;
     collideTime = 3.0f;
     dead = false;
 
@@ -51,7 +55,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     originalScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
     //std::cout << "Original Transform: " << originalTransform.x << ", " << originalTransform.y << ", " << originalTransform.z << std::endl;
-
+    rotMat = mat4(1);
 }
 
 /*
@@ -61,6 +65,7 @@ void Player::Start()
 {
     this->gameObject->transform.position = glm::vec3(0, 0, -4);
     this->gameObject->transform.scale = originalScale;
+    time = time->getInstance();
     //fin1->transform.scale = glm::vec3(0.4, 0.4, 0.4);
 }
 
@@ -76,8 +81,7 @@ void Player::Update()
     }
     else if (collideTime > 0)
     {
-        //DisassembleRocket();//grac
-        ShakeRocket();
+        DisassembleRocket();
     }
     else if (!dead)
     {
@@ -85,22 +89,51 @@ void Player::Update()
         dead = true;
 
     }
+    if (shakeTime > 0)
+    {
+        //DisassembleRocket();//grac
+        ShakeRocket();
+    }
 
 }
 
+// Shake rocket along forward vecyor. Used after shooting.
 void Player::ShakeRocket()
 {
-    Time* time = time->getInstance();
+    //Time* time = time->getInstance();
     float frametime = time->getFrametime();
-    collideTime -= frametime;
-    this->gameObject->transform.position.x += ((float)(rand() % 7 - 3) / 4.0f);
+    shakeTime -= frametime;
+    this->gameObject->transform.position += this->getForward()*((float)(rand() % 7 - 3) / 20.0f);
 }
 
+// Make the different parts of the rocket fall apart. Used after the rocket crashes.
+void Player::DisassembleRocket()
+{
+    collideTime -= time->getFrametime();
+}
+
+// Stop rendering rocket mesh
 void Player::KillRocket()
 {
+    // Stop rendering rocket body 
     MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
     rocket_mesh->Disable();
 
+    // Stop rendering fins
+    // fin1
+    MeshRenderer* fin_mesh = fin1->getComponentByType<MeshRenderer>();
+    fin_mesh->Disable();
+
+    // fin2
+    fin_mesh = fin2->getComponentByType<MeshRenderer>();
+    fin_mesh->Disable();
+
+    // fin3
+    fin_mesh = fin3->getComponentByType<MeshRenderer>();
+    fin_mesh->Disable();
+
+
+    // Activate particle systems
     GameObject* ps = (GameObject*)rm_->getOther("particle_system_death");
 
     ps->transform = this->gameObject->transform;
@@ -204,7 +237,7 @@ void Player::updateMoveVars()
     // Update movement variables
 
     dollyF = input->GetKey(GLFW_KEY_W);
-    Time* time = time->getInstance();
+    //Time* time = time->getInstance();
     if (dollyF)// && dollyFTime < MAXDOLLYFTIME)
     {
         dollyFTime += time->getFrametime();
@@ -232,7 +265,7 @@ void Player::updateMoveVars()
 */
 void Player::moveRocket()
 {
-    Time* time = time->getInstance();
+    //Time* time = time->getInstance();
     float frametime = time->getFrametime();
 
     // Determine direction of rocket movement
@@ -295,7 +328,7 @@ void Player::moveRocket()
 
     // Used to calculate position
     //glm::mat4 rotMat = glm::rotate(glm::mat4(1.f), rotation.x, glm::vec3(1, 0, 0)) * glm::rotate(glm::mat4(1.f), rotation.y, glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.f), (float) - PI / 2.0f, glm::vec3(1, 0, 0));
-    glm::mat4 rotMat = glm::rotate(glm::mat4(1.f), rotation.y, glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.f), rotation.x, glm::vec3(1, 0, 0));
+    rotMat = glm::rotate(glm::mat4(1.f), rotation.y, glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.f), rotation.x, glm::vec3(1, 0, 0));
 
 
     // Adjust movement based on the rocket's rotation
@@ -306,7 +339,7 @@ void Player::moveRocket()
 
     // Update the Rocket's Transform position matrix and rotation quaternion
     this->gameObject->transform.position -= glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
-    this->gameObject->transform.rotation = glm::quat(1.0, 0.0, 0.0, 0.0);//glm::quat(rotMat); // glm::quat(1.0, 0.0, 0.0, 0.0);
+    this->gameObject->transform.rotation = glm::quat(rotMat);;//glm::quat(rotMat); // glm::quat(1.0, 0.0, 0.0, 0.0);
 
 
     // Fin animation
@@ -348,6 +381,8 @@ void Player::moveRocket()
     bulletCooldown -= Time::getInstance()->getFrametime();
     if (InputManager::getInstance()->GetKey(GLFW_KEY_E) && bulletCooldown <= 0)
     {
+        //prepareShoot
+        shakeTime = 1.0f;
         bulletCooldown = 0.5f;
         GameObject* bullet = new GameObject("bullet");
         bullet->transform.position = gameObject->transform.position - this->getForward();
@@ -392,5 +427,18 @@ glm::quat Player::getRotation()
 float Player::getXRotation()
 {
     return rotation.x;
+}
+
+
+// Returns the vector that points to the rocket's right side
+glm::vec3 Player::getRightVector()
+{
+    return glm::vec3(normalize(rotMat * glm::vec4(1, 0, 0, 0)));
+}
+
+// Returns the vector that points to the rocket's up
+glm::vec3 Player::getUpVector()
+{
+    return glm::vec3(normalize(rotMat * glm::vec4(0, 0, 1, 0)));
 }
 

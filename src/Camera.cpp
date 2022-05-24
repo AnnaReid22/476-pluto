@@ -27,7 +27,7 @@ Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 void Camera::setUpCam()
 {
     float f = 0.08;//0.01;
-    pos = pos + ((rocket->getPosition() + rocket->getForward() * camDist) - pos) * f;
+    pos = pos + ((rocket->getPosition() + rocket->getForward() * camDist + rocket->getUpVector()  * camDist/2.0f) - pos) * f;
 }
 
 
