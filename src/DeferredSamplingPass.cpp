@@ -97,6 +97,9 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
 
     for (GameObject* obj : renderables)
     {
+        if (obj->name == "lazer") {
+            continue;
+        }
         M = obj->transform.genModelMatrix();
         MeshRenderer* mr = obj->getComponentByType<MeshRenderer>();
 

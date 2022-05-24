@@ -11,6 +11,7 @@ Z. Wood + S. Sueda
 #include "MatrixStack.h"
 #include "WindowManager.h"
 #include "SkyboxRenderPass.h"
+#include "LazerGlowRenderPass.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -163,6 +164,7 @@ public:
 		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
+		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
 		// add render passes with more shaders here
 	}
 
@@ -235,7 +237,7 @@ public:
 		//lazer
 		std::shared_ptr<Shape> lazerMesh = make_shared<Shape>();
 		lazerMesh->loadMesh(resourceDirectory + "/lazer.obj");
-		lazerMesh->resize();
+		//lazerMesh->resize();
 		lazerMesh->init();
 		rm->addMesh("lazer", lazerMesh);
 
