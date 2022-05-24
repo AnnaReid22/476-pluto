@@ -13,29 +13,20 @@ uniform sampler2D lazerGlowOutput;
 uniform mat4 V;
 
 
-vec4 getLazerGlow(float radius){
-    vec4 sampled = texture(lazerGlowOutput, fragTex);
-    if(sampled.r == 0){
-        return vec4(0);
-    }
-
-    float depth = sampled.r;
-
-    
-    float realRadius = radius / (1+depth);
-    float delta = realRadius/5.5;
-
+float getLazerGlow(float radius){
     float percentGlow = 0;
-    for(float i=-realRadius; i<=realRadius; i+=delta){
-        for(float j=-realRadius; j<=realRadius; j+=delta){
-            if(texture(lazerGlowOutput, fragTex + vec2(i, j)).r != 0){
+    float nSamples = 0;
+
+    for(float i=0; i<10; i++){
+        for(float j=0; j<10; j++){
+            vec2 offset = vec2(i - 4.5, j - 4.5) / 4.5;
+            nSamples += 1;
+            if(texture(lazerGlowOutput, fragTex + radius * offset).r != 0){
                 percentGlow += 1;
             }
         }
     }
-    percentGlow /= 121.0;
-    
-    return vec4(1, 0, 0, clamp(percentGlow, 0, 1));
+    return 2 * clamp(percentGlow / nSamples, 0, 0.5);
 }
 
 void main()
@@ -45,15 +36,24 @@ void main()
     vec4 psPos = texture(psPositionOutput, fragTex);
     vec4 gPos = texture(gBuffer, fragTex);
     vec4 skyCol = texture(skyColorOutput, fragTex);
-    vec4 lazerGlow = getLazerGlow(0.01);
+    float lazerDepth = texture(lazerGlowOutput, fragTex).r;
     vec4 viewPos = V*vec4(gPos.xyz, 1.0);
 
+    float lazerGlow = getLazerGlow(0.005 * (1-lazerDepth));
+    
     gPos.a *= 2.5007; // gPos.a values arent ranging from 0-1 for some reason... the max is about (1 / 2.5007).. No idea why.
 
     color.rgb = (1-gPos.a) * skyCol.rgb;
 
+    float gDepth =0.5;
+    
+    if(lazerDepth < gDepth && lazerDepth!=0){
+        color.r += lazerGlow;
+    }else{
+        color.r += (1 - gPos.a) * lazerGlow;
+    }
+
     color.rgb += gPos.a * (psCol.rgb*psCol.a + gLight.rgb*(1.0f-psCol.a));
 
-    color.rgb += lazerGlow.a * lazerGlow.rgb;
     
 }
