@@ -155,6 +155,9 @@ public:
 		rm->addNumericalValue("screenWidth", width);
 		rm->addNumericalValue("screenHeight", height);
 
+		int score = 0;
+		rm->addNumericalValue("score", score);
+
 		w = World();
 		rp = RenderPipeline(windowManager);
 
