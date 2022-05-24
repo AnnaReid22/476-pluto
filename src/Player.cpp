@@ -127,8 +127,8 @@ void Player::DisassembleRocket()
 void Player::KillRocket()
 {
     // Stop rendering rocket body 
-    MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
-    rocket_mesh->Disable();
+    MeshRenderer* rocket_body_mesh = rocketBody->getComponentByType<MeshRenderer>();
+    rocket_body_mesh->Disable();
 
     // Stop rendering fins
     // fin1
@@ -378,7 +378,7 @@ void Player::moveRocket()
     
     // Store fwd vector of the rocket
     fwd = normalize(rotMat * glm::vec4(0, -1, 0, 0));
-
+     
     // Update the Rocket's Transform position matrix and rotation quaternion
     this->gameObject->transform.position -= glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
     this->gameObject->transform.rotation = glm::quat(rotMat);;//glm::quat(rotMat); // glm::quat(1.0, 0.0, 0.0, 0.0);

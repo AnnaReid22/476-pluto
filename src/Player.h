@@ -70,6 +70,7 @@ public:
     // Rockets fin mesh
     std::shared_ptr<Shape> finMesh;
 
+    GameObject* rocketBody;
     GameObject* fin1;
     GameObject* fin2;
     GameObject* fin3;

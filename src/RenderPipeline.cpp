@@ -34,25 +34,31 @@ std::vector<GameObject*> RenderPipeline::viewFrustumCull(std::vector<GameObject*
     std::vector<GameObject*> objectsToDraw;
     for (int i = 0; i < objectsToRender.size(); i++)
     {
-        
+        // Ensure all parts of the rocket are rendered
+        if (objectsToRender[i]->name == "rocketBody" || objectsToRender[i]->name == "fin1" || objectsToRender[i]->name == "fin2" || objectsToRender[i]->name == "fin3")
+        {
+            objectsToDraw.push_back(objectsToRender[i]);
+        }
+        else
+        {
             std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
             glm::vec3 center = objectsToRender[i]->transform.position + mesh->getCenter();
             float radius = mesh->getRadius() * (glm::max)(objectsToRender[i]->transform.scale.x, (glm::max)(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
-    std::cout << "center: " << objectsToRender[i]->name << " " << center.x << ", " << center.y << ", " << center.z << std::endl;
+            std::cout << "center: " << objectsToRender[i]->name << " " << center.x << ", " << center.y << ", " << center.z << std::endl;
             bool cullable = false;
             for (int j = 0; j < 6; j++)
             {
-                    float dist = planes[j].x * center.x + planes[j].y * center.y + planes[j].z * center.z + planes[j].w;
-                    if (dist + radius < 0)
-                    {
-                        cullable = true;
-                        break;
-                    }
+                float dist = planes[j].x * center.x + planes[j].y * center.y + planes[j].z * center.z + planes[j].w;
+                if (dist + radius < 0)
+                {
+                    cullable = true;
+                    break;
+                }
             }
             if (!cullable) {
                 objectsToDraw.push_back(objectsToRender[i]);
             }
-        
+        }        
     }
     return objectsToDraw;
 }
@@ -68,9 +74,9 @@ void RenderPipeline::executePipeline()
 {
     Camera* cam = (Camera*)rm->getOther("activeCamera");
     std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
-    //renderables = viewFrustumCull(renderables, cam);
+    renderables = viewFrustumCull(renderables, cam);
 
-    //rm->addOther("renderables", &renderables);
+    rm->addOther("renderables", &renderables);
 
     for (std::shared_ptr<IShader> pass : renderPasses)
         pass->execute(windowManager);

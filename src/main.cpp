@@ -236,6 +236,7 @@ public:
 		rm->addUserTextureResource("skybox", sky_albedo);
 		rm->addUserTextureResource("skyboxNoise", sky_noise_albedo);
 
+
 		//player loader
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
@@ -245,9 +246,9 @@ public:
 		Camera* cam = camera->addComponentOfType<Camera>();
 		cam->rocket = pl;
 
-		MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
-		rocket->mesh = theRocket;
-		rocket->material = rocketMat;
+		//MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
+		//rocket->mesh = theRocket;
+		//rocket->material = rocketMat;
 
 		rm->addOther("player_game_object", player);
 
@@ -257,9 +258,24 @@ public:
 
 		w.addObject(player);
 
+
+		// rocket body loader
+		GameObject* rocketBodyObject = new GameObject("rocketBody");
+		rocketBodyObject->transform.scale = glm::vec3(1.0f);
+		rocketBodyObject->parent = true;
+		rocketBodyObject->parentObj = player;
+		MeshRenderer* rocketBodyMesh = rocketBodyObject->addComponentOfType<MeshRenderer>();
+		rocketBodyMesh->mesh = theRocket;
+		rocketBodyMesh->material = rocketMat;
+		rm->addOther("rocket_body_game_object", rocketBodyObject);
+		BoundingSphereCollider* rocketCollider = rocketBodyObject->addComponentOfType <BoundingSphereCollider>();
+		w.addObject(rocketBodyObject);
+		pl->rocketBody = rocketBodyObject;
+
+
 		// fin loader
 		// fin1
-		GameObject* fin1Object = new GameObject("fin");
+		GameObject* fin1Object = new GameObject("fin1");
 		fin1Object->transform.scale = glm::vec3(1.0f);
 		fin1Object->parent = true;
 		fin1Object->parentObj = player;
@@ -272,7 +288,7 @@ public:
 		pl->fin1 = fin1Object;
 
 		// fin2
-		GameObject* fin2Object = new GameObject("fin");
+		GameObject* fin2Object = new GameObject("fin2");
 		fin2Object->transform.scale = glm::vec3(1.0f);
 		fin2Object->parent = true;
 		fin2Object->parentObj = player;
@@ -285,7 +301,7 @@ public:
 		pl->fin2 = fin2Object;
 
 		// fin3
-		GameObject* fin3Object = new GameObject("fin");
+		GameObject* fin3Object = new GameObject("fin3");
 		fin3Object->transform.scale = glm::vec3(1.0f);
 		fin3Object->parent = true;
 		fin3Object->parentObj = player;
