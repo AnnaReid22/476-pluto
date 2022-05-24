@@ -39,6 +39,11 @@ public:
     glm::mat4 rotMat;
     Time* time;
     glm::vec4 posUpdate;
+    glm::vec3 originalFin1Pos;
+    glm::vec3 originalFin2Pos;
+    glm::vec3 originalFin3Pos;
+    glm::vec3 originalRocketPosition;
+    bool setOriginalFinPositions;
 
     // Rotation variables
     bool initMousePosSet;

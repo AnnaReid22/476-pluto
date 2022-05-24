@@ -9,8 +9,9 @@
 #include <iostream>
 #define PI 3.14159265
 #define MAXDOLLYFTIME 1.3
-#define DISASSEMBLE_ANIM 0
-#define ROTATE_FINS_ANIM 1
+#define DISASSEMBLE_SPEED 0.8
+//#define DISASSEMBLE_ANIM 0
+//#define ROTATE_FINS_ANIM 1
 
 
 ResourceManager* rm_ = ResourceManager::getInstance();
@@ -27,7 +28,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     dollyFTime = 0;
     stopTime = 0;
     shakeTime = 0;
-    collideTime = 3.0f;
+    collideTime = 6.0f;
     dead = false;
     alreadyShot = false;
     posUpdate = glm::vec4(0, 0, 0, 1);
@@ -59,6 +60,14 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
 
     //std::cout << "Original Transform: " << originalTransform.x << ", " << originalTransform.y << ", " << originalTransform.z << std::endl;
     rotMat = mat4(1);
+
+    // Set original fin positions to 0
+    originalFin1Pos = glm::vec3(0, 0, 0);
+    originalFin2Pos = glm::vec3(0, 0, 0);
+    originalFin3Pos = glm::vec3(0, 0, 0);
+
+    // Original fin positions are not set yet
+    setOriginalFinPositions = false;
 }
 
 /*
@@ -117,9 +126,18 @@ void Player::ShakeRocket()
     this->gameObject->transform.position += this->getForward()*((float)(rand() % 7 - 3) / 20.0f);
 }
 
-// Make the different parts of the rocket fall apart. Used after the rocket crashes.
+// Make the different parts of the rocket fall apart. Used after the rocket crashes. //TODO: add random number generation
 void Player::DisassembleRocket()
 {
+    if (!setOriginalFinPositions)
+    {
+        originalFin1Pos = normalize(fin1->transform.position);
+        originalFin2Pos = normalize(fin2->transform.position);
+        originalFin3Pos = normalize(fin3->transform.position);
+    }
+    fin1->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin1Pos);
+    fin2->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin2Pos);
+    fin3->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin3Pos);
     collideTime -= time->getFrametime();
 }
 
@@ -396,6 +414,8 @@ void Player::moveRocket()
     fin3->transform.position = glm::vec3(0.0, -0.7, -0.4);
     fin3->transform.rotation = glm::vec3(0.0f, glm::radians(0.0f), glm::radians(0.0f));
     fin3->transform.scale = glm::vec3(0.5, 0.5, 0.5);
+
+ 
 
     if (dollyFTime > 0)
     {
