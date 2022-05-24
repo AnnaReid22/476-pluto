@@ -23,6 +23,8 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     prevDollyF = false;
     dollyFTime = 0;
     stopTime = 0;
+    collideTime = 3.0f;
+    dead = false;
 
     // Speed for any of the above movements
     speed = -7.0f;
@@ -72,7 +74,41 @@ void Player::Update()
     {
         moveRocket();
     }
+    else if (collideTime > 0)
+    {
+        //DisassembleRocket();//grac
+        ShakeRocket();
+    }
+    else if (!dead)
+    {
+        KillRocket();
+        dead = true;
 
+    }
+
+}
+
+void Player::ShakeRocket()
+{
+    Time* time = time->getInstance();
+    float frametime = time->getFrametime();
+    collideTime -= frametime;
+    this->gameObject->transform.position.x += ((float)(rand() % 7 - 3) / 4.0f);
+}
+
+void Player::KillRocket()
+{
+    MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
+    rocket_mesh->Disable();
+
+    GameObject* ps = (GameObject*)rm_->getOther("particle_system_death");
+
+    ps->transform = this->gameObject->transform;
+    ps->Enable();
+    ParticleSystem* ps_obj = ps->getComponentByType<ParticleSystem>();
+    ps_obj->start = this->gameObject->transform.position;
+
+    std::cout << "You crashed :(" << std::endl;
 }
 
 
@@ -84,7 +120,7 @@ void Player::OnCollide(GameObject* other)
     if (other->tag == "planet" && other->name != "pluto" || other->name == "asteroid")
     {
         stop = true;
-        MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
+       /* MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
         rocket_mesh->Disable();
         
         GameObject* ps = (GameObject*)rm_->getOther("particle_system_death");
@@ -94,7 +130,7 @@ void Player::OnCollide(GameObject* other)
         ParticleSystem* ps_obj = ps->getComponentByType<ParticleSystem>();
         ps_obj->start = this->gameObject->transform.position;
 
-        std::cout << "You crashed :(" << std::endl;
+        std::cout << "You crashed :(" << std::endl;*/
     }
     if (other->name == "pluto")
     {

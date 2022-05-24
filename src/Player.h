@@ -31,6 +31,8 @@ public:
     bool prevDollyF;
     bool stop;
     bool shoot;
+    bool dead;
+    float collideTime;
 
     // Rotation variables
     bool initMousePosSet;
@@ -44,6 +46,8 @@ public:
     void Disable() { this->isEnabled = false; };
 
     void OnCollide(GameObject* other);
+    void KillRocket();
+    void ShakeRocket();
 
     // Rocket accessor methods
     glm::vec3 getPosition();
