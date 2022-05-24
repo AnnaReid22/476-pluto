@@ -220,10 +220,10 @@ void Player::moveRocket()
         BoundingSphereCollider* bsc = bullet->addComponentOfType<BoundingSphereCollider>();
         MeshRenderer* meshRenderer = bullet->addComponentOfType<MeshRenderer>();
         ResourceManager* rm = ResourceManager::getInstance();
-        meshRenderer->mesh = rm->getMesh("skybox");
-        std::shared_ptr<Material> mat = std::make_shared<Material>();
-        mat->t_albedo = rm->getUserTextureResource("particleTexture");
-        meshRenderer->material = mat;
+        meshRenderer->mesh = rm->getMesh("lazer");
+        meshRenderer->material = std::make_shared<Material>();
+        meshRenderer->material->t_albedo = rm->getUserTextureResource("lazerTexture");
+
         PhysicsObject* physicsObject = bullet->addComponentOfType<PhysicsObject>();
         physicsObject->vel = this->getForward() * -10.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
         physicsObject->acc = glm::vec3(0.0f);

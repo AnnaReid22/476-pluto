@@ -232,7 +232,21 @@ public:
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
 		es->spawnDelay = .7;
 
+		//lazer
+		std::shared_ptr<Shape> lazerMesh = make_shared<Shape>();
+		lazerMesh->loadMesh(resourceDirectory + "/lazer.obj");
+		lazerMesh->resize();
+		lazerMesh->init();
+		rm->addMesh("lazer", lazerMesh);
 
+		std::shared_ptr<Texture> lazerTexture = make_shared<Texture>();
+		lazerTexture->setFilename(resourceDirectory + "/redPixel.png");
+		lazerTexture->init();
+		lazerTexture->setUnit(0);
+		lazerTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		rm->addUserTextureResource("lazerTexture", lazerTexture);
+
+		//planets
 
 		initPlanets(resourceDirectory);
 
