@@ -6,5 +6,5 @@ in float zPos;
 
 void main()
 {
-    color = vec4(clamp(zPos, 0, 1), 0, 0, 1);
+    color = vec4(-zPos/1000, 0, 0, 1);
 }

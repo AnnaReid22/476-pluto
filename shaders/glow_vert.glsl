@@ -11,6 +11,7 @@ out float zPos;
 void main()
 {
   
-	gl_Position = P * V * M * vec4(vertPos, 1);
-  zPos = gl_Position.z / 100;
+	gl_Position = V * M * vec4(vertPos, 1);
+  zPos = gl_Position.z;
+  gl_Position = P * gl_Position;
 }

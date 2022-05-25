@@ -63,7 +63,6 @@ public:
 
 	shared_ptr<Texture> rocket_albedo;
 	shared_ptr<Texture> grass_albedo;
-	shared_ptr<Texture> asteroid_albedo;
 	shared_ptr<Texture> earth_albedo;
 	shared_ptr<Texture> mars_albedo;
 	shared_ptr<Texture> jupiter_albedo;
@@ -75,7 +74,7 @@ public:
 	
 	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> groundMat;
-	shared_ptr<Material> asteroidMat;
+	shared_ptr<Material> asteroidMat[4];
 	shared_ptr<Material> earthMat;
 	shared_ptr<Material> marsMat;
 	shared_ptr<Material> jupiterMat;
@@ -191,13 +190,16 @@ public:
 		rocketMat->t_albedo = rocket_albedo;
 
 		//asteroid loader
-		asteroid_albedo = make_shared<Texture>();
-		asteroid_albedo->setFilename(resourceDirectory + "/asteroid.jpg");
-		asteroid_albedo->init();
-		asteroid_albedo->setUnit(0);
-		asteroid_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-		asteroidMat = make_shared<Material>();
-		asteroidMat->t_albedo = asteroid_albedo;
+		string asteroid_tex_names[4] = {"/asteroid.jpg", "/asteroid2.jpg" ,"/asteroid3.jpg" ,"/asteroid4.jpg"};
+		for (int i = 0; i < 4; i++) {
+				asteroidMat[i] = make_shared<Material>();
+				asteroidMat[i]->t_albedo = make_shared<Texture>();
+				asteroidMat[i]->t_albedo->setFilename(resourceDirectory + asteroid_tex_names[i]);
+				asteroidMat[i]->t_albedo->init();
+				asteroidMat[i]->t_albedo->setUnit(0);
+				asteroidMat[i]->t_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		}
+		rm->addOther("asteroid_materials", &asteroidMat);
 		string asteroid_names[15] = { "", "0", "1", "00", "01", "10", "11", "000", "001", "010", "011", "100", "101", "110", "111" };
 		for (int i = 0; i < 15; i++) {
 				asteroid_shapes[i] = make_shared<Shape>();
@@ -206,10 +208,7 @@ public:
 				asteroid_shapes[i]->init();
 		}
 		rm->addOther("asteroid_shapes", asteroid_shapes);
-		rm->addOther("asteroid_material", &asteroidMat);
 
-		asteroidMat = make_shared<Material>();
-		asteroidMat->t_albedo = asteroid_albedo;
 
 
 		//player loader

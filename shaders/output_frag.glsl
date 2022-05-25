@@ -16,6 +16,9 @@ uniform mat4 V;
 float getLazerGlow(float radius){
     float percentGlow = 0;
     float nSamples = 0;
+    if(texture(lazerGlowOutput, fragTex).r == 0){
+        return 0;
+    }
 
     for(float i=0; i<10; i++){
         for(float j=0; j<10; j++){
@@ -26,7 +29,7 @@ float getLazerGlow(float radius){
             }
         }
     }
-    return 2 * clamp(percentGlow / nSamples, 0, 0.5);
+    return 0.5 * clamp(percentGlow / nSamples, 0.5, 1);
 }
 
 void main()
@@ -45,15 +48,15 @@ void main()
 
     color.rgb = (1-gPos.a) * skyCol.rgb;
 
-    float gDepth =0.5;
+    float gDepth = 1;
+    if(gPos.a != 0){
+        gDepth = -viewPos.z/1000;
+    }
     
-    if(lazerDepth < gDepth && lazerDepth!=0){
+    if(lazerDepth < gDepth){
         color.r += lazerGlow;
-    }else{
-        color.r += (1 - gPos.a) * lazerGlow;
     }
 
     color.rgb += gPos.a * (psCol.rgb*psCol.a + gLight.rgb*(1.0f-psCol.a));
-
-    
+    //color.rgb = vec3(lazerDepth, gDepth, 0);
 }
