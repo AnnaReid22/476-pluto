@@ -48,6 +48,7 @@ void OutputPass::execute(WindowManager* windowManager)
 	GLuint gLightOutput = rm->getRenderTextureResource("gLightOutput");
 	GLuint psColorOutput = rm->getRenderTextureResource("psColorOutput");
 	GLuint psPositionOutput = rm->getRenderTextureResource("psPositionOutput");
+
 	GLuint gBuffer = rm->getRenderTextureResource("gBuffer");
 	GLuint shadowOutput = rm->getRenderTextureResource("shadowOutput");
 
@@ -70,21 +71,21 @@ void OutputPass::execute(WindowManager* windowManager)
 	prog->bind();
 
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, psColorOutput);
-		glUniform1i(prog->getUniform("psColorOutput"), 0);
+		// glActiveTexture(GL_TEXTURE0);
+		// glBindTexture(GL_TEXTURE_2D, psColorOutput);
+		// glUniform1i(prog->getUniform("psColorOutput"), 0);
 
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, gLightOutput);
-		glUniform1i(prog->getUniform("gLightOutput"), 1);
+		// glActiveTexture(GL_TEXTURE1);
+		// glBindTexture(GL_TEXTURE_2D, gLightOutput);
+		// glUniform1i(prog->getUniform("gLightOutput"), 1);
 
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, psPositionOutput);
-		glUniform1i(prog->getUniform("psPositionOutput"), 2);
+		// glActiveTexture(GL_TEXTURE2);
+		// glBindTexture(GL_TEXTURE_2D, psPositionOutput);
+		// glUniform1i(prog->getUniform("psPositionOutput"), 2);
 
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, gBuffer);
-		glUniform1i(prog->getUniform("gBuffer"), 3);
+		// glActiveTexture(GL_TEXTURE3);
+		// glBindTexture(GL_TEXTURE_2D, gBuffer);
+		// glUniform1i(prog->getUniform("gBuffer"), 3);
 
 		glActiveTexture(GL_TEXTURE4);
 		glBindTexture(GL_TEXTURE_2D, shadowOutput);

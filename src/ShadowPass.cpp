@@ -92,7 +92,7 @@ void ShadowPass::execute(WindowManager * windowManager)
 	float width = rm->getNumericalValue("screenWidth");
 	float height = rm->getNumericalValue("screenHeight");
     //light lookat and y vector
-    vec3 lightLA = vec3(0.0, 0.0, -1000.0);
+    vec3 lightLA = vec3(0.0);
     vec3 lightUp = vec3(0, 1, 0);
 
     mat4 LO, LV, LSpace;
@@ -136,19 +136,35 @@ void ShadowPass::execute(WindowManager * windowManager)
   			depthProgDebug->unbind();
   		} else {
   			shadowDebugProg->bind();
-				glActiveTexture(GL_TEXTURE4);
+				glActiveTexture(GL_TEXTURE0);
+				int err = glGetError();
+				std::cout << "1: " << err << std::endl;
 				glBindTexture(GL_TEXTURE_2D, depthMap);
+				err = glGetError();
+				std::cout << "2: " << err << std::endl;
 				glUniform1i(shadowDebugProg->getUniform("texBuf"), 0);
+				err = glGetError();
+				std::cout << "3: " << err << std::endl;
 				glEnableVertexAttribArray(0);
-				glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+				err = glGetError();
+				std::cout << "4: " << err << std::endl;
+				glBindBuffer(GL_ARRAY_BUFFER, quad_vbuf);
+				err = glGetError();
+				std::cout << "5: " << err << std::endl;
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+				err = glGetError();
+				std::cout << "6: " << err << std::endl;
 				glDrawArrays(GL_TRIANGLES, 0, 6);
+				err = glGetError();
+				std::cout << "7: " << err << std::endl;
 				glDisableVertexAttribArray(0);
+				err = glGetError();
+				std::cout << "8: " << err << std::endl;
   			shadowDebugProg->unbind();
   		}
   	} else {
   		shadowProg->bind();
-			glActiveTexture(GL_TEXTURE4);
+			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, depthMap);
 			glUniform1i(shadowProg->getUniform("shadowDepth"), 1);
 			glUniform3f(shadowProg->getUniform("lightDir"), g_light.x, g_light.y, g_light.z);
