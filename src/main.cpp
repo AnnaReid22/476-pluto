@@ -10,6 +10,8 @@ Z. Wood + S. Sueda
 #include "Shape.h"
 #include "MatrixStack.h"
 #include "WindowManager.h"
+#include "SkyboxRenderPass.h"
+#include "LazerGlowRenderPass.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -33,6 +35,8 @@ Z. Wood + S. Sueda
 #include "ForwardRenderPass.h"
 #include "ParticleRenderPass.h"
 #include "ParticleSystem.h"
+#include "DeferredSamplingPass.h"
+#include "DeferredLightingPass.h"
 
 using namespace std;
 using namespace glm;
@@ -50,7 +54,6 @@ public:
 	shared_ptr<Shape> theRocket;
 	shared_ptr<Shape> theFin;
 	shared_ptr<Shape> texcube;
-	shared_ptr<Shape> texSphere;
 	shared_ptr<Shape> theEarth;
 	shared_ptr<Shape> theMars;
 	shared_ptr<Shape> theJupiter;
@@ -62,9 +65,6 @@ public:
 	shared_ptr<Texture> rocket_albedo;
 	shared_ptr<Texture> fin_albedo;
 	shared_ptr<Texture> grass_albedo;
-	shared_ptr<Texture> asteroid_albedo;
-	shared_ptr<Texture> sky_albedo;
-	shared_ptr<Texture> sky_noise_albedo;
 	shared_ptr<Texture> earth_albedo;
 	shared_ptr<Texture> mars_albedo;
 	shared_ptr<Texture> jupiter_albedo;
@@ -77,8 +77,7 @@ public:
 	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> finMat;
 	shared_ptr<Material> groundMat;
-	shared_ptr<Material> asteroidMat;
-	shared_ptr<Material> skyMat;
+	shared_ptr<Material> asteroidMat[4];
 	shared_ptr<Material> earthMat;
 	shared_ptr<Material> marsMat;
 	shared_ptr<Material> jupiterMat;
@@ -133,6 +132,11 @@ public:
 	void resizeCallback(GLFWwindow *window, int width, int height)
 	{
 		glViewport(0, 0, width, height);
+
+		ResourceManager* rm = rm->getInstance();
+
+		rm->addNumericalValue("screenWidth", width);
+		rm->addNumericalValue("screenHeight", height);
 	}
 
 	void init(const std::string& resourceDirectory)
@@ -144,14 +148,28 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 
+		ResourceManager* rm = rm->getInstance();
+		int width, height;
+
+		glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+		rm->addNumericalValue("screenWidth", width);
+		rm->addNumericalValue("screenHeight", height);
+
+		int score = 0;
+		rm->addNumericalValue("score", score);
+
 		w = World();
 		rp = RenderPipeline(windowManager);
 
-		ResourceManager* rm = rm->getInstance();
+
 		rm->addOther("WindowManager", windowManager);
 
-		rp.addRenderPass(std::make_shared<ForwardRenderPass>());
+		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
+		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
+		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
+		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
+		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
 		// add render passes with more shaders here
 	}
 
@@ -190,13 +208,16 @@ public:
 		finMat->t_albedo = fin_albedo;
 
 		//asteroid loader
-		asteroid_albedo = make_shared<Texture>();
-		asteroid_albedo->setFilename(resourceDirectory + "/asteroid.jpg");
-		asteroid_albedo->init();
-		asteroid_albedo->setUnit(0);
-		asteroid_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-		asteroidMat = make_shared<Material>();
-		asteroidMat->t_albedo = asteroid_albedo;
+		string asteroid_tex_names[4] = {"/asteroid.jpg", "/asteroid2.jpg" ,"/asteroid3.jpg" ,"/asteroid4.jpg"};
+		for (int i = 0; i < 4; i++) {
+				asteroidMat[i] = make_shared<Material>();
+				asteroidMat[i]->t_albedo = make_shared<Texture>();
+				asteroidMat[i]->t_albedo->setFilename(resourceDirectory + asteroid_tex_names[i]);
+				asteroidMat[i]->t_albedo->init();
+				asteroidMat[i]->t_albedo->setUnit(0);
+				asteroidMat[i]->t_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		}
+		rm->addOther("asteroid_materials", &asteroidMat);
 		string asteroid_names[15] = { "", "0", "1", "00", "01", "10", "11", "000", "001", "010", "011", "100", "101", "110", "111" };
 		for (int i = 0; i < 15; i++) {
 				asteroid_shapes[i] = make_shared<Shape>();
@@ -205,36 +226,8 @@ public:
 				asteroid_shapes[i]->init();
 		}
 		rm->addOther("asteroid_shapes", asteroid_shapes);
-		rm->addOther("asteroid_material", &asteroidMat);
-
-		asteroidMat = make_shared<Material>();
-		asteroidMat->t_albedo = asteroid_albedo;
-
-		//skybox loader
-		texSphere = make_shared<Shape>();
-		texSphere->loadMesh(resourceDirectory + "/texCube.obj");
-        texSphere->resize();
-        texSphere->init();
-
-		sky_albedo = make_shared<Texture>();
-        sky_albedo->setFilename(resourceDirectory + "/spaceSkybox.jpg");
-        sky_albedo->init();
-        sky_albedo->setUnit(1);
-        sky_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
-
-        skyMat = make_shared<Material>();
-        skyMat->t_albedo = sky_albedo;
 
 
-		sky_noise_albedo = make_shared<Texture>();
-		sky_noise_albedo->setFilename(resourceDirectory + "/twinkle_noise.jpg");
-		sky_noise_albedo->init();
-		sky_noise_albedo->setUnit(2);
-		sky_noise_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
-
-		rm->addMesh("skybox", texSphere);
-		rm->addUserTextureResource("skybox", sky_albedo);
-		rm->addUserTextureResource("skyboxNoise", sky_noise_albedo);
 
 
 		//player loader
@@ -319,8 +312,21 @@ public:
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
 		es->spawnDelay = .7;
 
+		//lazer
+		std::shared_ptr<Shape> lazerMesh = make_shared<Shape>();
+		lazerMesh->loadMesh(resourceDirectory + "/lazer.obj");
+		//lazerMesh->resize();
+		lazerMesh->init();
+		rm->addMesh("lazer", lazerMesh);
 
-		//Order matters here, because the skybox has to render before anything else.
+		std::shared_ptr<Texture> lazerTexture = make_shared<Texture>();
+		lazerTexture->setFilename(resourceDirectory + "/asteroid.jpg");
+		lazerTexture->init();
+		lazerTexture->setUnit(0);
+		lazerTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		rm->addUserTextureResource("lazerTexture", lazerTexture);
+
+		//planets
 
 		initPlanets(resourceDirectory);
 

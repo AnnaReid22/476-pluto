@@ -50,7 +50,7 @@ void Enemy::Update()
             glm::vec3 offVec2 = glm::vec3(-offVec1.x, -offVec1.y, 0);
 
             std::shared_ptr<Shape>* asteroid_shapes = (std::shared_ptr<Shape>*) (rm->getOther("asteroid_shapes"));
-            std::shared_ptr<Material> asteroid_material = *(std::shared_ptr<Material> *) rm->getOther("asteroid_material");
+            std::shared_ptr<Material> asteroid_material = gameObject->getComponentByType<MeshRenderer>()->material;
 
             GameObject* child1 = new GameObject("asteroid");
             child1->transform.position = gameObject->transform.position;
@@ -102,5 +102,13 @@ void Enemy::OnCollide(GameObject* other)
 {
     if (this->cooldown < 0) {
         collided = true;
+    }
+    if(other->name == "bullet")
+    {
+        ResourceManager* rm = ResourceManager::getInstance();
+        int score = rm->getNumericalValue("score");
+        score += 1;
+        std::cout << "Your Score is: " << score << std::endl;
+        rm->addNumericalValue("score", score);
     }
 }

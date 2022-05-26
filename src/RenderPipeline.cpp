@@ -1,11 +1,15 @@
 #include "RenderPipeline.h"
 #include "MeshRenderer.h"
 #include "GameObject.h"
+#include "OutputPass.h"
 
 RenderPipeline::RenderPipeline(WindowManager* wm)
 {
     windowManager = wm;
     rm = rm->getInstance();
+
+    outputPass = std::make_shared<OutputPass>();
+    outputPass->init();
 }
 
 std::vector<GameObject*> RenderPipeline::viewFrustumCull(std::vector<GameObject*> objectsToRender, Camera* cam)
@@ -82,7 +86,7 @@ void RenderPipeline::executePipeline()
         pass->execute(windowManager);
 
     //simple render pass that will combine all the textures
-    //outputPass->execute(windowManager);
+    outputPass->execute(windowManager);
 
     return;
 }
