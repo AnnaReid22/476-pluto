@@ -191,10 +191,10 @@ public:
 
 		//asteroid loader
 		asteroid_albedo = make_shared<Texture>();
-		asteroid_albedo->setFilename(resourceDirectory + "/bright.jpg");
+		asteroid_albedo->setFilename(resourceDirectory + "/asteroid.jpg");
 		asteroid_albedo->init();
 		asteroid_albedo->setUnit(0);
-		asteroid_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
+		asteroid_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 		asteroidMat = make_shared<Material>();
 		asteroidMat->t_albedo = asteroid_albedo;
 		string asteroid_names[15] = { "", "0", "1", "00", "01", "10", "11", "000", "001", "010", "011", "100", "101", "110", "111" };
