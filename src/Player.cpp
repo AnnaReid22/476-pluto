@@ -77,6 +77,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     originalFin1Pos = glm::vec3(0, 0, 0);
     originalFin2Pos = glm::vec3(0, 0, 0);
     originalFin3Pos = glm::vec3(0, 0, 0);
+    fin1R = mat4(1);
 
     // Original fin positions are not set yet
     setOriginalFinPositions = false;
@@ -128,7 +129,6 @@ void Player::Update()
     }
     if (shakeTime > 0)
     {
-        //DisassembleRocket();//grac
         ShakeRocket();
     }
 
@@ -141,6 +141,9 @@ void Player::LoseFins()
     if (!setOriginalFinPositions)
     {
         //Set the rotations here so that the fins don't rotate as they fall
+        //vec3 rotation = normalize(snoiseRotation(normalize(fin1->transform.position)));
+
+        //fin1R = rotationMatrix(rotation, 2*loseFinsTime);
         originalFin1Pos = fin1->transform.position;
         originalHierarchicalFin1Rot = fin1->transform.hierarchicalRot;
 
@@ -152,14 +155,14 @@ void Player::LoseFins()
 
         setOriginalFinPositions = true;
     }
-    fin1->transform.position = originalFin1Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));
+    fin1->transform.position = originalFin1Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));//glm::vec3(fin1R*glm::vec4(normalize(originalFin1Pos),0)));
     // Set rotation to original rotation so that the fins don't spin as the rocket goes forward
     fin1->transform.hierarchicalRot = originalHierarchicalFin1Rot;
     
-    fin2->transform.position = originalFin2Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));//originalFin2Pos + ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * normalize(originalFin2Pos));
+    fin2->transform.position = originalFin2Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));
     fin2->transform.hierarchicalRot = originalHierarchicalFin2Rot;
     
-    fin3->transform.position = originalFin3Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));//originalFin3Pos + ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * normalize(originalFin3Pos));
+    fin3->transform.position = originalFin3Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));
     fin3->transform.hierarchicalRot = originalHierarchicalFin3Rot;
     
     loseFinsTime -= time->getFrametime();
@@ -178,19 +181,61 @@ void Player::ShakeRocket()
     this->gameObject->transform.position += this->getForward()*((float)(rand() % 7 - 3) / 20.0f);
 }
 
+
+float Player::hash(float n)
+{
+    return fract(sin(n) * 753.5453123);
+}
+
+// Noise function used to disassemble rocket
+glm::vec3 Player::snoiseRotation(glm::vec3 x)
+{
+    glm::vec3 rotation;
+    glm::vec3 p = floor(x);
+    glm::vec3 f = fract(x);
+    f = f * f * (3.0f - 2.0f * f);
+    float n = p.x + p.y * 157.0 + 113.0 * p.z;
+    rotation.x = mix(mix(mix(hash(n + 0.0), hash(n + 1.0), f.x), mix(hash(n + 15.0), hash(n + 300.0), f.x), f.y), mix(mix(hash(n + 78.0), hash(n + 43.0), f.x), mix(hash(n + 88.0), hash(n + 53.0), f.x), f.y), f.z);
+    rotation.y = mix(mix(mix(hash(n + 0.0), hash(n + 1.0), f.x), mix(hash(n + 133.0), hash(n + 67.0), f.x), f.y), mix(mix(hash(n + 215.0), hash(n + 328.0), f.x), mix(hash(n + 112.0), hash(n + 14.0), f.x), f.y), f.z);
+    rotation.z = mix(mix(mix(hash(n + 0.0), hash(n + 1.0), f.x), mix(hash(n + 99.0), hash(n + 156.0), f.x), f.y), mix(mix(hash(n + 245.0), hash(n + 114.0), f.x), mix(hash(n + 270.0), hash(n + 275.0), f.x), f.y), f.z);
+    rotation.x = sin(rotation.x * 111.);
+    rotation.y = sin(rotation.y * 111.);
+    rotation.z = sin(rotation.z * 111.);
+    return rotation;
+}
+
+glm::mat4 Player::rotationMatrix(glm::vec3 axis, float angle)
+{
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+
+    return mat4(oc * axis.x * axis.x + c, oc * axis.x * axis.y - axis.z * s, oc * axis.z * axis.x + axis.y * s, 0.0,
+        oc * axis.x * axis.y + axis.z * s, oc * axis.y * axis.y + c, oc * axis.y * axis.z - axis.x * s, 0.0,
+        oc * axis.z * axis.x - axis.y * s, oc * axis.y * axis.z + axis.x * s, oc * axis.z * axis.z + c, 0.0,
+        0.0, 0.0, 0.0, 1.0);
+}
+
 // Make the different parts of the rocket fall apart. Used after the rocket crashes. //TODO: add random number generation
 void Player::DisassembleRocket()
 {
     std::cout << "disassembling!!!!!! " << std::endl;
     if (!setOriginalFinPositions)
     {
-        originalFin1Pos = normalize(fin1->transform.position);
+        vec3 rotation = normalize(snoiseRotation(normalize(fin1->transform.position)));
+
+        fin1R = rotationMatrix(rotation, 5*collideTime);
+      
+        originalFin1Pos = fin1R * glm::vec4(normalize(fin1->transform.position),0);
         originalFin2Pos = normalize(fin2->transform.position);
         originalFin3Pos = normalize(fin3->transform.position);
+        originalRocketBodyPos = normalize(vec3(0, 0, -1));
     }
     fin1->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin1Pos);
     fin2->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin2Pos);
     fin3->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin3Pos);
+    rocketBody->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalRocketBodyPos);
     collideTime -= time->getFrametime();
 }
 

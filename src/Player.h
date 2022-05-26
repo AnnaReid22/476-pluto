@@ -59,6 +59,11 @@ public:
     glm::vec3 originalFin3Pos;
     glm::quat originalHierarchicalFin3Rot;
 
+    glm::vec3 originalRocketBodyPos;
+
+    // Rotation matrices used for disassembling rocket
+    glm::mat4 fin1R;
+
     glm::vec3 originalPlayer;
     bool setOriginalFinPositions;
 
@@ -80,6 +85,11 @@ public:
     void PrepareShoot();
     void Shoot();
     void LoseFins();
+
+    // Helper functions for DisassembleRocket
+    float hash(float n);
+    glm::vec3 snoiseRotation(glm::vec3 x);
+    glm::mat4 rotationMatrix(glm::vec3 axis, float angle);
 
     // Rocket accessor methods
     glm::vec3 getPosition();
