@@ -57,6 +57,6 @@ void main()
         color.r += lazerGlow;
     }
 
-    color.rgb += gPos.a * (psCol.rgb*psCol.a + gLight.rgb*(1.0f-psCol.a));
+    color.rgb += (psCol.rgb*psCol.a + gLight.rgb*(1.0f-psCol.a));
     //color.rgb = vec3(lazerDepth, gDepth, 0);
 }
