@@ -54,7 +54,16 @@ void ParticleSystem::Update()
             points[i*3+0] =p.getPosition().x;
             points[i*3+1] =p.getPosition().y;
             points[i*3+2] =p.getPosition().z;
-            p.setColor(vec4(p.getColor().r, p.getColor().g, p.getColor().b, (p.getColor().a*time->getFrametime())));
+            // std::cout << time->getFrametime()/lifespan << std::endl;
+            if(type == "moving")
+            {
+                color_modify_value = (time->getFrametime()/lifespan)/2.0;
+                p.setColor(vec4(p.getColor().r + color_modify_value, p.getColor().g - color_modify_value, p.getColor().b  - color_modify_value, p.getColor().a));
+            }
+            else
+            {
+                p.setColor(vec4(p.getColor().r + color_modify_value, p.getColor().g - color_modify_value, p.getColor().b  - color_modify_value, p.getColor().a));
+            }
             vec4 col = p.getColor();
             pointColors[i*4+0] = col.r;
             pointColors[i*4+1] = col.g; 

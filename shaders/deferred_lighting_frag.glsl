@@ -42,4 +42,3 @@ float shadow(vec4 LSfPos)
         return 0.0;
     }
 }
-

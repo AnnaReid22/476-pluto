@@ -10,6 +10,8 @@ Z. Wood + S. Sueda
 #include "Shape.h"
 #include "MatrixStack.h"
 #include "WindowManager.h"
+#include "SkyboxRenderPass.h"
+#include "LazerGlowRenderPass.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -36,6 +38,7 @@ Z. Wood + S. Sueda
 #include "ParticleSystem.h"
 #include "DeferredSamplingPass.h"
 #include "DeferredLightingPass.h"
+#include "BloomRenderPass.h"
 
 using namespace std;
 using namespace glm;
@@ -51,8 +54,8 @@ public:
 	shared_ptr<Shape> asteroid_shapes[15];
 	shared_ptr<Shape> mesh;
 	shared_ptr<Shape> theRocket;
+	shared_ptr<Shape> theFin;
 	shared_ptr<Shape> texcube;
-	shared_ptr<Shape> texSphere;
 	shared_ptr<Shape> theEarth;
 	shared_ptr<Shape> theMars;
 	shared_ptr<Shape> theJupiter;
@@ -62,10 +65,8 @@ public:
 	shared_ptr<Shape> thePluto;
 
 	shared_ptr<Texture> rocket_albedo;
+	shared_ptr<Texture> fin_albedo;
 	shared_ptr<Texture> grass_albedo;
-	shared_ptr<Texture> asteroid_albedo;
-	shared_ptr<Texture> sky_albedo;
-	shared_ptr<Texture> sky_noise_albedo;
 	shared_ptr<Texture> earth_albedo;
 	shared_ptr<Texture> mars_albedo;
 	shared_ptr<Texture> jupiter_albedo;
@@ -76,9 +77,9 @@ public:
 	shared_ptr<Texture> particleTexture;
 	
 	shared_ptr<Material> rocketMat;
+	shared_ptr<Material> finMat;
 	shared_ptr<Material> groundMat;
-	shared_ptr<Material> asteroidMat;
-	shared_ptr<Material> skyMat;
+	shared_ptr<Material> asteroidMat[4];
 	shared_ptr<Material> earthMat;
 	shared_ptr<Material> marsMat;
 	shared_ptr<Material> jupiterMat;
@@ -156,6 +157,9 @@ public:
 		rm->addNumericalValue("screenWidth", width);
 		rm->addNumericalValue("screenHeight", height);
 
+		int score = 0;
+		rm->addNumericalValue("score", score);
+
 		w = World();
 		rp = RenderPipeline(windowManager);
 
@@ -164,9 +168,12 @@ public:
 
 		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
 		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
+		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		rp.addRenderPass(std::make_shared<ShadowPass>());
+		rp.addRenderPass(std::make_shared<BloomRenderPass>());
+		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
 		// add render passes with more shaders here
 	}
 
@@ -176,12 +183,12 @@ public:
 
 		//rocket loader
 		theRocket = make_shared<Shape>();
-		theRocket->loadMesh(resourceDirectory + "/rocket.obj");
+		theRocket->loadMesh(resourceDirectory + "/rocketBody.obj");
         theRocket->resize();
         theRocket->init();
 
 		rocket_albedo = make_shared<Texture>();
-		rocket_albedo->setFilename(resourceDirectory + "/flowers.jpg");
+		rocket_albedo->setFilename(resourceDirectory + "/rocketBody_albedo.jpg");
 		rocket_albedo->init();
 		rocket_albedo->setUnit(0);
 		rocket_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
@@ -189,14 +196,32 @@ public:
 		rocketMat = make_shared<Material>();
 		rocketMat->t_albedo = rocket_albedo;
 
+		//rocket fin's loader
+		theFin = make_shared<Shape>();
+		theFin->loadMesh(resourceDirectory + "/fin.obj");
+		theFin->resize();
+		theFin->init();
+
+		fin_albedo = make_shared<Texture>();
+		fin_albedo->setFilename(resourceDirectory + "/fin_albedo.jpg");
+		fin_albedo->init();
+		fin_albedo->setUnit(0);
+		fin_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+		finMat = make_shared<Material>();
+		finMat->t_albedo = fin_albedo;
+
 		//asteroid loader
-		asteroid_albedo = make_shared<Texture>();
-		asteroid_albedo->setFilename(resourceDirectory + "/asteroid.jpg");
-		asteroid_albedo->init();
-		asteroid_albedo->setUnit(0);
-		asteroid_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-		asteroidMat = make_shared<Material>();
-		asteroidMat->t_albedo = asteroid_albedo;
+		string asteroid_tex_names[4] = {"/asteroid.jpg", "/asteroid2.jpg" ,"/asteroid3.jpg" ,"/asteroid4.jpg"};
+		for (int i = 0; i < 4; i++) {
+				asteroidMat[i] = make_shared<Material>();
+				asteroidMat[i]->t_albedo = make_shared<Texture>();
+				asteroidMat[i]->t_albedo->setFilename(resourceDirectory + asteroid_tex_names[i]);
+				asteroidMat[i]->t_albedo->init();
+				asteroidMat[i]->t_albedo->setUnit(0);
+				asteroidMat[i]->t_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		}
+		rm->addOther("asteroid_materials", &asteroidMat);
 		string asteroid_names[15] = { "", "0", "1", "00", "01", "10", "11", "000", "001", "010", "011", "100", "101", "110", "111" };
 		for (int i = 0; i < 15; i++) {
 				asteroid_shapes[i] = make_shared<Shape>();
@@ -205,48 +230,22 @@ public:
 				asteroid_shapes[i]->init();
 		}
 		rm->addOther("asteroid_shapes", asteroid_shapes);
-		rm->addOther("asteroid_material", &asteroidMat);
-
-		asteroidMat = make_shared<Material>();
-		asteroidMat->t_albedo = asteroid_albedo;
-
-		//skybox loader
-		texSphere = make_shared<Shape>();
-		texSphere->loadMesh(resourceDirectory + "/texCube.obj");
-        texSphere->resize();
-        texSphere->init();
-
-		sky_albedo = make_shared<Texture>();
-        sky_albedo->setFilename(resourceDirectory + "/spaceSkybox.jpg");
-        sky_albedo->init();
-        sky_albedo->setUnit(0);
-        sky_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
-
-        skyMat = make_shared<Material>();
-        skyMat->t_albedo = sky_albedo;
 
 
-		sky_noise_albedo = make_shared<Texture>();
-		sky_noise_albedo->setFilename(resourceDirectory + "/twinkle_noise.jpg");
-		sky_noise_albedo->init();
-		sky_noise_albedo->setUnit(0);
-		sky_noise_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
-		rm->addMesh("skybox", texSphere);
-		rm->addUserTextureResource("skybox", sky_albedo);
-		rm->addUserTextureResource("skyboxNoise", sky_noise_albedo);
 
 		//player loader
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
-		player->transform.scale = glm::vec3(0.4);
+		//pl->finMesh = theFin;
+		player->transform.scale = glm::vec3(1.0f);
 		GameObject* camera = new GameObject("camera");
 		Camera* cam = camera->addComponentOfType<Camera>();
 		cam->rocket = pl;
 
-		MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
-		rocket->mesh = theRocket;
-		rocket->material = rocketMat;
+		//MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
+		//rocket->mesh = theRocket;
+		//rocket->material = rocketMat;
 
 		rm->addOther("player_game_object", player);
 
@@ -256,13 +255,82 @@ public:
 
 		w.addObject(player);
 
+
+		// rocket body loader
+		GameObject* rocketBodyObject = new GameObject("rocketBody");
+		rocketBodyObject->transform.scale = glm::vec3(1.0f);
+		rocketBodyObject->parent = true;
+		rocketBodyObject->parentObj = player;
+		MeshRenderer* rocketBodyMesh = rocketBodyObject->addComponentOfType<MeshRenderer>();
+		rocketBodyMesh->mesh = theRocket;
+		rocketBodyMesh->material = rocketMat;
+		rm->addOther("rocket_body_game_object", rocketBodyObject);
+		BoundingSphereCollider* rocketCollider = rocketBodyObject->addComponentOfType <BoundingSphereCollider>();
+		w.addObject(rocketBodyObject);
+		pl->rocketBody = rocketBodyObject;
+
+
+		// fin loader
+		// fin1
+		GameObject* fin1Object = new GameObject("fin1");
+		fin1Object->transform.scale = glm::vec3(1.0f);
+		fin1Object->parent = true;
+		fin1Object->parentObj = player;
+		MeshRenderer* fin1Mesh = fin1Object->addComponentOfType<MeshRenderer>();
+		fin1Mesh->mesh = theFin;
+		fin1Mesh->material = finMat;
+		rm->addOther("fin1_game_object", fin1Object);
+		BoundingSphereCollider* fin1Collider = fin1Object->addComponentOfType <BoundingSphereCollider>();
+		w.addObject(fin1Object);
+		pl->fin1 = fin1Object;
+
+		// fin2
+		GameObject* fin2Object = new GameObject("fin2");
+		fin2Object->transform.scale = glm::vec3(1.0f);
+		fin2Object->parent = true;
+		fin2Object->parentObj = player;
+		MeshRenderer* fin2Mesh = fin2Object->addComponentOfType<MeshRenderer>();
+		rm->addOther("fin2_game_object", fin2Object);
+		fin2Mesh->mesh = theFin;
+		fin2Mesh->material = finMat;
+		BoundingSphereCollider* fin2Collider = fin2Object->addComponentOfType <BoundingSphereCollider>();
+		w.addObject(fin2Object);
+		pl->fin2 = fin2Object;
+
+		// fin3
+		GameObject* fin3Object = new GameObject("fin3");
+		fin3Object->transform.scale = glm::vec3(1.0f);
+		fin3Object->parent = true;
+		fin3Object->parentObj = player;
+		MeshRenderer* fin3Mesh = fin3Object->addComponentOfType<MeshRenderer>();
+		rm->addOther("fin3_game_object", fin3Object);
+		fin3Mesh->mesh = theFin;
+		fin3Mesh->material = finMat;
+		BoundingSphereCollider* fin3Collider = fin3Object->addComponentOfType <BoundingSphereCollider>();
+		w.addObject(fin3Object);
+		pl->fin3 = fin3Object;
+		
+
 		//enemy loader
 		GameObject* spawner = new GameObject("spawner");
 		EnemySpawner* es = spawner->addComponentOfType<EnemySpawner>();
 		es->spawnDelay = .7;
 
+		//lazer
+		std::shared_ptr<Shape> lazerMesh = make_shared<Shape>();
+		lazerMesh->loadMesh(resourceDirectory + "/lazer.obj");
+		//lazerMesh->resize();
+		lazerMesh->init();
+		rm->addMesh("lazer", lazerMesh);
 
-		//Order matters here, because the skybox has to render before anything else.
+		std::shared_ptr<Texture> lazerTexture = make_shared<Texture>();
+		lazerTexture->setFilename(resourceDirectory + "/asteroid.jpg");
+		lazerTexture->init();
+		lazerTexture->setUnit(0);
+		lazerTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		rm->addUserTextureResource("lazerTexture", lazerTexture);
+
+		//planets
 
 		initPlanets(resourceDirectory);
 
@@ -278,7 +346,7 @@ public:
 		ParticleSystem* ps = player->addComponentOfType<ParticleSystem>();
 		ps->start = pl->getPosition()-pl->getForward();
 		ps->type = "moving";
-		ps->numParticles = 300;
+		ps->numParticles = 400;
 		ps->color = vec4(1.0, 0.7, 0.2, 1.0f);
 		ps->max_velocity = vec3(-0.05, -0.02, -0.04);
 		ps->min_velocity = vec3(-0.1, -0.05, -0.1);
@@ -561,10 +629,10 @@ public:
         thePluto->init();
 
 		pluto_albedo = make_shared<Texture>();
-		pluto_albedo->setFilename(resourceDirectory + "/planets/pluto.png");
+		pluto_albedo->setFilename(resourceDirectory + "/bright.jpg");
 		pluto_albedo->init();
 		pluto_albedo->setUnit(0);
-		pluto_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		pluto_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		plutoMat = make_shared<Material>();
 		plutoMat->t_albedo = pluto_albedo;
