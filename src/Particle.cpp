@@ -42,5 +42,5 @@ void Particle::setPosition(vec3 pos)
 
 void Particle::setColor(vec4 col)
 {
-	color = col;
+	this->color = col;
 }

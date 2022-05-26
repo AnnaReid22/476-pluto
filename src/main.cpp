@@ -344,7 +344,7 @@ public:
 		ParticleSystem* ps = player->addComponentOfType<ParticleSystem>();
 		ps->start = pl->getPosition()-pl->getForward();
 		ps->type = "moving";
-		ps->numParticles = 300;
+		ps->numParticles = 400;
 		ps->color = vec4(1.0, 0.7, 0.2, 1.0f);
 		ps->max_velocity = vec3(-0.05, -0.02, -0.04);
 		ps->min_velocity = vec3(-0.1, -0.05, -0.1);
