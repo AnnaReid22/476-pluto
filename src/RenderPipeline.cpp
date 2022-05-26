@@ -44,7 +44,7 @@ std::vector<GameObject*> RenderPipeline::viewFrustumCull(std::vector<GameObject*
             std::shared_ptr<Shape> mesh = objectsToRender[i]->getComponentByType<MeshRenderer>()->mesh;
             glm::vec3 center = objectsToRender[i]->transform.position + mesh->getCenter();
             float radius = mesh->getRadius() * (glm::max)(objectsToRender[i]->transform.scale.x, (glm::max)(objectsToRender[i]->transform.scale.y, objectsToRender[i]->transform.scale.z));
-            std::cout << "center: " << objectsToRender[i]->name << " " << center.x << ", " << center.y << ", " << center.z << std::endl;
+            //std::cout << "center: " << objectsToRender[i]->name << " " << center.x << ", " << center.y << ", " << center.z << std::endl;
             bool cullable = false;
             for (int j = 0; j < 6; j++)
             {

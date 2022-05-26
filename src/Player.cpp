@@ -9,7 +9,8 @@
 #include <iostream>
 #define PI 3.14159265
 #define MAXDOLLYFTIME 1.3
-#define DISASSEMBLE_SPEED 0.8
+#define DISASSEMBLE_SPEED 2
+#define LOSE_FINS_TIME 6.0
 //#define DISASSEMBLE_ANIM 0
 //#define ROTATE_FINS_ANIM 1
 
@@ -33,6 +34,17 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     alreadyShot = false;
     posUpdate = glm::vec4(0, 0, 0, 1);
     prepareShootTime = 0;
+
+    // Variables used for losing fins upon collision with asteroid
+    //loseFins = false;
+    loseFinsTime = 0;
+
+    // Variables used for obtaining a new set of fins
+    // getFins = false;
+    getFinsTime = 0;
+
+    // Initial num lives
+    numLives = 7;
 
     // Speed for any of the above movements
     speed = -7.0f;
@@ -90,6 +102,11 @@ void Player::Update()
     if (!stop)
     {
         moveRocket();
+        if (loseFinsTime > 0)
+        {
+            LoseFins();
+        }
+        //else if(getFinsTime)
     }
     else if (collideTime > 0)
     {
@@ -117,6 +134,41 @@ void Player::Update()
 
 }
 
+
+// Lose fins when you crash with an asteroid 
+void Player::LoseFins()
+{
+    if (!setOriginalFinPositions)
+    {
+        //Set the rotations here so that the fins don't rotate as they fall
+        originalFin1Pos = fin1->transform.position;
+        originalHierarchicalFin1Rot = fin1->transform.hierarchicalRot;
+
+        originalFin2Pos = fin2->transform.position;
+        originalHierarchicalFin2Rot = fin2->transform.hierarchicalRot;
+
+        originalFin3Pos = fin3->transform.position;
+        originalHierarchicalFin3Rot = fin3->transform.hierarchicalRot;
+
+        setOriginalFinPositions = true;
+    }
+    fin1->transform.position = originalFin1Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));
+    // Set rotation to original rotation so that the fins don't spin as the rocket goes forward
+    fin1->transform.hierarchicalRot = originalHierarchicalFin1Rot;
+    
+    fin2->transform.position = originalFin2Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));//originalFin2Pos + ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * normalize(originalFin2Pos));
+    fin2->transform.hierarchicalRot = originalHierarchicalFin2Rot;
+    
+    fin3->transform.position = originalFin3Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));//originalFin3Pos + ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * normalize(originalFin3Pos));
+    fin3->transform.hierarchicalRot = originalHierarchicalFin3Rot;
+    
+    loseFinsTime -= time->getFrametime();
+    if (loseFinsTime <= 0)
+    {
+        setOriginalFinPositions = false;
+    }
+}
+
 // Shake rocket along forward vecyor. Used after shooting.
 void Player::ShakeRocket()
 {
@@ -129,6 +181,7 @@ void Player::ShakeRocket()
 // Make the different parts of the rocket fall apart. Used after the rocket crashes. //TODO: add random number generation
 void Player::DisassembleRocket()
 {
+    std::cout << "disassembling!!!!!! " << std::endl;
     if (!setOriginalFinPositions)
     {
         originalFin1Pos = normalize(fin1->transform.position);
@@ -212,7 +265,16 @@ void Player::OnCollide(GameObject* other)
 {
     if (other->tag == "planet" && other->name != "pluto" || other->name == "asteroid")
     {
-        stop = true;
+        std::cout << "NumLives: " << numLives << std::endl;
+        if (numLives > 0 && loseFinsTime <=0)
+        {
+            loseFinsTime = LOSE_FINS_TIME;//6.0f;
+            numLives--;
+        }
+        else if(numLives <=0)
+        {
+            stop = true;
+        }
        /* MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
         rocket_mesh->Disable();
         
@@ -420,7 +482,7 @@ void Player::moveRocket()
     if (dollyFTime > 0)
     {
         glm::vec3 finRot = glm::vec3(0, dollyFTime*4, 0.0f);
-        std::cout << "dollyFTime: " << dollyFTime << std::endl;
+        //std::cout << "dollyFTime: " << dollyFTime << std::endl;
         fin1->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
         fin1->transform.position = glm::vec3(0.5, -0.78, 0.20);
         fin2->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
