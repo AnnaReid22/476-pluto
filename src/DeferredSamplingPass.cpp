@@ -89,6 +89,7 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
 
     P = cam->getCameraProjectionMatrix();
     V = cam->getCameraViewMatrix();
+    M = glm::mat4(1);
 
     prog->bind();
 
@@ -97,7 +98,27 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
 
     for (GameObject* obj : renderables)
     {
-        M = obj->transform.genModelMatrix();
+        if (obj->name == "lazer") {
+            continue;
+        }
+
+
+        glm::mat4 Mchild = obj->transform.genModelMatrix();
+        if (obj->parent)
+        {
+            //glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), 4.0f);
+
+            M = obj->parentObj->transform.genModelMatrix() * obj->transform.getHierarchicalRot() * obj->transform.getTransMatrix() * obj->transform.getRotMatrix() * obj->transform.getScaleMatrix();
+            //std::cout << "compare:" << obj << std::endl;
+            //std::cout << "player compare: " << obj->parentObj << std::endl;;
+        }
+        else
+        {
+            M = Mchild;
+        }
+
+
+       // M = obj->transform.genModelMatrix();
         MeshRenderer* mr = obj->getComponentByType<MeshRenderer>();
 
         std::shared_ptr<Material> mat = mr->material;

@@ -28,7 +28,7 @@ bool Physics::isColliding(GameObject* obj1, GameObject* obj2)
     glm::vec3 center1 = p1 + col1->centerOffset;
     glm::vec3 center2 = p2 + col2->centerOffset;
 
-    return glm::distance(center1, center2) <= ((col1->radius)*test_r1 + (col2->radius)*test_r2);
+    return 0.7*glm::distance(center1, center2) <= ((col1->radius)*test_r1 + (col2->radius)*test_r2);
 }
 
 void Physics::clearCollideables()

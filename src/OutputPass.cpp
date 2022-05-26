@@ -35,9 +35,13 @@ void OutputPass::init()
 	prog->addUniform("gLightOutput");
 	prog->addUniform("psColorOutput");
 	prog->addUniform("psPositionOutput");
+	prog->addUniform("skyColorOutput");
+	prog->addUniform("lazerGlowOutput");
 	prog->addUniform("V");
 	prog->addUniform("gBuffer");
 	prog->addUniform("bloomOutput");
+
+	
 
 	initQuad();
 }
@@ -45,11 +49,13 @@ void OutputPass::init()
 void OutputPass::execute(WindowManager* windowManager)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	GLuint skyColorOutput = rm->getRenderTextureResource("skyColorOutput");
 	GLuint gLightOutput = rm->getRenderTextureResource("gLightOutput");
 	GLuint psColorOutput = rm->getRenderTextureResource("psColorOutput");
 	GLuint psPositionOutput = rm->getRenderTextureResource("psPositionOutput");
 	GLuint gBuffer = rm->getRenderTextureResource("gBuffer");
 	GLuint bloomOutput = rm->getRenderTextureResource("bloomColor");
+	GLuint lazerGlowOutput = rm->getRenderTextureResource("lazerGlowOutput");
 
 	Camera* cam = (Camera*)rm->getOther("activeCamera");
     glm::mat4 V = cam->getCameraViewMatrix();
@@ -87,8 +93,16 @@ void OutputPass::execute(WindowManager* windowManager)
 		glUniform1i(prog->getUniform("gBuffer"), 3);
 
 		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, bloomOutput);
-		glUniform1i(prog->getUniform("bloomOutput"), 4);
+		glBindTexture(GL_TEXTURE_2D, skyColorOutput);
+		glUniform1i(prog->getUniform("skyColorOutput"), 4);
+
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, lazerGlowOutput);
+		glUniform1i(prog->getUniform("lazerGlowOutput"), 5);
+  
+    glActiveTexture(GL_TEXTURE6);
+    glBindTexture(GL_TEXTURE_2D, bloomOutput);
+		glUniform1i(prog->getUniform("bloomOutput"), 6);
 
 		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
 

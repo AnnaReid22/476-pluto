@@ -6,6 +6,7 @@
 #include "MeshRenderer.h"
 
 #include "ResourceManager.h"
+#include "Transform.h"
 
 glm::mat4 GetProjectionMatrix(WindowManager * windowManager)
 {
@@ -36,17 +37,7 @@ void ForwardRenderPass::init()
 	prog->addUniform("flip");
 	prog->addAttribute("vertNor");
 
-  skyProg = std::make_shared<Program>();
-  skyProg->setVerbose(true);
-  skyProg->setShaderNames("../shaders/sky_vert.glsl", "../shaders/sky_frag.glsl");
-  skyProg->init();
-  skyProg->addUniform("SkyMat");
-  skyProg->addUniform("time");
-  skyProg->addUniform("Texture0");
-  skyProg->addUniform("TwinkleNoise");
-  skyProg->addAttribute("vertPos");
-  skyProg->addAttribute("vertNor");
-  skyProg->addAttribute("vertTex");
+  
 }
 
 void ForwardRenderPass::execute(WindowManager * windowManager)
@@ -99,7 +90,20 @@ void ForwardRenderPass::execute(WindowManager * windowManager)
     glUniform1i(prog->getUniform("flip"), 1);
     for (GameObject* obj : renderables)
     {
-        M = obj->transform.genModelMatrix();
+        //M = obj->transform.genModelMatrix();
+        glm::mat4 Mchild = obj->transform.genModelMatrix();
+        if (obj->parent)
+        {
+            //glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), 4.0f);
+
+            M = obj->parentObj->transform.genModelMatrix() *obj->transform.getHierarchicalRot() * obj->transform.getTransMatrix() * obj->transform.getRotMatrix() * obj->transform.getScaleMatrix();
+            //std::cout << "compare:" << obj << std::endl;
+            //std::cout << "player compare: " << obj->parentObj << std::endl;;
+        }
+        else
+        {
+            M = Mchild;
+        }
         MeshRenderer* mr = obj->getComponentByType<MeshRenderer>();
 
         std::shared_ptr<Material> mat = mr->material;

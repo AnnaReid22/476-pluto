@@ -28,7 +28,7 @@ void EnemySpawner::spawnEnemy()
 
 		ResourceManager* rm = ResourceManager::getInstance();
 		std::shared_ptr<Shape>* asteroid_shapes = (std::shared_ptr<Shape>*) (rm->getOther("asteroid_shapes"));
-		std::shared_ptr<Material> asteroid_material = *(std::shared_ptr<Material> *) rm->getOther("asteroid_material");
+		std::shared_ptr<Material>* asteroid_materials = (std::shared_ptr<Material> *) rm->getOther("asteroid_materials");
 
 		glm::vec3 playerPos = ((GameObject*)rm->getOther("player_game_object"))->transform.position;
 
@@ -43,7 +43,7 @@ void EnemySpawner::spawnEnemy()
 
 		MeshRenderer* renderer1 = asteroid->addComponentOfType<MeshRenderer>();
 		renderer1->mesh = asteroid_shapes[0];
-		renderer1->material = asteroid_material;
+		renderer1->material = asteroid_materials[(int)(dist(gen)*2.0f + 2.0f)];
 		BoundingSphereCollider* bsc1 = asteroid->addComponentOfType<BoundingSphereCollider>();
 		bsc1->radius = 0.65;
 
