@@ -142,8 +142,8 @@ void Player::LoseFins()
     {
         //Set the rotations here so that the fins don't rotate as they fall
         //vec3 rotation = normalize(snoiseRotation(normalize(fin1->transform.position)));
-
         //fin1R = rotationMatrix(rotation, 2*loseFinsTime);
+
         originalFin1Pos = fin1->transform.position;
         originalHierarchicalFin1Rot = fin1->transform.hierarchicalRot;
 
@@ -423,7 +423,6 @@ void Player::updateMoveVars()
 
     }
     prevDollyF = dollyF;
-    //dollyB = input->GetKey(GLFW_KEY_S);
 }
 
 /*

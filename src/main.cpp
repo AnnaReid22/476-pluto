@@ -166,7 +166,7 @@ public:
         theRocket->init();
 
 		rocket_albedo = make_shared<Texture>();
-		rocket_albedo->setFilename(resourceDirectory + "/gray.jfif");
+		rocket_albedo->setFilename(resourceDirectory + "/rocketBody_albedo.jpg");
 		rocket_albedo->init();
 		rocket_albedo->setUnit(0);
 		rocket_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
@@ -181,7 +181,7 @@ public:
 		theFin->init();
 
 		fin_albedo = make_shared<Texture>();
-		fin_albedo->setFilename(resourceDirectory + "/gray.jfif");
+		fin_albedo->setFilename(resourceDirectory + "/fin_albedo.jpg");
 		fin_albedo->init();
 		fin_albedo->setUnit(0);
 		fin_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
