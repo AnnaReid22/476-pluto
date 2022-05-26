@@ -36,17 +36,7 @@ void ForwardRenderPass::init()
 	prog->addUniform("flip");
 	prog->addAttribute("vertNor");
 
-  skyProg = std::make_shared<Program>();
-  skyProg->setVerbose(true);
-  skyProg->setShaderNames("../shaders/sky_vert.glsl", "../shaders/sky_frag.glsl");
-  skyProg->init();
-  skyProg->addUniform("SkyMat");
-  skyProg->addUniform("time");
-  skyProg->addUniform("Texture0");
-  skyProg->addUniform("TwinkleNoise");
-  skyProg->addAttribute("vertPos");
-  skyProg->addAttribute("vertNor");
-  skyProg->addAttribute("vertTex");
+  
 }
 
 void ForwardRenderPass::execute(WindowManager * windowManager)

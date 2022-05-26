@@ -213,19 +213,20 @@ void Player::moveRocket()
     if (InputManager::getInstance()->GetKey(GLFW_KEY_E) && bulletCooldown <= 0)
     {
         bulletCooldown = 0.5f;
-        GameObject* bullet = new GameObject("bullet");
-        bullet->transform.position = gameObject->transform.position - this->getForward();
+        GameObject* bullet = new GameObject("lazer");
+        bullet->transform.position = gameObject->transform.position - 4.5f*this->getForward();
         bullet->transform.scale = gameObject->transform.scale;
         bullet->transform.rotation = gameObject->transform.rotation;
+        
         BoundingSphereCollider* bsc = bullet->addComponentOfType<BoundingSphereCollider>();
         MeshRenderer* meshRenderer = bullet->addComponentOfType<MeshRenderer>();
         ResourceManager* rm = ResourceManager::getInstance();
-        meshRenderer->mesh = rm->getMesh("skybox");
-        std::shared_ptr<Material> mat = std::make_shared<Material>();
-        mat->t_albedo = rm->getUserTextureResource("particleTexture");
-        meshRenderer->material = mat;
+        meshRenderer->mesh = rm->getMesh("lazer");
+        meshRenderer->material = std::make_shared<Material>();
+        meshRenderer->material->t_albedo = rm->getUserTextureResource("lazerTexture");
+
         PhysicsObject* physicsObject = bullet->addComponentOfType<PhysicsObject>();
-        physicsObject->vel = this->getForward() * -10.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
+        physicsObject->vel = this->getForward() * -30.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
         physicsObject->acc = glm::vec3(0.0f);
 
         gameObject->world->addObject(bullet);
