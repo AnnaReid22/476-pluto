@@ -35,7 +35,6 @@ void OutputPass::init()
 	prog->addUniform("gLightOutput");
 	prog->addUniform("psColorOutput");
 	prog->addUniform("psPositionOutput");
-	prog->addUniform("shadowOutput");
 	prog->addUniform("V");
 	prog->addUniform("gBuffer");
 
@@ -50,7 +49,6 @@ void OutputPass::execute(WindowManager* windowManager)
 	GLuint psPositionOutput = rm->getRenderTextureResource("psPositionOutput");
 
 	GLuint gBuffer = rm->getRenderTextureResource("gBuffer");
-	GLuint shadowOutput = rm->getRenderTextureResource("shadowOutput");
 
 	Camera* cam = (Camera*)rm->getOther("activeCamera");
     glm::mat4 V = cam->getCameraViewMatrix();
@@ -71,25 +69,21 @@ void OutputPass::execute(WindowManager* windowManager)
 	prog->bind();
 
 
-		// glActiveTexture(GL_TEXTURE0);
-		// glBindTexture(GL_TEXTURE_2D, psColorOutput);
-		// glUniform1i(prog->getUniform("psColorOutput"), 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, psColorOutput);
+		glUniform1i(prog->getUniform("psColorOutput"), 0);
 
-		// glActiveTexture(GL_TEXTURE1);
-		// glBindTexture(GL_TEXTURE_2D, gLightOutput);
-		// glUniform1i(prog->getUniform("gLightOutput"), 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, gLightOutput);
+		glUniform1i(prog->getUniform("gLightOutput"), 1);
 
-		// glActiveTexture(GL_TEXTURE2);
-		// glBindTexture(GL_TEXTURE_2D, psPositionOutput);
-		// glUniform1i(prog->getUniform("psPositionOutput"), 2);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, psPositionOutput);
+		glUniform1i(prog->getUniform("psPositionOutput"), 2);
 
-		// glActiveTexture(GL_TEXTURE3);
-		// glBindTexture(GL_TEXTURE_2D, gBuffer);
-		// glUniform1i(prog->getUniform("gBuffer"), 3);
-
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, shadowOutput);
-		glUniform1i(prog->getUniform("shadowOutput"), 4);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, gBuffer);
+		glUniform1i(prog->getUniform("gBuffer"), 3);
 
 		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
 

@@ -84,7 +84,7 @@ void ShadowPass::init()
   	glReadBuffer(GL_NONE);
   	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	rm->addRenderTextureResource("shadowOutput", depthMapFBO);
+	rm->addRenderTextureResource("shadowOutput", depthMap);
 }
 
 void ShadowPass::execute(WindowManager * windowManager)
@@ -92,7 +92,7 @@ void ShadowPass::execute(WindowManager * windowManager)
 	float width = rm->getNumericalValue("screenWidth");
 	float height = rm->getNumericalValue("screenHeight");
     //light lookat and y vector
-    vec3 lightLA = vec3(0.0);
+    vec3 lightLA = vec3(0.0, 0.0, 1000.0);
     vec3 lightUp = vec3(0, 1, 0);
 
     mat4 LO, LV, LSpace;
@@ -105,7 +105,7 @@ void ShadowPass::execute(WindowManager * windowManager)
 		depthProg->bind();
 
 			//light orthogonal view
-			LO = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 5.0f);
+			LO = glm::ortho(-500.0f, 500.0f, -500.0f, 500.0f, -500.0f, 500.0f);
 			glUniformMatrix4fv(depthProg->getUniform("LP"), 1, GL_FALSE, glm::value_ptr(LO));
 
 			//light view
@@ -116,72 +116,12 @@ void ShadowPass::execute(WindowManager * windowManager)
 		depthProg->unbind();
 		glCullFace(GL_BACK);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
     }
-
     glViewport(0, 0, width, height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if (DEBUG_LIGHT) {	
-  		if (GEOM_DEBUG) { 
-  			depthProgDebug->bind();
-				mat4 ortho = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, -50.0f, 1000.0f);
-				glUniformMatrix4fv(depthProgDebug->getUniform("LP"), 1, GL_FALSE, glm::value_ptr(ortho));
-				mat4 camera = glm::lookAt(g_light, lightLA, lightUp);
-				glUniformMatrix4fv(depthProgDebug->getUniform("LV"), 1, GL_FALSE, glm::value_ptr(camera));
-				draw(depthProgDebug, shadowProg->getUniform("Texture0"));
-  			depthProgDebug->unbind();
-  		} else {
-  			shadowDebugProg->bind();
-				glActiveTexture(GL_TEXTURE0);
-				int err = glGetError();
-				std::cout << "1: " << err << std::endl;
-				glBindTexture(GL_TEXTURE_2D, depthMap);
-				err = glGetError();
-				std::cout << "2: " << err << std::endl;
-				glUniform1i(shadowDebugProg->getUniform("texBuf"), 0);
-				err = glGetError();
-				std::cout << "3: " << err << std::endl;
-				glEnableVertexAttribArray(0);
-				err = glGetError();
-				std::cout << "4: " << err << std::endl;
-				glBindBuffer(GL_ARRAY_BUFFER, quad_vbuf);
-				err = glGetError();
-				std::cout << "5: " << err << std::endl;
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-				err = glGetError();
-				std::cout << "6: " << err << std::endl;
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-				err = glGetError();
-				std::cout << "7: " << err << std::endl;
-				glDisableVertexAttribArray(0);
-				err = glGetError();
-				std::cout << "8: " << err << std::endl;
-  			shadowDebugProg->unbind();
-  		}
-  	} else {
-  		shadowProg->bind();
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, depthMap);
-			glUniform1i(shadowProg->getUniform("shadowDepth"), 1);
-			glUniform3f(shadowProg->getUniform("lightDir"), g_light.x, g_light.y, g_light.z);
-
-			Camera* cam = (Camera*)rm->getOther("activeCamera");
-			mat4 P = cam->getCameraProjectionMatrix();
-			mat4 V = cam->getCameraViewMatrix();
-
-			glUniformMatrix4fv(shadowProg->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
-			glUniformMatrix4fv(shadowProg->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
-
-			LSpace = LO*LV;
-			glUniformMatrix4fv(shadowProg->getUniform("LS"), 1, GL_FALSE, glm::value_ptr(LSpace));
-
-			draw(shadowProg, shadowProg->getUniform("Texture0"));
-  		shadowProg->unbind();
-  	}
 }
 
 void ShadowPass::draw(std::shared_ptr<Program> prog, GLint texID) 

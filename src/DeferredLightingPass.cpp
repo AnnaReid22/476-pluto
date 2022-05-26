@@ -48,6 +48,8 @@ void DeferredLightingPass::init()
     prog->addUniform("gNormal");
     prog->addUniform("gColor");
     prog->addUniform("lightPos");
+	prog->addUniform("depthMap");
+	prog->addUniform("LS");
 
 	initQuad();
 
@@ -60,6 +62,7 @@ void DeferredLightingPass::execute(WindowManager* windowManager)
 	GLuint gBuffer = rm->getRenderTextureResource("gBuffer");
 	GLuint gNormal = rm->getRenderTextureResource("gNormal");
 	GLuint gColor = rm->getRenderTextureResource("gColor");
+	GLuint depthMap = rm->getRenderTextureResource("shadowOutput");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, lightingFBO);
 
@@ -82,10 +85,24 @@ void DeferredLightingPass::execute(WindowManager* windowManager)
 		glBindTexture(GL_TEXTURE_2D, gNormal);
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, gColor);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform1i(prog->getUniform("gBuffer"), 0);
 		glUniform1i(prog->getUniform("gNormal"), 1);
 		glUniform1i(prog->getUniform("gColor"), 2);
-		glUniform3f(prog->getUniform("lightPos"), 0.0f, 2.0f, 0.0f);
+		glUniform3f(prog->getUniform("lightPos"), 0.0, 50.0, -100.0);
+		glUniform1i(prog->getUniform("depthMap"), 3);
+
+		glm::vec3 lightLA = glm::vec3(0.0, 0.0, -1000.0);
+		glm::vec3 lightUp = glm::vec3(0, 1, 0);
+		glm::mat4 LO, LV, LSpace;
+
+		LO = glm::ortho(-500.0f, 500.0f, -500.0f, 500.0f, -500.0f, 500.0f);
+		LV = glm::lookAt(glm::vec3(0.0, 50.0, 1000.0), lightLA, lightUp);
+
+		LSpace = LO*LV;
+		glUniformMatrix4fv(prog->getUniform("LS"), 1, GL_FALSE, glm::value_ptr(LSpace));
+
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
