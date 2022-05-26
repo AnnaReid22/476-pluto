@@ -14,7 +14,10 @@ void main()
     vec3 wPos = texture(gBuffer, fragTex).xyz;
     vec3 ldir = normalize(lightPos - wPos);
     vec3 norm = normalize(texture(gNormal, fragTex).xyz);
+    vec3 texCol = texture(gColor, fragTex).rgb;
     
     float diff = max(dot(norm, ldir), 0.0);
-    color = diff * texture(gColor, fragTex);
+    //color.rgb = (diff * texCol);
+    color.rgb = texCol;
+    color.a = 1.0;
 }

@@ -37,6 +37,7 @@ Z. Wood + S. Sueda
 #include "ParticleSystem.h"
 #include "DeferredSamplingPass.h"
 #include "DeferredLightingPass.h"
+#include "BloomRenderPass.h"
 
 using namespace std;
 using namespace glm;
@@ -169,6 +170,7 @@ public:
 		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
+		rp.addRenderPass(std::make_shared<BloomRenderPass>());
 		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
 		// add render passes with more shaders here
 	}
@@ -625,10 +627,10 @@ public:
         thePluto->init();
 
 		pluto_albedo = make_shared<Texture>();
-		pluto_albedo->setFilename(resourceDirectory + "/planets/pluto.png");
+		pluto_albedo->setFilename(resourceDirectory + "/bright.jpg");
 		pluto_albedo->init();
 		pluto_albedo->setUnit(0);
-		pluto_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		pluto_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		plutoMat = make_shared<Material>();
 		plutoMat->t_albedo = pluto_albedo;
