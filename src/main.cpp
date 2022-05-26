@@ -34,6 +34,7 @@ Z. Wood + S. Sueda
 
 #include "ForwardRenderPass.h"
 #include "ParticleRenderPass.h"
+#include "ShadowPass.h"
 #include "ParticleSystem.h"
 #include "DeferredSamplingPass.h"
 #include "DeferredLightingPass.h"
@@ -170,6 +171,7 @@ public:
 		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
+		rp.addRenderPass(std::make_shared<ShadowPass>());
 		rp.addRenderPass(std::make_shared<BloomRenderPass>());
 		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
 		// add render passes with more shaders here

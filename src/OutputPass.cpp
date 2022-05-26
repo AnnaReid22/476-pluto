@@ -53,6 +53,7 @@ void OutputPass::execute(WindowManager* windowManager)
 	GLuint gLightOutput = rm->getRenderTextureResource("gLightOutput");
 	GLuint psColorOutput = rm->getRenderTextureResource("psColorOutput");
 	GLuint psPositionOutput = rm->getRenderTextureResource("psPositionOutput");
+
 	GLuint gBuffer = rm->getRenderTextureResource("gBuffer");
 	GLuint bloomOutput = rm->getRenderTextureResource("bloomColor");
 	GLuint lazerGlowOutput = rm->getRenderTextureResource("lazerGlowOutput");
