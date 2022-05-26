@@ -42,7 +42,5 @@ void Particle::setPosition(vec3 pos)
 
 void Particle::setColor(vec4 col)
 {
-	std::cout << color.r << ", " << color.g << ", " << color.b << std::endl;
 	this->color = col;
-	std::cout << color.r << ", " << color.g << ", " << color.b << std::endl;
 }

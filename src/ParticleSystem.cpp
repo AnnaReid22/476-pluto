@@ -57,7 +57,7 @@ void ParticleSystem::Update()
             // std::cout << time->getFrametime()/lifespan << std::endl;
             if(type == "moving")
             {
-                color_modify_value = time->getFrametime()/lifespan;
+                color_modify_value = (time->getFrametime()/lifespan)/2.0;
                 p.setColor(vec4(p.getColor().r + color_modify_value, p.getColor().g - color_modify_value, p.getColor().b  - color_modify_value, p.getColor().a));
             }
             else
