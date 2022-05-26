@@ -103,12 +103,14 @@ void Enemy::OnCollide(GameObject* other)
     if (this->cooldown < 0) {
         collided = true;
     }
-    if(other->name == "bullet")
+    if(other->name == "lazer")
     {
         ResourceManager* rm = ResourceManager::getInstance();
         int score = rm->getNumericalValue("score");
         score += 1;
         std::cout << "Your Score is: " << score << std::endl;
         rm->addNumericalValue("score", score);
+
+        this->gameObject->world->destroyObject(other);
     }
 }

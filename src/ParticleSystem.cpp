@@ -30,7 +30,7 @@ void ParticleSystem::Update()
         for (unsigned int i = 0; i < new_particles; ++i)
         {
             int dead = deadParticle();
-            particles[dead].load(playerPos+fwd/2.5f, color, max_velocity, min_velocity, lifespan);
+            particles[dead].load(playerPos+fwd/1.5f, color, max_velocity, min_velocity, lifespan);
         }
   }
   else if(type == "static")
@@ -62,7 +62,7 @@ void ParticleSystem::Update()
             }
             else
             {
-                p.setColor(vec4(p.getColor().r + color_modify_value, p.getColor().g - color_modify_value, p.getColor().b  - color_modify_value, p.getColor().a));
+                p.setColor(vec4(p.getColor().r, p.getColor().g, p.getColor().b, p.getColor().a));
             }
             vec4 col = p.getColor();
             pointColors[i*4+0] = col.r;
