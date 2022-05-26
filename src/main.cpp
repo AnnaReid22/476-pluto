@@ -627,10 +627,10 @@ public:
         thePluto->init();
 
 		pluto_albedo = make_shared<Texture>();
-		pluto_albedo->setFilename(resourceDirectory + "/planets/pluto.png");
+		pluto_albedo->setFilename(resourceDirectory + "/bright.jpg");
 		pluto_albedo->init();
 		pluto_albedo->setUnit(0);
-		pluto_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		pluto_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		plutoMat = make_shared<Material>();
 		plutoMat->t_albedo = pluto_albedo;
