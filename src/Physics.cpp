@@ -44,8 +44,7 @@ void Physics::checkCollisions()
         {
             // Dont compare collisions with yourself
             if (i == j) continue;
-
-            if (isColliding(collideableObjects[i], collideableObjects[j]))
+            else if (isColliding(collideableObjects[i], collideableObjects[j]))
             {
                 BoundingSphereCollider * col = collideableObjects[i]->getComponentByType<BoundingSphereCollider>();
                 col->collide(collideableObjects[j]);
