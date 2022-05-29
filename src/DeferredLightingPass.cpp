@@ -1,6 +1,7 @@
 #include "DeferredLightingPass.h"
 #include "GameObject.h"
 #include "Player.h"
+#include "Camera.h"
 
 /**** geometry set up for a quad *****/
 void DeferredLightingPass::initQuad() {
@@ -35,7 +36,7 @@ void DeferredLightingPass::init()
 	// - color buffer
 	glGenTextures(1, &gLightOutput);
 	glBindTexture(GL_TEXTURE_2D, gLightOutput);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gLightOutput, 0);

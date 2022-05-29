@@ -15,6 +15,8 @@ public:
     std::string name;
     bool isEnabled = true;
     bool toBeDestroyed = false;
+    bool parent = false;
+    GameObject* parentObj;
     std::string tag;
 
     World * world;

@@ -14,6 +14,6 @@ uniform sampler2D albedoMap;
 void main()
 {
     gNormal = vec4(normalize(fragNor), 1.0f);
-    gBuffer = vec4(fragPos, 1.0f);
+    gBuffer = vec4(fragPos, 0.4);
     gColor = vec4(texture(albedoMap, fragTex).rgb, 1.0f);
 }
