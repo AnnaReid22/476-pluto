@@ -158,6 +158,14 @@ void Player::updateMoveVars()
     dollyB = input->GetKey(GLFW_KEY_S);
 }
 
+float min(float a, float b){
+    if (a < b){
+        return a;
+    }
+    else{
+        return b;
+    }
+}
 /*
 * Calculates the rocket's position matrix and rotation quaternion and 
 * updates the rocket's transform.

@@ -92,7 +92,12 @@ void ShadowPass::execute(WindowManager * windowManager)
 	float width = rm->getNumericalValue("screenWidth");
 	float height = rm->getNumericalValue("screenHeight");
     //light lookat and y vector
-    vec3 lightLA = vec3(0.0, 0.0, 1000.0);
+
+	glm::vec3 fwd = ((GameObject*)rm->getOther("player_game_object"))->getComponentByType<Player>()->getForward();
+	
+
+
+    vec3 lightLA = vec3(0.0, 0.0, -1000.0);
     vec3 lightUp = vec3(0, 1, 0);
 
     mat4 LO, LV, LSpace;
@@ -105,7 +110,7 @@ void ShadowPass::execute(WindowManager * windowManager)
 		depthProg->bind();
 
 			//light orthogonal view
-			LO = glm::ortho(-500.0f, 500.0f, -500.0f, 500.0f, -500.0f, 500.0f);
+			LO = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 4.0f, 1000.0f);
 			glUniformMatrix4fv(depthProg->getUniform("LP"), 1, GL_FALSE, glm::value_ptr(LO));
 
 			//light view
@@ -138,10 +143,7 @@ void ShadowPass::draw(std::shared_ptr<Program> prog, GLint texID)
 
         glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
 
-        // mat->t_albedo->bind(prog->getUniform("albedoMap"));
-
         mesh->draw(prog);
 
-        // mat->t_albedo->unbind();
     }
 }
