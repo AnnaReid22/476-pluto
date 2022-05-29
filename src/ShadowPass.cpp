@@ -22,21 +22,6 @@ void ShadowPass::init()
   	depthProg->setShaderNames("../shaders/depth_vert.glsl", "../shaders/depth_frag.glsl");
   	depthProg->init();
 
-  	depthProgDebug = std::make_shared<Program>();
-  	depthProgDebug->setVerbose(true);
-  	depthProgDebug->setShaderNames("../shaders/depth_vertDebug.glsl", "../shaders/depth_fragDebug.glsl");
-  	depthProgDebug->init();
-
-  	shadowProg = std::make_shared<Program>();
-  	shadowProg->setVerbose(true);
-  	shadowProg->setShaderNames("../shaders/shadow_vert.glsl", "../shaders/shadow_frag.glsl");
-  	shadowProg->init();
-
-  	shadowDebugProg = std::make_shared<Program>();
-  	shadowDebugProg->setVerbose(true);
-  	shadowDebugProg->setShaderNames("../shaders/pass_vert.glsl", "../shaders/pass_texfrag.glsl");
-  	shadowDebugProg->init();
-
     // Add uniform and attributes
   	depthProg->addUniform("LP");
   	depthProg->addUniform("LV");
@@ -44,27 +29,6 @@ void ShadowPass::init()
   	depthProg->addAttribute("vertPos");
   	depthProg->addAttribute("vertNor");
   	depthProg->addAttribute("vertTex");
-
-  	depthProgDebug->addUniform("LP");
-  	depthProgDebug->addUniform("LV");
-  	depthProgDebug->addUniform("M");
-  	depthProgDebug->addAttribute("vertPos");
-  	depthProgDebug->addAttribute("vertNor");
-  	depthProgDebug->addAttribute("vertTex");
-
-  	shadowProg->addUniform("P");
-  	shadowProg->addUniform("M");
-  	shadowProg->addUniform("V");
-    shadowProg->addUniform("LS");
-  	shadowProg->addUniform("lightDir");
-  	shadowProg->addAttribute("vertPos");
-  	shadowProg->addAttribute("vertNor");
-  	shadowProg->addAttribute("vertTex");
-  	shadowProg->addUniform("Texture0");
-  	shadowProg->addUniform("shadowDepth");
-
-  	shadowDebugProg->addUniform("texBuf");
-  	shadowDebugProg->addAttribute("vertPos");
 
     //generate the FBO for the shadow depth
   	glGenFramebuffers(1, &depthMapFBO);

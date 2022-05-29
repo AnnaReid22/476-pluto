@@ -13,9 +13,7 @@ private:
     ResourceManager* rm;
 
     std::shared_ptr<Program> depthProg;
-    std::shared_ptr<Program> shadowProg;
     std::shared_ptr<Program> depthProgDebug;
-    std::shared_ptr<Program> shadowDebugProg;
     bool DEBUG_LIGHT = false;
 	bool GEOM_DEBUG = false;
     bool SHADOW = true;
