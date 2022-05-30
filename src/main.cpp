@@ -41,6 +41,9 @@ Z. Wood + S. Sueda
 #include "BloomRenderPass.h"
 #include "PlutoBehavior.h"
 
+#include "soloud.h"
+#include "soloud_wav.h"
+
 using namespace std;
 using namespace glm;
 
@@ -93,6 +96,9 @@ public:
 	World w;
 	RenderPipeline rp;
 
+	SoLoud::Soloud gSoloud; // SoLoud engine
+	SoLoud::Wav gWave;      // One wave file
+
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		InputManager* input = input->getInstance();
@@ -144,6 +150,9 @@ public:
 
 	void init(const std::string& resourceDirectory)
 	{
+		gSoloud.init(); // Initialize SoLoud
+		gWave.load("../resources/audio/test.wav");
+
 		GLSL::checkVersion();
 
 		// Set background color.
@@ -662,6 +671,8 @@ public:
 		Time* time = time->getInstance();
 		ResourceManager* rm = rm->getInstance();
 		Physics* physics = physics->getInstance();
+
+		gSoloud.play(gWave); // Play the wave
 
 		time->updateTime();
 		physics->clearCollideables();
