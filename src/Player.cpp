@@ -13,9 +13,14 @@
 #define LOSE_FINS_TIME 6.0
 //#define DISASSEMBLE_ANIM 0
 //#define ROTATE_FINS_ANIM 1
-
+#include "soloud.h"
+#include "soloud_wav.h"
 
 ResourceManager* rm_ = ResourceManager::getInstance();
+SoLoud::Soloud gSoloudPlayer;
+SoLoud::Wav gWaveShoot;
+SoLoud::Wav gWaveLoseLife;
+SoLoud::Wav gWaveDie;
 
 Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
 {
@@ -299,7 +304,13 @@ void Player::Shoot()
     physicsObject->vel = this->getForward() * -30.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
     physicsObject->acc = glm::vec3(0.0f);
 
+        std::cout << "here!" << std::endl;
     gameObject->world->addObject(bullet);
+    gSoloudPlayer.init();
+    
+    //https://www.soundfishing.eu/sound/laser-gun
+    gWaveShoot.load("../resources/audio/shoot.mp3");
+    gSoloudPlayer.play(gWaveShoot);
 
 }
 
@@ -316,10 +327,16 @@ void Player::OnCollide(GameObject* other)
         {
             loseFinsTime = LOSE_FINS_TIME;
             numLives--;
+            //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
+            gWaveLoseLife.load("../resources/audio/losefin.wav");
+            gSoloudPlayer.play(gWaveLoseLife);
         }
-        else if(numLives <=0)
+        else if(numLives <= 0)
         {
             stop = true;
+            //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
+            gWaveDie.load("../resources/audio/losefin.wav");
+            gSoloudPlayer.play(gWaveDie);
         }
     }
     if (other->name == "pluto")
@@ -549,7 +566,7 @@ void Player::moveRocket()
     {
         prepareShootTime = 0.5f;
         alreadyShot = false;
-   
+        std::cout << "here!" << std::endl;
     }
 }
 

@@ -150,8 +150,10 @@ public:
 
 	void init(const std::string& resourceDirectory)
 	{
-		gSoloud.init(); // Initialize SoLoud
-		gWave.load("../resources/audio/test.wav");
+		gSoloud.init();
+		//https://www.free-stock-music.com/savfk-deep.html
+		gWave.load("../resources/audio/bg.wav");
+		gSoloud.play(gWave);
 
 		GLSL::checkVersion();
 
@@ -672,7 +674,7 @@ public:
 		ResourceManager* rm = rm->getInstance();
 		Physics* physics = physics->getInstance();
 
-		gSoloud.play(gWave); // Play the wave
+
 
 		time->updateTime();
 		physics->clearCollideables();
