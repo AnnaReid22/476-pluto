@@ -24,15 +24,21 @@ void main()
     shade = shadow(posLS);
 
     float diff = max(dot(norm, ldir), 0.0);
-    color = diff * (1.0-shade) * texture(gColor, fragTex);
-    
+    if(shade == 1.0)
+    {
+        color = diff * (1.0-(shade * 0.4)) * texture(gColor, fragTex);
+    }
+        
+    else
+    {
+        color = diff * texture(gColor, fragTex);
+    }
 }
 
 /* returns 1 if shadowed */
 float shadow(vec4 LSfPos) 
 {
     vec3 projCoord = 0.5*(LSfPos.xyz + vec3(1.0));
-    return 0.0f;
 	float curD = projCoord.z - 0.005f;
     float lightDepth = texture(depthMap, projCoord.xy).r; 
     if (curD > lightDepth) {
