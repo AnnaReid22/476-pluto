@@ -17,6 +17,7 @@ private:
     unsigned vertArrObj;
 	unsigned vertBuffObj;
 	unsigned colorbuff;
+  unsigned int lastDeadParticle = 0;
 
 public:
 	vec3 start;
