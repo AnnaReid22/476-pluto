@@ -41,6 +41,7 @@ Z. Wood + S. Sueda
 #include "DeferredSamplingPass.h"
 #include "DeferredLightingPass.h"
 #include "BloomRenderPass.h"
+#include "PlutoBehavior.h"
 
 using namespace std;
 using namespace glm;
@@ -503,7 +504,7 @@ public:
 		BoundingSphereCollider* bsc_mars = mars->addComponentOfType<BoundingSphereCollider>();
 		
 		w.addObject(mars);
-		bsc_mars->radius = 1;
+		bsc_mars->radius = 0.5;
 
 		//jupiter
 		theJupiter = make_shared<Shape>();
@@ -533,7 +534,7 @@ public:
 		BoundingSphereCollider* bsc_jupiter = jupiter->addComponentOfType<BoundingSphereCollider>();
 
 		w.addObject(jupiter);
-		bsc_jupiter->radius = 1;
+		bsc_jupiter->radius = 0.5;
 
 		//saturn
 		theSaturn = make_shared<Shape>();
@@ -563,7 +564,7 @@ public:
 		BoundingSphereCollider* bsc_saturn = saturn->addComponentOfType<BoundingSphereCollider>();
 
 		w.addObject(saturn);
-		bsc_saturn->radius = 1;
+		bsc_saturn->radius = 0.5;
 
 		//uranus
 		theUranus = make_shared<Shape>();
@@ -593,7 +594,7 @@ public:
 		BoundingSphereCollider* bsc_uranus = uranus->addComponentOfType<BoundingSphereCollider>();
 
 		w.addObject(uranus);
-		bsc_uranus->radius = 1;
+		bsc_uranus->radius = 0.5;
 
 		//neptune
 		theNeptune = make_shared<Shape>();
@@ -623,7 +624,7 @@ public:
 		BoundingSphereCollider* bsc_neptune = neptune->addComponentOfType<BoundingSphereCollider>();
 
 		w.addObject(neptune);
-		bsc_neptune->radius = 1;
+		bsc_neptune->radius = 0.5;
 
 		//pluto
 		thePluto = make_shared<Shape>();
@@ -651,6 +652,8 @@ public:
 		plutoMR->material = plutoMat;
 
 		BoundingSphereCollider* bsc_pluto = pluto->addComponentOfType<BoundingSphereCollider>();
+
+		pluto->addComponentOfType<PlutoBehavior>();
 
 		w.addObject(pluto);
 		bsc_pluto->radius = 1;

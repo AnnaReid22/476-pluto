@@ -31,7 +31,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     shakeTime = 0;
     collideTime = 6.0f;
     dead = false;
-    alreadyShot = false;
+    alreadyShot = true;
     posUpdate = glm::vec4(0, 0, 0, 1);
     prepareShootTime = 0;
 
@@ -285,7 +285,7 @@ void Player::Shoot()
     bulletCooldown = 0.5f;
     GameObject* bullet = new GameObject("lazer");
     bullet->transform.position = gameObject->transform.position - 4.5f * this->getForward();
-    bullet->transform.scale = gameObject->transform.scale;
+    bullet->transform.scale = gameObject->transform.scale * 0.5f;
     bullet->transform.rotation = gameObject->transform.rotation;
 
     BoundingSphereCollider* bsc = bullet->addComponentOfType<BoundingSphereCollider>();
@@ -309,28 +309,17 @@ void Player::Shoot()
 */
 void Player::OnCollide(GameObject* other) 
 {
-    if (other->tag == "planet" && other->name != "pluto" || other->name == "asteroid")
+    if ((other->tag == "planet" && other->name != "pluto") || other->name == "asteroid")
     {
         if (numLives > 0 && loseFinsTime <=0)
         {
-            loseFinsTime = LOSE_FINS_TIME;//6.0f;
+            loseFinsTime = LOSE_FINS_TIME;
             numLives--;
         }
         else if(numLives <=0)
         {
             stop = true;
         }
-       /* MeshRenderer* rocket_mesh = this->gameObject->getComponentByType<MeshRenderer>();
-        rocket_mesh->Disable();
-        
-        GameObject* ps = (GameObject*)rm_->getOther("particle_system_death");
-        
-        ps->transform = this->gameObject->transform;
-        ps->Enable();
-        ParticleSystem* ps_obj = ps->getComponentByType<ParticleSystem>();
-        ps_obj->start = this->gameObject->transform.position;
-
-        std::cout << "You crashed :(" << std::endl;*/
     }
     if (other->name == "pluto")
     {
@@ -425,6 +414,14 @@ void Player::updateMoveVars()
     prevDollyF = dollyF;
 }
 
+float min(float a, float b){
+    if (a < b){
+        return a;
+    }
+    else{
+        return b;
+    }
+}
 /*
 * Calculates the rocket's position matrix and rotation quaternion and 
 * updates the rocket's transform.
@@ -547,7 +544,7 @@ void Player::moveRocket()
    
 
     bulletCooldown -= Time::getInstance()->getFrametime();
-    if (InputManager::getInstance()->GetKey(GLFW_KEY_E) && bulletCooldown <= 0)
+    if (InputManager::getInstance()->GetKey(GLFW_KEY_SPACE) && bulletCooldown <= 0)
     {
         prepareShootTime = 0.5f;
         alreadyShot = false;

@@ -1,4 +1,6 @@
 #include "DeferredLightingPass.h"
+#include "GameObject.h"
+#include "Player.h"
 #include "Camera.h"
 
 /**** geometry set up for a quad *****/
@@ -91,15 +93,17 @@ void DeferredLightingPass::execute(WindowManager* windowManager)
 		glUniform1i(prog->getUniform("gBuffer"), 0);
 		glUniform1i(prog->getUniform("gNormal"), 1);
 		glUniform1i(prog->getUniform("gColor"), 2);
-		glUniform3f(prog->getUniform("lightPos"), 0.0, 50.0, -100.0);
+		glUniform3f(prog->getUniform("lightPos"), 0.0, 10.0, 0.0);
 		glUniform1i(prog->getUniform("depthMap"), 3);
 
 		glm::vec3 lightLA = glm::vec3(0.0, 0.0, -1000.0);
 		glm::vec3 lightUp = glm::vec3(0, 1, 0);
 		glm::mat4 LO, LV, LSpace;
+		glm::vec3 g_light = glm::vec3(0.0, 5.0, -50.0);
 
-		LO = glm::ortho(-500.0f, 500.0f, -500.0f, 500.0f, -500.0f, 500.0f);
-		LV = glm::lookAt(glm::vec3(0.0, 50.0, 1000.0), lightLA, lightUp);
+		// LO = glm::ortho(-1000.0f, 1000.0f, -1000.0f, 1000.0f, -1000.0f, 1000.0f);
+		LO = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 4.0f, 1000.0f);
+		LV = glm::lookAt(g_light, lightLA, lightUp);
 
 		LSpace = LO*LV;
 		glUniformMatrix4fv(prog->getUniform("LS"), 1, GL_FALSE, glm::value_ptr(LSpace));
