@@ -106,7 +106,6 @@ void Enemy::OnCollide(GameObject* other)
             ResourceManager* rm = ResourceManager::getInstance();
             int score = rm->getNumericalValue("score");
             score += 1;
-            std::cout << "Your Score is: " << score << std::endl;
             rm->addNumericalValue("score", score);
         }
         collided = true;
