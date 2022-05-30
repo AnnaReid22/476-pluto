@@ -311,7 +311,6 @@ void Player::OnCollide(GameObject* other)
 {
     if (other->tag == "planet" && other->name != "pluto" || other->name == "asteroid")
     {
-        std::cout << "NumLives: " << numLives << std::endl;
         if (numLives > 0 && loseFinsTime <=0)
         {
             loseFinsTime = LOSE_FINS_TIME;//6.0f;

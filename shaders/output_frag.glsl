@@ -10,6 +10,7 @@ uniform sampler2D gBuffer;
 uniform sampler2D skyColorOutput;
 uniform sampler2D lazerGlowOutput;
 uniform sampler2D bloomOutput;
+uniform sampler2D guiColorOutput;
 uniform mat4 V;
 
 
@@ -58,6 +59,7 @@ void main()
         color.r += lazerGlow;
     }
 
-    color.rgb += psCol.rgb*psCol.a + (gLight.rgb + bloomColor.rgb)*(1.0f-psCol.a);;
-    //color.rgb = vec3(lazerDepth, gDepth, 0);
+    color.rgb += psCol.rgb*psCol.a + (gLight.rgb + bloomColor.rgb)*(1.0f-psCol.a);
+
+    color.rgb += texture(guiColorOutput, fragTex).rgb;
 }

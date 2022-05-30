@@ -12,6 +12,8 @@ Z. Wood + S. Sueda
 #include "WindowManager.h"
 #include "SkyboxRenderPass.h"
 #include "LazerGlowRenderPass.h"
+#include "GuiRenderPass.h"
+
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -174,6 +176,7 @@ public:
 		rp.addRenderPass(std::make_shared<ShadowPass>());
 		rp.addRenderPass(std::make_shared<BloomRenderPass>());
 		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
+		rp.addRenderPass(std::make_shared<GuiRenderPass>());
 		// add render passes with more shaders here
 	}
 
