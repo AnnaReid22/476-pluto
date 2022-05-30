@@ -18,6 +18,7 @@
 
 ResourceManager* rm_ = ResourceManager::getInstance();
 SoLoud::Soloud gSoloudPlayer;
+SoLoud::Wav gWaveBG;
 SoLoud::Wav gWaveShoot;
 SoLoud::Wav gWaveLoseLife;
 SoLoud::Wav gWaveDie;
@@ -92,7 +93,11 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
 * Sets initial rocket position
 */
 void Player::Start()
-{
+{   
+    gSoloudPlayer.init();  
+    // //https://www.free-stock-music.com/savfk-deep.html
+    gWaveBG.load("../resources/audio/bg.wav");
+    gSoloudPlayer.play(gWaveBG);
     this->gameObject->transform.position = glm::vec3(0, 0, -4);
     this->gameObject->transform.scale = originalScale;
     time = time->getInstance();
@@ -306,8 +311,6 @@ void Player::Shoot()
 
         std::cout << "here!" << std::endl;
     gameObject->world->addObject(bullet);
-    gSoloudPlayer.init();
-    
     //https://www.soundfishing.eu/sound/laser-gun
     gWaveShoot.load("../resources/audio/shoot.mp3");
     gSoloudPlayer.play(gWaveShoot);

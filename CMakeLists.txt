@@ -32,11 +32,11 @@ add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
 findGLFW3(${CMAKE_PROJECT_NAME})
 findGLM(${CMAKE_PROJECT_NAME})
 
+add_compile_definitions(WITH_MINIAUDIO)
 # OS specific options and libraries
 if(NOT WIN32)
 
   message(STATUS "Adding GCC style compiler flags")
-  add_compile_definitions(WITH_MINIAUDIO)
   add_compile_options("-Wall")
   add_compile_options("-pedantic")
   add_compile_options("-Werror=return-type")

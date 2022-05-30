@@ -150,10 +150,8 @@ public:
 
 	void init(const std::string& resourceDirectory)
 	{
-		gSoloud.init();
-		//https://www.free-stock-music.com/savfk-deep.html
-		gWave.load("../resources/audio/bg.wav");
-		gSoloud.play(gWave);
+		// gSoloud.init();
+
 
 		GLSL::checkVersion();
 
