@@ -414,14 +414,6 @@ void Player::updateMoveVars()
     prevDollyF = dollyF;
 }
 
-float min(float a, float b){
-    if (a < b){
-        return a;
-    }
-    else{
-        return b;
-    }
-}
 /*
 * Calculates the rocket's position matrix and rotation quaternion and 
 * updates the rocket's transform.
@@ -434,10 +426,10 @@ void Player::moveRocket()
     // Determine direction of rocket movement
     glm::vec3 rocketMove = glm::vec3(0.0f, 0.0f, 0.0f);
    
-    float t;
+    float t = 0;
     if (dollyFTime > 0)
     {
-        t = min(dollyFTime, MAXDOLLYFTIME);
+        t = dollyFTime < MAXDOLLYFTIME ? dollyFTime : MAXDOLLYFTIME;
     }
     else
     {
