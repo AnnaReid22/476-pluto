@@ -285,7 +285,7 @@ void Player::Shoot()
     bulletCooldown = 0.5f;
     GameObject* bullet = new GameObject("lazer");
     bullet->transform.position = gameObject->transform.position - 4.5f * this->getForward();
-    bullet->transform.scale = gameObject->transform.scale * 0.5f;
+    bullet->transform.scale = gameObject->transform.scale * 0.25f;
     bullet->transform.rotation = gameObject->transform.rotation;
 
     BoundingSphereCollider* bsc = bullet->addComponentOfType<BoundingSphereCollider>();

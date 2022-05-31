@@ -111,6 +111,6 @@ void Enemy::OnCollide(GameObject* other)
         std::cout << "Your Score is: " << score << std::endl;
         rm->addNumericalValue("score", score);
 
-        this->gameObject->world->destroyObject(other);
+        //this->gameObject->world->destroyObject(other);
     }
 }

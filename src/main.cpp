@@ -170,7 +170,6 @@ public:
 		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
 		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
 		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
-		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		rp.addRenderPass(std::make_shared<ShadowPass>());
 		rp.addRenderPass(std::make_shared<BloomRenderPass>());
