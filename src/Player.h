@@ -13,8 +13,6 @@ private:
     double currentXPos, currentYPos, initXPos, initYPos;
     double deltaXPos, deltaYPos;
     float sensitivity;
-    // How many asteroids can hit you before you die.
-    int numLives; 
 
     // Variable used to trigger losing fins 
    // bool loseFins;
@@ -37,6 +35,8 @@ private:
     void moveRocket();
 
 public:
+    // How many asteroids can hit you before you die.
+    int numLives;
     // Movement variables
     bool dollyF;
     bool dollyB;

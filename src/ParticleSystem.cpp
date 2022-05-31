@@ -8,7 +8,6 @@
 
 //reference: https://learnopengl.com/In-Practice/2D-Game/Particles
 
-unsigned int lastDeadParticle = 0;
 ResourceManager* rm = ResourceManager::getInstance();
 
 void ParticleSystem::Start()
