@@ -9,15 +9,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED 14)
 set(CMAKE_CXX_STANDARD 14)
 
 # Use glob to get the list of all source files.
-file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/ext/*/*.cpp" "${CMAKE_SOURCE_DIR}/ext/glad/src/*.c")
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp" 
+      "${CMAKE_SOURCE_DIR}/ext/*/*.cpp" 
+      "${CMAKE_SOURCE_DIR}/ext/glad/src/*.c" 
+      "${CMAKE_SOURCE_DIR}/ext/soloud/src/*/*.cpp" 
+      "${CMAKE_SOURCE_DIR}/ext/soloud/src/*/*/*.cpp"
+      "${CMAKE_SOURCE_DIR}/ext/soloud/src/*/*/*.c")
 
 # We don't really need to include header and resource files to build, but it's
 # nice to have them show up in IDEs.
-file(GLOB_RECURSE HEADERS "src/*.h" "ext/*/*.h" "ext/glad/*/*.h")
+file(GLOB_RECURSE HEADERS "src/*.h" "ext/*/*.h" "ext/glad/*/*.h" "ext/soloud/*/*.h")
 file(GLOB_RECURSE GLSL "resources/*.glsl")
 
 include_directories("ext")
 include_directories("ext/glad/include")
+include_directories("ext/soloud/include")
 
 # Set the executable.
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
@@ -26,6 +32,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
 findGLFW3(${CMAKE_PROJECT_NAME})
 findGLM(${CMAKE_PROJECT_NAME})
 
+add_compile_definitions(WITH_MINIAUDIO)
 # OS specific options and libraries
 if(NOT WIN32)
 
