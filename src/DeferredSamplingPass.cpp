@@ -108,7 +108,7 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
         {
             //glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), 4.0f);
 
-            M = obj->parentObj->transform.genModelMatrix() * obj->transform.getHierarchicalRot() * obj->transform.getTransMatrix() * obj->transform.getRotMatrix() * obj->transform.getScaleMatrix();
+            M = obj->parentObj->transform.genModelMatrix() * obj->transform.genHierarchicalMatrix(); 
             //std::cout << "compare:" << obj << std::endl;
             //std::cout << "player compare: " << obj->parentObj << std::endl;;
         }

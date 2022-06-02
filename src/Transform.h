@@ -10,6 +10,7 @@ public:
     glm::vec3 scale;
     glm::quat rotation;
     glm::quat hierarchicalRot;
+    glm::vec3 hierarchicalTrans;
     //Transform* parentTransform
 
     Transform();
@@ -22,6 +23,8 @@ public:
     glm::mat4 getScaleMatrix();
     glm::mat4 getTransMatrix();
     glm::mat4 getHierarchicalRot();
+    glm::mat4 getHierarchicalTrans();
+    glm::mat4 genHierarchicalMatrix();
 
 };
 

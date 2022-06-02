@@ -51,6 +51,7 @@ public:
     Time* time;
     glm::vec4 posUpdate;
     glm::vec3 originalFin1Pos;
+    glm::vec3 finDirection;
     glm::quat originalHierarchicalFin1Rot;
 
     glm::vec3 originalFin2Pos;
@@ -85,6 +86,7 @@ public:
     void PrepareShoot();
     void Shoot();
     void LoseFins();
+    void KillFin(int finNum);
 
     // Helper functions for DisassembleRocket
     float hash(float n);

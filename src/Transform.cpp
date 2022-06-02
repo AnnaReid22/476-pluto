@@ -7,6 +7,7 @@ Transform::Transform()
     scale = glm::vec3(1.0f, 1.0f, 1.0f);
     rotation = glm::quat(1.0, 0.0, 0.0, 0.0);
     hierarchicalRot = glm::quat(1.0, 0.0, 0.0, 0.0);
+    hierarchicalTrans = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 Transform::Transform(glm::vec3 d_Pos, glm::vec3 d_Scale)
@@ -49,4 +50,14 @@ glm::mat4 Transform::getTransMatrix()
 glm::mat4 Transform::getHierarchicalRot()
 {
     return glm::toMat4(this->hierarchicalRot);
+}
+
+glm::mat4 Transform::getHierarchicalTrans()
+{
+    return glm::translate(glm::mat4(1.0f), this->hierarchicalTrans);
+}
+
+glm::mat4 Transform::genHierarchicalMatrix()
+{
+    return getHierarchicalTrans() * getHierarchicalRot() * getTransMatrix() * getRotMatrix() * getScaleMatrix();
 }

@@ -9,7 +9,7 @@
 #include <iostream>
 #define PI 3.14159265
 #define MAXDOLLYFTIME 1.3
-#define DISASSEMBLE_SPEED 2
+#define DISASSEMBLE_SPEED 0.5
 #define LOSE_FINS_TIME 6.0
 //#define DISASSEMBLE_ANIM 0
 //#define ROTATE_FINS_ANIM 1
@@ -50,7 +50,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     getFinsTime = 0;
 
     // Initial num lives
-    numLives = 7;
+    numLives = 4;
 
     // Speed for any of the above movements
     speed = -7.0f;
@@ -148,12 +148,58 @@ void Player::Update()
 // Lose fins when you crash with an asteroid 
 void Player::LoseFins()
 {
-    if (!setOriginalFinPositions)
+    // Lose first fin
+    if (numLives == 3)
     {
-        //Set the rotations here so that the fins don't rotate as they fall
-        //vec3 rotation = normalize(snoiseRotation(normalize(fin1->transform.position)));
-        //fin1R = rotationMatrix(rotation, 2*loseFinsTime);
+        if (!setOriginalFinPositions)
+        {
+            originalFin1Pos = fin1->transform.position;
+            finDirection = glm::vec3(originalFin1Pos.x, 1.0f, originalFin1Pos.z);
+            originalHierarchicalFin1Rot = fin1->transform.hierarchicalRot;
+            setOriginalFinPositions = true;
+        }
+        std::cout << "Original fin1Pos: " << normalize(finDirection).x << ", " << normalize(finDirection).y << ", " << normalize(finDirection).z << std::endl;
+        fin1->transform.hierarchicalTrans = originalFin1Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(finDirection));//glm::vec3(fin1R*glm::vec4(normalize(originalFin1Pos),0)));
+        // Set rotation to original rotation so that the fins don't spin as the rocket goes forward
+        //fin1->transform.hierarchicalRot = originalHierarchicalFin1Rot;
+        glm::vec3 finRot = glm::vec3((LOSE_FINS_TIME - loseFinsTime) * 4, 0.0f, 0.0f);
+        //fin1->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, glm::vec3(1, 0, 0)));
+        fin1->transform.position = glm::vec3(0, 1, 0);
+    }
+    // Lose second fin
+    else if (numLives == 2)
+    {
+        if (!setOriginalFinPositions)
+        {
+            originalFin2Pos = fin2->transform.position;
+            originalHierarchicalFin2Rot = fin2->transform.hierarchicalRot;
+            setOriginalFinPositions = true;
+        }
+        fin2->transform.position = originalFin2Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));
+        fin2->transform.hierarchicalRot = originalHierarchicalFin2Rot;
+    }
+    // Lose third fin 
+    else if (numLives == 1)
+    {
+        if (!setOriginalFinPositions)
+        {
+            originalFin3Pos = fin3->transform.position;
+            originalHierarchicalFin3Rot = fin3->transform.hierarchicalRot;
+            setOriginalFinPositions = true;
+        }
 
+        fin3->transform.position = originalFin3Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(originalFin1Pos));
+        fin3->transform.hierarchicalRot = originalHierarchicalFin3Rot;
+    }
+    loseFinsTime -= time->getFrametime();
+    if (loseFinsTime <= 0)
+    {
+        setOriginalFinPositions = false;
+        //KillFin(4 - numLives);
+    }
+
+    /*if (!setOriginalFinPositions)
+    {
         originalFin1Pos = fin1->transform.position;
         originalHierarchicalFin1Rot = fin1->transform.hierarchicalRot;
 
@@ -180,6 +226,7 @@ void Player::LoseFins()
     {
         setOriginalFinPositions = false;
     }
+    */
 }
 
 // Shake rocket along forward vecyor. Used after shooting.
@@ -247,6 +294,26 @@ void Player::DisassembleRocket()
     fin3->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin3Pos);
     rocketBody->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalRocketBodyPos);
     collideTime -= time->getFrametime();
+}
+
+// Stop rendering the fin called finNum
+void Player::KillFin(int finNum)
+{
+    if (finNum == 1)
+    {
+        MeshRenderer* fin_mesh = fin1->getComponentByType<MeshRenderer>();
+        fin_mesh->Disable();
+    }
+    else if (finNum == 2)
+    {
+        MeshRenderer*  fin_mesh = fin2->getComponentByType<MeshRenderer>();
+        fin_mesh->Disable();
+    }
+    else if (finNum == 3)
+    {
+        MeshRenderer* fin_mesh = fin3->getComponentByType<MeshRenderer>();
+        fin_mesh->Disable();
+    }
 }
 
 // Stop rendering rocket mesh
