@@ -83,12 +83,17 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
     glViewport(0, 0, width, height);
 
     Camera* cam = (Camera*)rm->getOther("activeCamera");
-    std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
+    std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("lightingRenderables");
 
     glm::mat4 M, V, P;
 
     P = cam->getCameraProjectionMatrix();
     V = cam->getCameraViewMatrix();
+    // glm::vec3 lightLA = glm::vec3(0.0, 0.0, -1000.0);
+    // glm::vec3 lightUp = glm::vec3(0, 1, 0);
+    // glm::vec3 g_light = glm::vec3(0.0, 5.0, 7.0);
+    // P = glm::ortho(-300.0f, 300.0f, -300.0f, 300.0f, 10.0f, 1000.0f);  
+    // V = glm::lookAt(g_light, lightLA, lightUp);
     M = glm::mat4(1);
 
     prog->bind();
