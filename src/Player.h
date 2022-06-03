@@ -29,7 +29,7 @@ private:
     float stopTime;
     float prepareShootTime;
     bool alreadyShot;
-
+    float wonTimer;
     // Rocket movement vectors
     void updateMoveVars();
     void moveRocket();
@@ -45,6 +45,7 @@ public:
     bool stop;
     bool shoot;
     bool dead;
+    bool won;
     float shakeTime;
     float collideTime;
     glm::mat4 rotMat;
@@ -87,6 +88,7 @@ public:
     void Shoot();
     void LoseFins();
     void KillFin(int finNum);
+    void WinAnimation();
 
     // Helper functions for DisassembleRocket
     float hash(float n);

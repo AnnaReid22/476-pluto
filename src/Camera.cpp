@@ -19,6 +19,7 @@ Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 
     ResourceManager* rm = rm->getInstance();
     windowManager = (WindowManager*)rm->getOther("WindowManager");
+    swapViewChoice = false;
 }
 
 /*
@@ -34,6 +35,15 @@ void Camera::setUpCam()
 void Camera::Update()
 {
     setUpCam();
+    if (InputManager::getInstance()->GetKey(GLFW_KEY_O))
+    {
+        swapViewChoice = false;
+    }
+    if (InputManager::getInstance()->GetKey(GLFW_KEY_L))
+    {
+        swapViewChoice = true;
+    }
+    std::cout << "swapViewChoice: " << swapViewChoice << std::endl;
     //upVector = glm::vec4(0, 1, 0, 0) * glm::rotate(glm::mat4(1.f), rocket->getXRotation(), glm::vec3(1, 0, 0));
 
 }
@@ -46,8 +56,17 @@ glm::mat4 Camera::getCameraViewMatrix()
     glm::vec3 rocketPos = rocket->getPosition();
     glm::vec3 rocketFwd = rocket->getForward();
     glm::vec3 posAbove = rocket->getPosition() + rocket->getForward() * camDist;
+    static glm::vec3 posLeft = rocket->getPosition() + -1.0f * rocket->getRightVector() * 6.0f;
     posAbove = glm::vec3(posAbove.x, posAbove.y + 3.0f, posAbove.z + 3.0f);
-    return glm::lookAt(pos, rocketPos, upVector);
+    if (swapViewChoice == false)
+    {
+        return glm::lookAt(pos, rocketPos, upVector);
+    }
+    else
+    {
+        return glm::lookAt(posLeft, rocketPos, upVector);
+    }
+    
 }
 
 glm::mat4 Camera::getCameraProjectionMatrix()
@@ -64,5 +83,5 @@ glm::mat4 Camera::getCameraProjectionMatrix()
 */
 glm::mat4 Camera::getCameraRotationMatrix()
 {
-    return glm::lookAt(glm::vec3(0), rocket->getPosition() - pos, upVector);
+    return glm::mat4(1);// glm::lookAt(glm::vec3(0), rocket->getPosition() - pos, upVector);
 }

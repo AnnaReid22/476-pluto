@@ -10,6 +10,7 @@ class Camera : public Component
 {
 private:
     float camDist;
+    bool swapViewChoice;
     WindowManager* windowManager = nullptr;
 
 public:
