@@ -11,9 +11,7 @@ void ShadowPass::init()
 {
 	this->rm = rm->getInstance();
 	float width = rm->getNumericalValue("screenWidth");
-	std::cout << width << std::endl;
 	float height = rm->getNumericalValue("screenHeight");
-	std::cout << height << std::endl;
 	// Set background color.
   	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 	 // Enable z-buffer test.
@@ -38,7 +36,7 @@ void ShadowPass::init()
     //generate the texture
   	glGenTextures(1, &depthMap);
   	glBindTexture(GL_TEXTURE_2D, depthMap);
-  	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 8192.0f, 8192.0f, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
