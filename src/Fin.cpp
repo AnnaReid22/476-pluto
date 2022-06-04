@@ -19,8 +19,8 @@ void Fin::Update()
 void Fin::SetFinVars()
 {
 	GameObject* finObj = this->gameObject;
-	originalFinPos = finObj->transform.position;
-	finDirection = glm::vec3(originalFinPos.x, -1.0f, originalFinPos.z);
-	originalHierarchicalFinRot = finObj->transform.hierarchicalRot;
+	originalFinPos = glm::vec3(finObj->transform.getHierarchicalRot1Matrix() * glm::vec4(finObj->transform.position, 1.0f));
+	finDirection = glm::vec3(7.0f*originalFinPos.x, originalFinPos.y, 2.0f*originalFinPos.z);
+	originalHierarchicalFinRot = finObj->transform.hierarchicalRot1;
 	initializedVariables = true;
 }

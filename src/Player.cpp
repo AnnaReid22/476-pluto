@@ -10,8 +10,8 @@
 #include <iostream>
 #define PI 3.14159265
 #define MAXDOLLYFTIME 1.3
-#define DISASSEMBLE_SPEED 1
-#define LOSE_FINS_TIME 7
+#define DISASSEMBLE_SPEED .5
+#define LOSE_FINS_TIME 15//7
 //#define DISASSEMBLE_ANIM 0
 //#define ROTATE_FINS_ANIM 1
 #include "soloud.h"
@@ -190,14 +190,20 @@ void Player::LoseFin(int finNum)
         //finDirection = glm::vec3(originalFin1Pos.x, -1.0f, originalFin1Pos.z);
         //originalHierarchicalFin1Rot = finObjs[finNum]->transform.hierarchicalRot;
         //setOriginalFinPositions = true;
+        //finObjs[finNum]->transform.position *= 2.0f;
     }
-    std::cout << "Original fin1Pos: " << normalize(finVars->finDirection).x << ", " << normalize(finVars->finDirection).y << ", " << normalize(finVars->finDirection).z << std::endl;
-    finObjs[finNum]->transform.hierarchicalTrans = finVars->originalFinPos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(finVars->finDirection));//glm::vec3(fin1R*glm::vec4(normalize(originalFin1Pos),0)));
+    std::cout << "FinDirection: " << normalize(finVars->finDirection).x << ", " << normalize(finVars->finDirection).y << ", " << normalize(finVars->finDirection).z << std::endl;
+    finObjs[finNum]->transform.hierarchicalTrans2 = ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(finVars->finDirection));// finVars->originalFinPos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(finVars->finDirection));//glm::vec3(fin1R*glm::vec4(normalize(originalFin1Pos),0)));
     // Set rotation to original rotation so that the fins don't spin as the rocket goes forward
     //fin1->transform.hierarchicalRot = originalHierarchicalFin1Rot;
     glm::vec3 finRot = glm::vec3((LOSE_FINS_TIME - loseFinsTime) * 10, 0.0f, 0.0f);
-    finObjs[finNum]->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, glm::vec3(-1, 1, 0)));
-    finObjs[finNum]->transform.position = glm::vec3(0, -1, 0);
+    glm::vec3 perpendicularVector = glm::cross(finVars->finDirection, glm::vec3(0, 1, 0));
+    finObjs[finNum]->transform.hierarchicalRot1 = glm::quat(1.0, 0.0, 0.0, 0.0);
+    std::cout << "PerpendicularVector: " << normalize(perpendicularVector).x << ", " << normalize(perpendicularVector).y << ", " << normalize(perpendicularVector).z << std::endl;
+    finObjs[finNum]->transform.hierarchicalTrans1 = 0.5f*normalize(perpendicularVector);
+    finObjs[finNum]->transform.hierarchicalRot2 = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, normalize(finVars->finDirection)));
+    //finObjs[finNum]->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, normalize(finVars->finDirection)));//glm::vec3(-1, 1, 0)));
+    //finObjs[finNum]->transform.position = glm::vec3(0, 0, 0);
 
     loseFinsTime -= time->getFrametime();
     if (loseFinsTime <= 0)
@@ -584,11 +590,11 @@ void Player::moveRocket()
     {
         glm::vec3 finRot = glm::vec3(0, dollyFTime*4, 0.0f);
         //std::cout << "dollyFTime: " << dollyFTime << std::endl;
-        finObjs[0]->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
+        finObjs[0]->transform.hierarchicalRot1 = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
         finObjs[0]->transform.position = glm::vec3(0.5, -0.78, 0.20);
-        finObjs[1]->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
+        finObjs[1]->transform.hierarchicalRot1 = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
         finObjs[1]->transform.position = glm::vec3(-0.5, -0.78, 0.20);
-        finObjs[2]->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
+        finObjs[2]->transform.hierarchicalRot1 = glm::quat(glm::rotate(glm::mat4(1.f), finRot.y, glm::vec3(0, 1, 0)));
         finObjs[2]->transform.position = glm::vec3(0.0, -0.7, -0.5);
         //t = dollyFTime;
     }
