@@ -47,20 +47,21 @@ public:
     bool shoot;
     bool dead;
     bool won;
+    bool setOriginalDisassemblePositions;
     float shakeTime;
     float collideTime;
     glm::mat4 rotMat;
     Time* time;
     glm::vec4 posUpdate;
-    glm::vec3 originalFin1Pos;
-    glm::vec3 finDirection;
-    glm::quat originalHierarchicalFin1Rot;
+    //glm::vec3 originalFin1Pos;
+    //glm::vec3 finDirection;
+    //glm::quat originalHierarchicalFin1Rot;
 
-    glm::vec3 originalFin2Pos;
-    glm::quat originalHierarchicalFin2Rot;
+    //glm::vec3 originalFin2Pos;
+    //glm::quat originalHierarchicalFin2Rot;
 
-    glm::vec3 originalFin3Pos;
-    glm::quat originalHierarchicalFin3Rot;
+   // glm::vec3 originalFin3Pos;
+    //glm::quat originalHierarchicalFin3Rot;
 
     glm::vec3 originalRocketBodyPos;
 
@@ -68,7 +69,7 @@ public:
     glm::mat4 fin1R;
 
     glm::vec3 originalPlayer;
-    bool setOriginalFinPositions;
+    //bool setOriginalFinPositions;
 
     // Rotation variables
     bool initMousePosSet;

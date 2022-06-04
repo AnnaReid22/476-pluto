@@ -42,6 +42,7 @@ Z. Wood + S. Sueda
 #include "DeferredLightingPass.h"
 #include "BloomRenderPass.h"
 #include "PlutoBehavior.h"
+#include "Fin.h"
 
 #include "soloud.h"
 #include "soloud_wav.h"
@@ -294,6 +295,7 @@ public:
 		fin1Mesh->material = finMat;
 		rm->addOther("fin1_game_object", fin1Object);
 		BoundingSphereCollider* fin1Collider = fin1Object->addComponentOfType <BoundingSphereCollider>();
+		fin1Object->addComponentOfType<Fin>();
 		w.addObject(fin1Object);
 		pl->finObjs[0] = fin1Object;
 
@@ -307,6 +309,7 @@ public:
 		fin2Mesh->mesh = theFin;
 		fin2Mesh->material = finMat;
 		BoundingSphereCollider* fin2Collider = fin2Object->addComponentOfType <BoundingSphereCollider>();
+		fin2Object->addComponentOfType<Fin>();
 		w.addObject(fin2Object);
 		pl->finObjs[1] = fin2Object;
 
@@ -320,6 +323,7 @@ public:
 		fin3Mesh->mesh = theFin;
 		fin3Mesh->material = finMat;
 		BoundingSphereCollider* fin3Collider = fin3Object->addComponentOfType <BoundingSphereCollider>();
+		fin3Object->addComponentOfType <Fin>();
 		w.addObject(fin3Object);
 		pl->finObjs[2] = fin3Object;
 		

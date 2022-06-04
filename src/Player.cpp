@@ -6,6 +6,7 @@
 #include "BoundingSphereCollider.h"
 #include "PhysicsObject.h"
 #include "World.h"
+#include "Fin.h"
 #include <iostream>
 #define PI 3.14159265
 #define MAXDOLLYFTIME 1.3
@@ -82,13 +83,13 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     rotMat = mat4(1);
 
     // Set original fin positions to 0
-    originalFin1Pos = glm::vec3(0, 0, 0);
-    originalFin2Pos = glm::vec3(0, 0, 0);
-    originalFin3Pos = glm::vec3(0, 0, 0);
+    //originalFin1Pos = glm::vec3(0, 0, 0);
+    //originalFin2Pos = glm::vec3(0, 0, 0);
+    //originalFin3Pos = glm::vec3(0, 0, 0);
     fin1R = mat4(1);
 
     // Original fin positions are not set yet
-    setOriginalFinPositions = false;
+    setOriginalDisassemblePositions = false;
 }
 
 /*
@@ -181,15 +182,17 @@ void Player::LoseFin(int finNum)
     std::cout << "FinNum" << finNum << std::endl;
     // Lose first fin
     //int currFin = 3 - numLives;
-    if (!setOriginalFinPositions)
+    Fin* finVars = finObjs[finNum]->getComponentByType<Fin>();
+    if (!(finVars->initializedVariables))
     {
-        originalFin1Pos = finObjs[finNum]->transform.position;
-        finDirection = glm::vec3(originalFin1Pos.x, -1.0f, originalFin1Pos.z);
-        originalHierarchicalFin1Rot = finObjs[finNum]->transform.hierarchicalRot;
-        setOriginalFinPositions = true;
+        finVars->SetFinVars();
+        //originalFin1Pos = finObjs[finNum]->transform.position;
+        //finDirection = glm::vec3(originalFin1Pos.x, -1.0f, originalFin1Pos.z);
+        //originalHierarchicalFin1Rot = finObjs[finNum]->transform.hierarchicalRot;
+        //setOriginalFinPositions = true;
     }
-    std::cout << "Original fin1Pos: " << normalize(finDirection).x << ", " << normalize(finDirection).y << ", " << normalize(finDirection).z << std::endl;
-    finObjs[finNum]->transform.hierarchicalTrans = originalFin1Pos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(finDirection));//glm::vec3(fin1R*glm::vec4(normalize(originalFin1Pos),0)));
+    std::cout << "Original fin1Pos: " << normalize(finVars->finDirection).x << ", " << normalize(finVars->finDirection).y << ", " << normalize(finVars->finDirection).z << std::endl;
+    finObjs[finNum]->transform.hierarchicalTrans = finVars->originalFinPos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(finVars->finDirection));//glm::vec3(fin1R*glm::vec4(normalize(originalFin1Pos),0)));
     // Set rotation to original rotation so that the fins don't spin as the rocket goes forward
     //fin1->transform.hierarchicalRot = originalHierarchicalFin1Rot;
     glm::vec3 finRot = glm::vec3((LOSE_FINS_TIME - loseFinsTime) * 10, 0.0f, 0.0f);
@@ -199,7 +202,7 @@ void Player::LoseFin(int finNum)
     loseFinsTime -= time->getFrametime();
     if (loseFinsTime <= 0)
     {
-        setOriginalFinPositions = false;
+        //setOriginalFinPositions = false;
         KillFin(finNum);
     }
 }
@@ -253,7 +256,7 @@ glm::mat4 Player::rotationMatrix(glm::vec3 axis, float angle)
 void Player::DisassembleRocket()
 {
     std::cout << "disassembling!!!!!! " << std::endl;
-    if (!setOriginalFinPositions)
+    if (!setOriginalDisassemblePositions)
     {
         vec3 rotation = normalize(snoiseRotation(normalize(finObjs[0]->transform.position)));
 
@@ -263,11 +266,13 @@ void Player::DisassembleRocket()
         //originalFin2Pos = normalize(finObjs[1]->transform.position);
         //originalFin3Pos = normalize(finObjs[2]->transform.position);
         originalRocketBodyPos = normalize(vec3(0, 0, -1));
-        
-        for (int i = numLives - 2; i >= 0; i--)
-        {
-            LoseFin(i);
-        }
+
+        setOriginalDisassemblePositions = true;
+
+    }
+    for (int i = numLives - 2; i >= 0; i--)
+    {
+        LoseFin(i);
     }
     
     //finObjs[0]->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin1Pos);
