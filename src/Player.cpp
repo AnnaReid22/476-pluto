@@ -379,6 +379,7 @@ void Player::OnCollide(GameObject* other)
         
         if(win_play == 0)
         {
+            // https://www.soundboard.com/sb/sound/1001390
             gWaveWin.load("../resources/audio/win.mp3");
             gSoloudPlayer.play(gWaveWin);
             win_play = 1;
@@ -425,6 +426,7 @@ void Player::updateMoveVars()
     {
         if(fly_play == 0)
         {
+            // https://soundbible.com/tags-rocket.html
             gWaveFly.load("../resources/audio/fly.mp3");
             flying_handle = gSoloudPlayer.play(gWaveFly);
             int flying_handle;
