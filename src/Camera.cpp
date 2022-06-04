@@ -59,7 +59,9 @@ glm::mat4 Camera::getCameraViewMatrix()
     glm::vec3 rocketPos = rocket->getPosition();
     glm::vec3 rocketFwd = rocket->getForward();
     glm::vec3 posAbove = rocket->getPosition() + rocket->getForward() * camDist;
+    //static glm::vec3 leftVector = -1.0f * rocket->getRightVector()
     static glm::vec3 posLeft = rocket->getPosition() + -1.0f * rocket->getRightVector() * 6.0f;
+    static glm::vec3 fwd = rocket->getForward();
     posAbove = glm::vec3(posAbove.x, posAbove.y + 3.0f, posAbove.z + 3.0f);
     if (swapViewChoice == false)
     {
@@ -70,6 +72,7 @@ glm::mat4 Camera::getCameraViewMatrix()
         //return glm::lookAt(pos2, rocketPos, upVector);
 
         return glm::lookAt(posLeft, rocketPos, upVector);
+        //return glm::lookAt(rocketPos + fwd*6.0f, rocketPos, upVector);
     }
     
 }

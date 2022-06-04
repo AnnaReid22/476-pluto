@@ -127,7 +127,7 @@ void Player::Update()
     updateMoveVars();
     if (!stop)
     {
-        
+        std::cout << "One" << std::endl;
         if (loseFinsTime > 0)
         {
             LoseFin(numLives-1);
@@ -141,28 +141,40 @@ void Player::Update()
     }
     else if (collideTime > 0)
     {
+        std::cout << "Two" << std::endl;
+
         DisassembleRocket();
     }
     else if (!dead)
     {
+        std::cout << "Three" << std::endl;
+
         KillRocket();
         dead = true;
 
     }
     if (prepareShootTime > 0)
     {
+        std::cout << "Four" << std::endl;
+
         PrepareShoot();
     }
     else if (!alreadyShot)
     {
+        std::cout << "Five" << std::endl;
+
         Shoot();
     }
     if (shakeTime > 0)
     {
+        std::cout << "Six" << std::endl;
+
         ShakeRocket();
     }
     if (won)
     {
+        std::cout << "Seven" << std::endl;
+
         WinAnimation();
     }
 
@@ -173,17 +185,29 @@ void Player::WinAnimation()
     wonTimer += time->getFrametime();
     if(wonTimer < 8.5)
     { 
-        gameObject->transform.position += glm::vec3(0, -.01, 0);
+        gameObject->transform.position += glm::vec3(0, -.05, 0);
         rotation = glm::vec3(0, 4 * wonTimer, 0);
     }
     else
     {
-        gameObject->transform.position += glm::vec3(0, .08, 0);
+        gameObject->transform.position += glm::vec3(0, .2, 0);
     }
     
 }
 // Lose fins when you crash with an asteroid 
 void Player::LoseFin(int finNum)
+{   
+    UpdateFinFallOff(finNum);
+    loseFinsTime -= 3*time->getFrametime();
+    
+    if (loseFinsTime <= 0)
+    {
+        //setOriginalFinPositions = false;
+        KillFin(finNum);
+    }
+}
+
+void Player::UpdateFinFallOff(int finNum)
 {
     std::cout << "FinNum" << finNum << std::endl;
     // Lose first fin
@@ -206,19 +230,10 @@ void Player::LoseFin(int finNum)
     glm::vec3 perpendicularVector = glm::cross(finVars->finDirection, glm::vec3(0, 1, 0));
     finObjs[finNum]->transform.hierarchicalRot1 = glm::quat(1.0, 0.0, 0.0, 0.0);
     std::cout << "PerpendicularVector: " << normalize(perpendicularVector).x << ", " << normalize(perpendicularVector).y << ", " << normalize(perpendicularVector).z << std::endl;
-    finObjs[finNum]->transform.hierarchicalTrans1 = 0.5f*normalize(perpendicularVector);
+    finObjs[finNum]->transform.hierarchicalTrans1 = 0.5f * normalize(perpendicularVector);
     finObjs[finNum]->transform.hierarchicalRot2 = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, normalize(finVars->finDirection)));
     //finObjs[finNum]->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, normalize(finVars->finDirection)));//glm::vec3(-1, 1, 0)));
     //finObjs[finNum]->transform.position = glm::vec3(0, 0, 0);
-
-    
-    loseFinsTime -= time->getFrametime();
-    
-    if (loseFinsTime <= 0)
-    {
-        //setOriginalFinPositions = false;
-        KillFin(finNum);
-    }
 }
 
 // Shake rocket along forward vecyor. Used after shooting.
@@ -287,7 +302,7 @@ void Player::DisassembleRocket()
     for (int i = numLives - 2; i >= 0; i--)
     {
         std::cout << "Losing fin " << i << std::endl;
-        LoseFin(i);
+        UpdateFinFallOff(i);
     }
     
     //finObjs[0]->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin1Pos);
@@ -295,6 +310,7 @@ void Player::DisassembleRocket()
     //finObjs[2]->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin3Pos);
     rocketBody->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalRocketBodyPos);
     collideTime -= time->getFrametime();
+    loseFinsTime -= time->getFrametime();
 }
 
 // Stop rendering the fin called finNum
@@ -398,7 +414,10 @@ void Player::OnCollide(GameObject* other)
     }
     if (other->tag == "planet" && other->name != "pluto")
     {
-        loseFinsTime = LOSE_FINS_TIME;
+        if (loseFinsTime <= 0)
+        {
+            loseFinsTime = LOSE_FINS_TIME;
+        }
         stop = true;
         //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
         gWaveDie.load("../resources/audio/losefin.wav");

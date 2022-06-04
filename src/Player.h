@@ -91,6 +91,7 @@ public:
     void LoseFin(int finNum);
     void KillFin(int finNum);
     void WinAnimation();
+    void UpdateFinFallOff(int finNum);
 
 
     // Helper functions for DisassembleRocket
