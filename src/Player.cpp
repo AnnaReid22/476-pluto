@@ -36,7 +36,7 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     dollyFTime = 0;
     stopTime = 0;
     shakeTime = 0;
-    collideTime = 6.0f;
+    collideTime = LOSE_FINS_TIME;//6.0f;
     dead = false;
     alreadyShot = true;
     posUpdate = glm::vec4(0, 0, 0, 1);
@@ -107,6 +107,7 @@ void Player::Start()
     //fin1->transform.scale = glm::vec3(0.4, 0.4, 0.4);
 }
 
+
 /*
 * Calls functions that move and rotate rocket
 */
@@ -115,6 +116,11 @@ void Player::Update()
     if (InputManager::getInstance()->GetKey(GLFW_KEY_P))
     {
         won = true;
+        ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
+        //std::cout << "ps->type: " << ps->type << std::endl;
+        ps->numParticles = 4000;
+        ps->lifespan = 10;
+        ps->GPUSetup();
         rotation = glm::vec3(0, 0, 0);
         //gameObject->transform.rotation = glm::quat(1.0, 0.0, 0.0, 0.0);
     }
@@ -205,7 +211,9 @@ void Player::LoseFin(int finNum)
     //finObjs[finNum]->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, normalize(finVars->finDirection)));//glm::vec3(-1, 1, 0)));
     //finObjs[finNum]->transform.position = glm::vec3(0, 0, 0);
 
+    
     loseFinsTime -= time->getFrametime();
+    
     if (loseFinsTime <= 0)
     {
         //setOriginalFinPositions = false;
@@ -278,6 +286,7 @@ void Player::DisassembleRocket()
     }
     for (int i = numLives - 2; i >= 0; i--)
     {
+        std::cout << "Losing fin " << i << std::endl;
         LoseFin(i);
     }
     
@@ -389,6 +398,7 @@ void Player::OnCollide(GameObject* other)
     }
     if (other->tag == "planet" && other->name != "pluto")
     {
+        loseFinsTime = LOSE_FINS_TIME;
         stop = true;
         //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
         gWaveDie.load("../resources/audio/losefin.wav");
@@ -397,7 +407,9 @@ void Player::OnCollide(GameObject* other)
     if (other->name == "pluto")
     {
         //stop = true;
-        
+        won = true; 
+        rotation = glm::vec3(0, 0, 0);
+
         GameObject* ps1 = (GameObject*)rm_->getOther("particle_system_c1");
         ps1->transform = this->gameObject->transform;
         ps1->Enable();

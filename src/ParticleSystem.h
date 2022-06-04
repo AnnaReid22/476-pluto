@@ -12,8 +12,8 @@ class ParticleSystem :
 private:
     Time* time = 0;
     std::vector<Particle> particles;
-    GLfloat points[1200];
-	GLfloat pointColors[1600];
+    GLfloat points[12000];
+	GLfloat pointColors[16000];
     unsigned vertArrObj;
 	unsigned vertBuffObj;
 	unsigned colorbuff;
