@@ -16,6 +16,7 @@ private:
 public:
     glm::vec3 upVector;
     glm::vec3 pos;
+    glm::vec3 pos2;
 
     Player* rocket;
 

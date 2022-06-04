@@ -295,7 +295,7 @@ public:
 		rm->addOther("fin1_game_object", fin1Object);
 		BoundingSphereCollider* fin1Collider = fin1Object->addComponentOfType <BoundingSphereCollider>();
 		w.addObject(fin1Object);
-		pl->fin1 = fin1Object;
+		pl->finObjs[0] = fin1Object;
 
 		// fin2
 		GameObject* fin2Object = new GameObject("fin2");
@@ -308,7 +308,7 @@ public:
 		fin2Mesh->material = finMat;
 		BoundingSphereCollider* fin2Collider = fin2Object->addComponentOfType <BoundingSphereCollider>();
 		w.addObject(fin2Object);
-		pl->fin2 = fin2Object;
+		pl->finObjs[1] = fin2Object;
 
 		// fin3
 		GameObject* fin3Object = new GameObject("fin3");
@@ -321,7 +321,7 @@ public:
 		fin3Mesh->material = finMat;
 		BoundingSphereCollider* fin3Collider = fin3Object->addComponentOfType <BoundingSphereCollider>();
 		w.addObject(fin3Object);
-		pl->fin3 = fin3Object;
+		pl->finObjs[2] = fin3Object;
 		
 
 		//enemy loader

@@ -34,6 +34,7 @@ private:
     void updateMoveVars();
     void moveRocket();
 
+
 public:
     // How many asteroids can hit you before you die.
     int numLives;
@@ -86,7 +87,7 @@ public:
     void DisassembleRocket();
     void PrepareShoot();
     void Shoot();
-    void LoseFins();
+    void LoseFin(int finNum);
     void KillFin(int finNum);
     void WinAnimation();
 
@@ -108,8 +109,9 @@ public:
     std::shared_ptr<Shape> finMesh;
 
     GameObject* rocketBody;
+    GameObject* finObjs[3] = {NULL, NULL, NULL};
+    GameObject* fin0;
     GameObject* fin1;
     GameObject* fin2;
-    GameObject* fin3;
 };
 

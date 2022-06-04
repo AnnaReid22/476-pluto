@@ -16,6 +16,7 @@ Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 
     // Current camera position
     pos = glm::vec3(0.f);
+    pos2 = glm::vec3(0.f);
 
     ResourceManager* rm = rm->getInstance();
     windowManager = (WindowManager*)rm->getOther("WindowManager");
@@ -29,6 +30,8 @@ void Camera::setUpCam()
 {
     float f = 0.08;//0.01;
     pos = pos + ((rocket->getPosition() + rocket->getForward() * camDist + rocket->getUpVector()  * camDist/2.0f) - pos) * f;
+    pos2 = pos2 + ((rocket->getPosition() - rocket->getForward() * camDist + rocket->getUpVector() * camDist / -2.0f + rocket->getRightVector()* camDist / -2.0f) - pos2) * f;
+
 }
 
 
@@ -56,7 +59,7 @@ glm::mat4 Camera::getCameraViewMatrix()
     glm::vec3 rocketPos = rocket->getPosition();
     glm::vec3 rocketFwd = rocket->getForward();
     glm::vec3 posAbove = rocket->getPosition() + rocket->getForward() * camDist;
-    static glm::vec3 posLeft = rocket->getPosition() + -1.0f * rocket->getRightVector() * 6.0f;
+    glm::vec3 posLeft = rocket->getPosition() + -1.0f * rocket->getRightVector() * 6.0f;
     posAbove = glm::vec3(posAbove.x, posAbove.y + 3.0f, posAbove.z + 3.0f);
     if (swapViewChoice == false)
     {
@@ -64,7 +67,9 @@ glm::mat4 Camera::getCameraViewMatrix()
     }
     else
     {
-        return glm::lookAt(posLeft, rocketPos, upVector);
+        return glm::lookAt(pos2, rocketPos, upVector);
+
+        //return glm::lookAt(posLeft, rocketPos, upVector);
     }
     
 }
