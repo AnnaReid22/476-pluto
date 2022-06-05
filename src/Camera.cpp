@@ -94,5 +94,5 @@ glm::mat4 Camera::getCameraProjectionMatrix()
 */
 glm::mat4 Camera::getCameraRotationMatrix()
 {
-    return glm::mat4(1);// glm::lookAt(glm::vec3(0), rocket->getPosition() - pos, upVector);
+    return glm::lookAt(glm::vec3(0), target - pos, upVector);
 }
