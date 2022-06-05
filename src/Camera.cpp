@@ -9,10 +9,12 @@
 
 Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 {
+    pos = glm::vec3(0, 0, 0);
+    target = glm::vec3(0, 0, 0);
+    upVector = glm::vec3(0, 1, 0);
+
     // Distance between camera and rocket
     camDist = 3.0f;
-
-    upVector = glm::vec3(0, 1, 0);
 
     // Current camera position
     pos = glm::vec3(0.f);
@@ -29,8 +31,8 @@ Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 void Camera::setUpCam()
 {
     float f = 0.08;//0.01;
-    pos = pos + ((rocket->getPosition() + rocket->getForward() * camDist + rocket->getUpVector()  * camDist/2.0f) - pos) * f;
-    pos2 = pos2 + ((rocket->getPosition() - rocket->getForward() * camDist + rocket->getUpVector() * camDist / -2.0f + rocket->getRightVector()* camDist / -2.0f) - pos2) * f;
+    //pos = pos + ((rocket->getPosition() + rocket->getForward() * camDist + rocket->getUpVector()  * camDist/2.0f) - pos) * f;
+    //pos2 = pos2 + ((rocket->getPosition() - rocket->getForward() * camDist + rocket->getUpVector() * camDist / -2.0f + rocket->getRightVector()* camDist / -2.0f) - pos2) * f;
 
 }
 
@@ -56,22 +58,23 @@ void Camera::Update()
 */
 glm::mat4 Camera::getCameraViewMatrix()
 {
-    glm::vec3 rocketPos = rocket->getPosition();
+    /*glm::vec3 rocketPos = rocket->getPosition();
     glm::vec3 rocketFwd = rocket->getForward();
     glm::vec3 posAbove = rocket->getPosition() + rocket->getForward() * camDist;
     //static glm::vec3 leftVector = -1.0f * rocket->getRightVector()
     static glm::vec3 posLeft = rocket->getPosition() + -1.0f * rocket->getRightVector() * 6.0f;
     static glm::vec3 fwd = rocket->getForward();
-    posAbove = glm::vec3(posAbove.x, posAbove.y + 3.0f, posAbove.z + 3.0f);
+    posAbove = glm::vec3(posAbove.x, posAbove.y + 3.0f, posAbove.z + 3.0f);*/
+    return glm::lookAt(pos, target, upVector);
     if (swapViewChoice == false)
     {
-        return glm::lookAt(pos, rocketPos, upVector);
+        //return glm::lookAt(pos, rocketPos, upVector);
     }
     else
     {
         //return glm::lookAt(pos2, rocketPos, upVector);
 
-        return glm::lookAt(posLeft, rocketPos, upVector);
+        //return glm::lookAt(posLeft, rocketPos, upVector);
         //return glm::lookAt(rocketPos + fwd*6.0f, rocketPos, upVector);
     }
     

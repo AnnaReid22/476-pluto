@@ -7,6 +7,8 @@
 #include "PhysicsObject.h"
 #include "World.h"
 #include "Fin.h"
+#include "Camera_Lose_Fin.h"
+#include "Camera_Follow_Rocket.h"
 #include <iostream>
 #define PI 3.14159265
 #define MAXDOLLYFTIME 1.3
@@ -115,6 +117,11 @@ void Player::Update()
 {
     if (InputManager::getInstance()->GetKey(GLFW_KEY_P))
     {
+       /* Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
+        if (!(camFollowRocket->startWinAnimation))
+        {
+            camFollowRocket->SetUpWinAnimation();
+        }*/
         won = true;
        
         //ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
@@ -192,6 +199,12 @@ void Player::WinAnimation()
     }
     else
     {
+        Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
+        if (!(camFollowRocket->startWinAnimation))
+        {
+            camFollowRocket->SetUpWinAnimation();
+        }
+        
         gameObject->transform.position += glm::vec3(0, .2, 0);
     }
     
@@ -212,6 +225,8 @@ void Player::LoseFin(int finNum)
     if (loseFinsTime <= 0)
     {
         //setOriginalFinPositions = false;
+        Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
+        camFollowRocket->StopPanning();
         KillFin(finNum);
         ps->gameObject->Enable();
     }
@@ -406,15 +421,22 @@ void Player::OnCollide(GameObject* other)
 {
     if (other->name == "asteroid")
     {
-        if (numLives > 0 && loseFinsTime <=-1)
+        if (numLives > 0 && loseFinsTime <=-3)
         {
             loseFinsTime = LOSE_FINS_TIME;
             numLives--;
+            //gameObject->world->mainCamera = cam2;
+            Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
+            camFollowRocket->SetUpLoseFin(finObjs[numLives-1]);
+            //Camera_Lose_Fin* camLoseFin = cam1->gameObject->getComponentByType<Camera_Lose_Fin>();
+            //camLoseFin->Enable();
+            /*camLoseFin->SetUpTransition(); */
+           
             //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
             gWaveLoseLife.load("../resources/audio/losefin.wav");
             gSoloudPlayer.play(gWaveLoseLife);
         }
-        else if(numLives <= 0)
+        else if(numLives <= 0 && !stop)
         {
             stop = true;
             //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
@@ -427,16 +449,26 @@ void Player::OnCollide(GameObject* other)
         if (loseFinsTime <= 0)
         {
             loseFinsTime = LOSE_FINS_TIME;
+            Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
+            camFollowRocket->SetUpLoseFin(finObjs[0]);//Be careful with the wing index you are passing in here
+             //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
+            gWaveDie.load("../resources/audio/losefin.wav");
+            gSoloudPlayer.play(gWaveDie);
         }
+        ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
+        /*if (ps->gameObject->isEnabled)
+        {
+            ps->gameObject->Disable();
+        }*/
         stop = true;
-        //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
-        gWaveDie.load("../resources/audio/losefin.wav");
-        gSoloudPlayer.play(gWaveDie);
+       
+        
     }
     if (other->name == "pluto")
     {
-        //stop = true;
-        won = true; 
+        won = true;
+        
+        //stop = true; 
         rotation = glm::vec3(0, 0, 0);
 
         GameObject* ps1 = (GameObject*)rm_->getOther("particle_system_c1");

@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "InputManager.h"
 #include "Shape.h"
+#include "Camera.h"
 
 class Player : public Component
 {
@@ -73,6 +74,8 @@ public:
 
     // Rotation variables
     bool initMousePosSet;
+    Camera* cam1;
+    //Camera* cam2;
 
 
     Player(GameObject* d_GameObject);
@@ -116,5 +119,7 @@ public:
     GameObject* fin0;
     GameObject* fin1;
     GameObject* fin2;
+
+    
 };
 

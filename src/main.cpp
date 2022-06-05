@@ -43,6 +43,8 @@ Z. Wood + S. Sueda
 #include "BloomRenderPass.h"
 #include "PlutoBehavior.h"
 #include "Fin.h"
+#include "Camera_Follow_Rocket.h"
+#include "Camera_Lose_Fin.h"
 
 #include "soloud.h"
 #include "soloud_wav.h"
@@ -253,9 +255,29 @@ public:
 		Player* pl = player->addComponentOfType<Player>();
 		//pl->finMesh = theFin;
 		player->transform.scale = glm::vec3(1.0f);
-		GameObject* camera = new GameObject("camera");
-		Camera* cam = camera->addComponentOfType<Camera>();
-		cam->rocket = pl;
+
+		// Camera1 follows the player
+		GameObject* camera1 = new GameObject("camera");
+		Camera* cam1 = camera1->addComponentOfType<Camera>();
+		Camera_Follow_Rocket* camFollow = camera1->addComponentOfType<Camera_Follow_Rocket>();
+		camFollow->rocket = pl;
+		//Camera_Lose_Fin* camLoseFin = camera1->addComponentOfType<Camera_Lose_Fin>();
+	//	camLoseFin->rocket = pl;
+		//camLoseFin->Disable();
+
+		//cam1->rocket = pl;
+		pl->cam1 = cam1;
+
+		// Camera2 pans out when the player gets hit
+		/*GameObject* camera2 = new GameObject("camera2");
+		Camera* cam2 = camera2->addComponentOfType<Camera>();
+		Camera_Lose_Fin* camLoseFin = camera2->addComponentOfType<Camera_Lose_Fin>();
+		camLoseFin->rocket = pl;
+		camLoseFin->cam1 = cam1;
+		//cam2->rocket = pl;
+		pl->cam2 = cam2;*/
+
+
 
 		//MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
 		//rocket->mesh = theRocket;
@@ -263,7 +285,7 @@ public:
 
 		rm->addOther("player_game_object", player);
 
-		w.mainCamera = cam;
+		w.mainCamera = cam1;
 
 		BoundingSphereCollider* bsc2 = player->addComponentOfType <BoundingSphereCollider>();
 
@@ -458,7 +480,7 @@ public:
 		w.addObject(ps_celebrate5);
 		w.addObject(player);
 		w.addObject(spawner);
-		w.addObject(camera);
+		w.addObject(camera1);
 	}
 
 	void initPlanets(const std::string& resourceDirectory){
