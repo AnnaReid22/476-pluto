@@ -10,17 +10,13 @@ class Camera : public Component
 {
 private:
     float camDist;
-    bool swapViewChoice;
     WindowManager* windowManager = nullptr;
 
 public:
     //glm::vec3 camPos;
     glm::vec3 target;
     glm::vec3 upVector;
-
-
     glm::vec3 pos;
-    glm::vec3 pos2;
 
     //Player* rocket;
 

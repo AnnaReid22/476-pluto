@@ -24,7 +24,6 @@ void Camera_Follow_Rocket::Update()
 	{
 		camDistFromTarget += 0.04;
 		camera->target += rocket->getForward() * (camDistFromTarget -3.0f)*0.5f;
-		//camera->target += finObj->transform.hierarchicalTrans2 + glm::vec3(glm::mat4(rotationQuat) * glm::vec4(finObj->transform.position,1));// (finObj->transform.position + finObj->transform.hierarchicalTrans2);
 	}
 	if (startWinAnimation)
 	{
@@ -35,12 +34,10 @@ void Camera_Follow_Rocket::Update()
 	
 }
 
-void Camera_Follow_Rocket::SetUpLoseFin(GameObject* fin)
+void Camera_Follow_Rocket::SetUpLoseFin()
 {
-	rotationQuat = fin->transform.hierarchicalRot1;
 	camDistFromTarget = 3.0f;
 	startPanning = true;
-	finObj = fin;
 }
 
 void Camera_Follow_Rocket::StopPanning()

@@ -253,7 +253,6 @@ public:
 		//player loader
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
-		//pl->finMesh = theFin;
 		player->transform.scale = glm::vec3(1.0f);
 
 		// Camera1 follows the player
@@ -261,21 +260,8 @@ public:
 		Camera* cam1 = camera1->addComponentOfType<Camera>();
 		Camera_Follow_Rocket* camFollow = camera1->addComponentOfType<Camera_Follow_Rocket>();
 		camFollow->rocket = pl;
-		//Camera_Lose_Fin* camLoseFin = camera1->addComponentOfType<Camera_Lose_Fin>();
-	//	camLoseFin->rocket = pl;
-		//camLoseFin->Disable();
-
-		//cam1->rocket = pl;
+	
 		pl->cam1 = cam1;
-
-		// Camera2 pans out when the player gets hit
-		/*GameObject* camera2 = new GameObject("camera2");
-		Camera* cam2 = camera2->addComponentOfType<Camera>();
-		Camera_Lose_Fin* camLoseFin = camera2->addComponentOfType<Camera_Lose_Fin>();
-		camLoseFin->rocket = pl;
-		camLoseFin->cam1 = cam1;
-		//cam2->rocket = pl;
-		pl->cam2 = cam2;*/
 
 
 

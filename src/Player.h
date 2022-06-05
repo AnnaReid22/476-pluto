@@ -41,7 +41,6 @@ public:
     int numLives;
     // Movement variables
     bool dollyF;
-    bool dollyB;
     float dollyFTime;
     bool prevDollyF;
     bool stop;
@@ -54,15 +53,6 @@ public:
     glm::mat4 rotMat;
     Time* time;
     glm::vec4 posUpdate;
-    //glm::vec3 originalFin1Pos;
-    //glm::vec3 finDirection;
-    //glm::quat originalHierarchicalFin1Rot;
-
-    //glm::vec3 originalFin2Pos;
-    //glm::quat originalHierarchicalFin2Rot;
-
-   // glm::vec3 originalFin3Pos;
-    //glm::quat originalHierarchicalFin3Rot;
 
     glm::vec3 originalRocketBodyPos;
 
@@ -70,12 +60,10 @@ public:
     glm::mat4 fin1R;
 
     glm::vec3 originalPlayer;
-    //bool setOriginalFinPositions;
 
     // Rotation variables
     bool initMousePosSet;
     Camera* cam1;
-    //Camera* cam2;
 
 
     Player(GameObject* d_GameObject);

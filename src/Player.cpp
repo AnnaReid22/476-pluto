@@ -32,7 +32,6 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     stop = false;
 
     // Move forward and backwards
-    dollyB = false;
     dollyF = false;
     prevDollyF = false;
     dollyFTime = 0;
@@ -47,11 +46,9 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     wonTimer = 0;
 
     // Variables used for losing fins upon collision with asteroid
-    //loseFins = false;
     loseFinsTime = 0;
 
     // Variables used for obtaining a new set of fins
-    // getFins = false;
     getFinsTime = 0;
 
     // Initial num lives
@@ -85,9 +82,6 @@ Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
     rotMat = mat4(1);
 
     // Set original fin positions to 0
-    //originalFin1Pos = glm::vec3(0, 0, 0);
-    //originalFin2Pos = glm::vec3(0, 0, 0);
-    //originalFin3Pos = glm::vec3(0, 0, 0);
     fin1R = mat4(1);
 
     // Original fin positions are not set yet
@@ -106,7 +100,6 @@ void Player::Start()
     this->gameObject->transform.position = glm::vec3(0, 0, -4);
     this->gameObject->transform.scale = originalScale;
     time = time->getInstance();
-    //fin1->transform.scale = glm::vec3(0.4, 0.4, 0.4);
 }
 
 
@@ -117,26 +110,12 @@ void Player::Update()
 {
     if (InputManager::getInstance()->GetKey(GLFW_KEY_P))
     {
-       /* Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
-        if (!(camFollowRocket->startWinAnimation))
-        {
-            camFollowRocket->SetUpWinAnimation();
-        }*/
         won = true;
-       
-        //ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
-        //ps->gameObject->Enable();
-        //std::cout << "ps->type: " << ps->type << std::endl;
-        //ps->numParticles = 4000;
-        //ps->lifespan = 10;
-        //ps->GPUSetup();
         rotation = glm::vec3(0, 0, 0);
-        //gameObject->transform.rotation = glm::quat(1.0, 0.0, 0.0, 0.0);
     }
     updateMoveVars();
     if (!stop)
     {
-        std::cout << "One" << std::endl;
         if (loseFinsTime > 0)
         {
             LoseFin(numLives-1);
@@ -145,45 +124,31 @@ void Player::Update()
         {
             moveRocket();
         }
-
-        //else if(getFinsTime)
     }
     else if (collideTime > 0)
     {
-        std::cout << "Two" << std::endl;
-
         DisassembleRocket();
     }
     else if (!dead)
     {
-        std::cout << "Three" << std::endl;
-
         KillRocket();
         dead = true;
 
     }
     if (prepareShootTime > 0)
     {
-        std::cout << "Four" << std::endl;
-
         PrepareShoot();
     }
     else if (!alreadyShot)
     {
-        std::cout << "Five" << std::endl;
-
         Shoot();
     }
     if (shakeTime > 0)
     {
-        std::cout << "Six" << std::endl;
-
         ShakeRocket();
     }
     if (won)
     {
-        std::cout << "Seven" << std::endl;
-
         WinAnimation();
     }
 
@@ -224,7 +189,6 @@ void Player::LoseFin(int finNum)
 
     if (loseFinsTime <= 0)
     {
-        //setOriginalFinPositions = false;
         Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
         camFollowRocket->StopPanning();
         KillFin(finNum);
@@ -234,37 +198,25 @@ void Player::LoseFin(int finNum)
 
 void Player::UpdateFinFallOff(int finNum)
 {
-    std::cout << "FinNum" << finNum << std::endl;
-    // Lose first fin
-    //int currFin = 3 - numLives;
     Fin* finVars = finObjs[finNum]->getComponentByType<Fin>();
     if (!(finVars->initializedVariables))
     {
         finVars->SetFinVars();
-        //originalFin1Pos = finObjs[finNum]->transform.position;
-        //finDirection = glm::vec3(originalFin1Pos.x, -1.0f, originalFin1Pos.z);
-        //originalHierarchicalFin1Rot = finObjs[finNum]->transform.hierarchicalRot;
-        //setOriginalFinPositions = true;
-        //finObjs[finNum]->transform.position *= 2.0f;
     }
-    std::cout << "FinDirection: " << normalize(finVars->finDirection).x << ", " << normalize(finVars->finDirection).y << ", " << normalize(finVars->finDirection).z << std::endl;
+    //std::cout << "FinDirection: " << normalize(finVars->finDirection).x << ", " << normalize(finVars->finDirection).y << ", " << normalize(finVars->finDirection).z << std::endl;
     finObjs[finNum]->transform.hierarchicalTrans2 = ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(finVars->finDirection));// finVars->originalFinPos + ((float)DISASSEMBLE_SPEED * (float)(LOSE_FINS_TIME - loseFinsTime) * normalize(finVars->finDirection));//glm::vec3(fin1R*glm::vec4(normalize(originalFin1Pos),0)));
     // Set rotation to original rotation so that the fins don't spin as the rocket goes forward
-    //fin1->transform.hierarchicalRot = originalHierarchicalFin1Rot;
     glm::vec3 finRot = glm::vec3((LOSE_FINS_TIME - loseFinsTime) * 10, 0.0f, 0.0f);
     glm::vec3 perpendicularVector = glm::cross(finVars->finDirection, glm::vec3(0, 1, 0));
     finObjs[finNum]->transform.hierarchicalRot1 = glm::quat(1.0, 0.0, 0.0, 0.0);
-    std::cout << "PerpendicularVector: " << normalize(perpendicularVector).x << ", " << normalize(perpendicularVector).y << ", " << normalize(perpendicularVector).z << std::endl;
+    //std::cout << "PerpendicularVector: " << normalize(perpendicularVector).x << ", " << normalize(perpendicularVector).y << ", " << normalize(perpendicularVector).z << std::endl;
     finObjs[finNum]->transform.hierarchicalTrans1 = 0.5f * normalize(perpendicularVector);
     finObjs[finNum]->transform.hierarchicalRot2 = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, normalize(finVars->finDirection)));
-    //finObjs[finNum]->transform.hierarchicalRot = glm::quat(glm::rotate(glm::mat4(1.f), finRot.x, normalize(finVars->finDirection)));//glm::vec3(-1, 1, 0)));
-    //finObjs[finNum]->transform.position = glm::vec3(0, 0, 0);
 }
 
 // Shake rocket along forward vecyor. Used after shooting.
 void Player::ShakeRocket()
 {
-    //Time* time = time->getInstance();
     float frametime = time->getFrametime();
     shakeTime -= frametime;
     this->gameObject->transform.position += this->getForward()*((float)(rand() % 7 - 3) / 20.0f);
@@ -309,16 +261,12 @@ glm::mat4 Player::rotationMatrix(glm::vec3 axis, float angle)
 // Make the different parts of the rocket fall apart. Used after the rocket crashes. //TODO: add random number generation
 void Player::DisassembleRocket()
 {
-    std::cout << "disassembling!!!!!! " << std::endl;
     if (!setOriginalDisassemblePositions)
     {
         vec3 rotation = normalize(snoiseRotation(normalize(finObjs[0]->transform.position)));
 
         fin1R = rotationMatrix(rotation, 5*collideTime);
-      
-        //originalFin1Pos = fin1R * glm::vec4(normalize(finObjs[0]->transform.position),0);
-        //originalFin2Pos = normalize(finObjs[1]->transform.position);
-        //originalFin3Pos = normalize(finObjs[2]->transform.position);
+     
         originalRocketBodyPos = normalize(vec3(0, 0, -1));
 
         setOriginalDisassemblePositions = true;
@@ -330,9 +278,6 @@ void Player::DisassembleRocket()
         UpdateFinFallOff(i);
     }
     
-    //finObjs[0]->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin1Pos);
-    //finObjs[1]->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin2Pos);
-    //finObjs[2]->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalFin3Pos);
     rocketBody->transform.position += ((float)(time->getFrametime()) * (float)DISASSEMBLE_SPEED * originalRocketBodyPos);
     collideTime -= time->getFrametime();
     loseFinsTime -= time->getFrametime();
@@ -425,12 +370,9 @@ void Player::OnCollide(GameObject* other)
         {
             loseFinsTime = LOSE_FINS_TIME;
             numLives--;
-            //gameObject->world->mainCamera = cam2;
+
             Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
-            camFollowRocket->SetUpLoseFin(finObjs[numLives-1]);
-            //Camera_Lose_Fin* camLoseFin = cam1->gameObject->getComponentByType<Camera_Lose_Fin>();
-            //camLoseFin->Enable();
-            /*camLoseFin->SetUpTransition(); */
+            camFollowRocket->SetUpLoseFin();
            
             //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
             gWaveLoseLife.load("../resources/audio/losefin.wav");
@@ -450,16 +392,13 @@ void Player::OnCollide(GameObject* other)
         {
             loseFinsTime = LOSE_FINS_TIME;
             Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
-            camFollowRocket->SetUpLoseFin(finObjs[0]);//Be careful with the wing index you are passing in here
+            camFollowRocket->SetUpLoseFin();//Be careful with the wing index you are passing in here
              //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
             gWaveDie.load("../resources/audio/losefin.wav");
             gSoloudPlayer.play(gWaveDie);
         }
         ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
-        /*if (ps->gameObject->isEnabled)
-        {
-            ps->gameObject->Disable();
-        }*/
+      
         stop = true;
        
         
@@ -609,17 +548,6 @@ void Player::moveRocket()
             ps->gameObject->Enable();
         }*/
 
-    }
-   /* else
-    {
-        if (ps->gameObject->isEnabled)
-        {
-            ps->gameObject->Disable();
-        }
-    }*/
-    if (dollyB)
-    {
-        rocketMove.y -= frametime * speed;
     }
 
     // Update rocket rotation about the y-axis
