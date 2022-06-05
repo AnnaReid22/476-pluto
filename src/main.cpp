@@ -363,11 +363,11 @@ public:
 		ParticleSystem* ps = player->addComponentOfType<ParticleSystem>();
 		ps->start = pl->getPosition()-pl->getForward();
 		ps->type = "moving";
-		ps->numParticles = 400;//4000
+		ps->numParticles = 4000;//400;
 		ps->color = vec4(1.0, 0.7, 0.2, 1.0f);
 		ps->max_velocity = vec3(-0.05, -0.02, -0.04);
 		ps->min_velocity = vec3(-0.1, -0.05, -0.1);
-		ps->lifespan = 2.0f;//10
+		ps->lifespan = 10;//2.0f;
 		ps->GPUSetup();
 
 		GameObject* ps_death = new GameObject("ps_death");

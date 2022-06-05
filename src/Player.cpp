@@ -116,11 +116,13 @@ void Player::Update()
     if (InputManager::getInstance()->GetKey(GLFW_KEY_P))
     {
         won = true;
-        ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
+       
+        //ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
+        //ps->gameObject->Enable();
         //std::cout << "ps->type: " << ps->type << std::endl;
-        ps->numParticles = 4000;
-        ps->lifespan = 10;
-        ps->GPUSetup();
+        //ps->numParticles = 4000;
+        //ps->lifespan = 10;
+        //ps->GPUSetup();
         rotation = glm::vec3(0, 0, 0);
         //gameObject->transform.rotation = glm::quat(1.0, 0.0, 0.0, 0.0);
     }
@@ -200,10 +202,18 @@ void Player::LoseFin(int finNum)
     UpdateFinFallOff(finNum);
     loseFinsTime -= 3*time->getFrametime();
     
+
+    ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
+    if (ps->gameObject->isEnabled)
+    {
+        ps->gameObject->Disable();
+    }
+
     if (loseFinsTime <= 0)
     {
         //setOriginalFinPositions = false;
         KillFin(finNum);
+        ps->gameObject->Enable();
     }
 }
 
@@ -549,7 +559,7 @@ void Player::moveRocket()
 
     if (t > 1.033)
     {
-        t = 1.033;
+        t = 1.033; 
     }
 
     float squashCalculation = 3 * pow((t - 0.52), 2) + 0.2;
@@ -558,12 +568,23 @@ void Player::moveRocket()
     this->gameObject->transform.scale.y = squashCalculation;
    // std::cout << this->gameObject->transform.scale.x << ", " << this->gameObject->transform.scale.y << ", " << this->gameObject->transform.scale.z << std::endl;
   
-
+    //ParticleSystem* ps = this->gameObject->getComponentByType<ParticleSystem>();
     if (dollyF)
     {
         rocketMove.y += frametime * speed;
-        
+        /*if (!(ps->gameObject->isEnabled))
+        {
+            ps->gameObject->Enable();
+        }*/
+
     }
+   /* else
+    {
+        if (ps->gameObject->isEnabled)
+        {
+            ps->gameObject->Disable();
+        }
+    }*/
     if (dollyB)
     {
         rocketMove.y -= frametime * speed;
