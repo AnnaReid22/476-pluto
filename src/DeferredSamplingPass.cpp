@@ -59,10 +59,13 @@ void DeferredSamplingPass::init()
     prog->addUniform("V");
     prog->addUniform("M");
     prog->addUniform("albedoMap");
-    //prog->addUniform("normalMap");
+    prog->addUniform("normalMap");
+    prog->addUniform("useNormalMap");
     prog->addAttribute("vertPos");
     prog->addAttribute("vertNor");
     prog->addAttribute("vertTex");
+    prog->addAttribute("vertTan");
+    prog->addAttribute("vertBN");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -132,12 +135,24 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
         glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
 
         mat->t_albedo->bind(prog->getUniform("albedoMap"));
-        //mat->t_normal->bind(prog->getUniform("normalMap"));
 
-        mesh->draw(prog);
+        if (mat->t_normal != nullptr)
+        {
+            mat->t_normal->bind(prog->getUniform("normalMap"));
+            glUniform1i(prog->getUniform("useNormalMap"), true);
+            mesh->draw(prog, true);
+        }
+        else
+        {
+            glUniform1i(prog->getUniform("useNormalMap"), false);
+            mesh->draw(prog);
+        }
 
         mat->t_albedo->unbind();
-        //mat->t_normal->unbind();
+        if (mat->t_normal != nullptr)
+        {
+            mat->t_normal->unbind();
+        }   
     }
 
     prog->unbind();
