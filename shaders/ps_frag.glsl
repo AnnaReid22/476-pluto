@@ -12,6 +12,6 @@ out vec4 outColor;
 void main()
 {
 	float alpha = texture(alphaTexture, gl_PointCoord).r;
-	psColorOutput = vec4(partCol, alpha);
+	psColorOutput = vec4(partCol * 5, alpha);
 	psPositionOutput = vec4(partPos.xyz, 1.0);
 }
