@@ -187,6 +187,9 @@ public:
 		rp.addRenderPass(std::make_shared<BloomRenderPass>());
 		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
 		rp.addRenderPass(std::make_shared<GuiRenderPass>());
+		rm->addNumericalValue("guiStartTime", -1.0f);
+		rm->addNumericalValue("guiWinTime", -1.0f);
+		rm->addNumericalValue("guiDeathTime", -1.0f);
 		// add render passes with more shaders here
 	}
 

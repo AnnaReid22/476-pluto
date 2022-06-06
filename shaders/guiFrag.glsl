@@ -2,6 +2,8 @@
 
 uniform float aspect;
 uniform vec3 rgb;
+uniform float texAlpha;
+uniform sampler2D tex;
 
 in vec2 center;
 in vec2 scale;
@@ -49,6 +51,10 @@ void main()
     if(dist > 1 || dist < minDist){
         discard;
     }
-    color = vec4(rgb, 1);
-
+    if(texAlpha < 0){
+        color = vec4(rgb, 1);
+    }else{
+        //color = vec4(1, 0, 0, 1);
+        color = texture(tex, geomPos * 0.8f + vec2(0.5f)) * texAlpha;
+    }
 }
