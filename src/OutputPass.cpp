@@ -41,7 +41,8 @@ void OutputPass::init()
 	prog->addUniform("gBuffer");
 	prog->addUniform("bloomOutput");
 	prog->addUniform("guiColorOutput");
-
+	prog->addUniform("shadowOutput");
+	prog->addUniform("gCol");
 	
 
 	initQuad();
@@ -60,6 +61,9 @@ void OutputPass::execute(WindowManager* windowManager)
 	GLuint lazerGlowOutput = rm->getRenderTextureResource("lazerGlowOutput");
 
 	GLuint guiColorOutput = rm->getRenderTextureResource("guiColorOutput");
+
+	GLuint shadowOutput = rm->getRenderTextureResource("shadowOutput");
+	GLuint gColor = rm->getRenderTextureResource("gColor");
 
 	Camera* cam = (Camera*)rm->getOther("activeCamera");
     glm::mat4 V = cam->getCameraViewMatrix();
@@ -111,6 +115,14 @@ void OutputPass::execute(WindowManager* windowManager)
 		glActiveTexture(GL_TEXTURE7);
 		glBindTexture(GL_TEXTURE_2D, guiColorOutput);
 		glUniform1i(prog->getUniform("guiColorOutput"), 7);
+
+		glActiveTexture(GL_TEXTURE8);
+		glBindTexture(GL_TEXTURE_2D, shadowOutput);
+		glUniform1i(prog->getUniform("shadowOutput"), 8);
+
+		glActiveTexture(GL_TEXTURE9);
+		glBindTexture(GL_TEXTURE_2D, gColor);
+		glUniform1i(prog->getUniform("gCol"), 9);
 
 		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
 
