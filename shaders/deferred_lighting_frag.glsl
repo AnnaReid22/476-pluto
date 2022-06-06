@@ -26,7 +26,7 @@ void main()
     float diff = max(dot(norm, ldir), 0.0);
     if(shade == 1.0)
     {
-        color = diff * (1.0-(shade * 0.4)) * texture(gColor, fragTex);
+        color = diff * (1.0-(shade * 0.4f)) * texture(gColor, fragTex);
     }
         
     else

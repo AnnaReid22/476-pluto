@@ -179,11 +179,11 @@ public:
 		rm->addOther("WindowManager", windowManager);
 
 		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
-		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
 		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		rp.addRenderPass(std::make_shared<ShadowPass>());
+		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
 		rp.addRenderPass(std::make_shared<BloomRenderPass>());
 		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
 		rp.addRenderPass(std::make_shared<GuiRenderPass>());
@@ -687,11 +687,13 @@ public:
 
 		// Get vector of renderable gameobjects and submit to RenderPipeline
 		std::vector<GameObject*> renderables = w.getRenderables();
+		std::vector<GameObject*> lightRenderables = w.getRenderables();
 		std::vector<GameObject*> curPS = w.getParticleSystems();
 
 
 		rm->addOther("particleSystem", &curPS);
 		rm->addOther("renderables", &renderables);
+		rm->addOther("lightingRenderables", &lightRenderables);
 		rm->addOther("activeCamera", w.mainCamera);
 
 		rp.executePipeline();
