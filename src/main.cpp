@@ -602,9 +602,9 @@ public:
 		jupiterMR->material = jupiterMat;
 
 		BoundingSphereCollider* bsc_jupiter = jupiter->addComponentOfType<BoundingSphereCollider>();
-
+		
 		w.addObject(jupiter);
-		bsc_jupiter->radius = 0.5;
+		bsc_jupiter->radius = 0.6;
 
 		//saturn
 		theSaturn = make_shared<Shape>();

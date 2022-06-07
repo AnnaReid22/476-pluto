@@ -135,8 +135,10 @@ void Shape::shift() {
 void Shape::resize() {
     glm::vec3 center = this->getCenter();
     float radius = this->getRadius();
-    this->max -= center;
-    this->min -= center;
+
+    this->max = glm::normalize(glm::vec3(1));
+    this->min = -this->max;
+    
 
     for (int i = 0; i < obj_count; i++) {
         for (size_t v = 0; v < posBuf[i].size() / 3; v++) {
