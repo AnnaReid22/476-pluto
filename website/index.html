@@ -78,7 +78,7 @@
 		model where the components of each GameObject are updated every frame according to their own behavior. At the end of 
 		each update cycle the render pipeline is executed which is constructed of individual render passes that are encapsulated 
 		from each other and are composited in one final render pass which outputs to the screen. This has allowed us to work 
-		on our own tasks without interfering with each other, and helping with seamless integration.
+		on our own tasks without interfering with each other, and has helped with seamless integration.
 	</p>
 </div>
 <h2>High Performance Camera</h2>
@@ -87,7 +87,8 @@
 	<p>
 		Sarah implemented a strong 3D camera that follows the player’s movement around the 3D space. It has a third person 
 		perspective view. It has a spring effect (created using linear interpolation) to smoothly follow the rocket’s rotations 
-		and translations.
+		and translations. The camera zooms out and has slightly different targets when the player collides with asteroirds or 
+		planets other than Pluto. The camera also has a special behavior for the win animation.
 	</p>
 </div>
 <h2>Complex Environment</h2>
@@ -95,8 +96,8 @@
 <div class="description">
 	<p>
 		Anna placed all of the planets in the 3D environment and scaled it large, similar to space. The 3D world is on a large 
-		scale so that the game appears massive and spans wide. Chris added the skybox for the game and the asteroids. Collisions 
-		are in place for the rocket in the 3D space, also.
+		scale so that the game appears massive and spans wide. Chris added the skybox for the game and the asteroids and made 
+		the stars twinkle. Collisions are in place for the rocket in the 3D space.
 	</p>
 </div>
 <h2>Animations</h2>
@@ -104,8 +105,8 @@
 <div class="description">
 	<p>
 		Sarah added animations to the rocket movement. Chris also added asteroid movement over time. Anna added particle 
-		systems that move over time and attached them to the rocket’s tail to look like fire, death state, and win state as 
-		celebratory particles. Rocket animations are scripted hierarchical modeling animations, but based on their complexity 
+		systems that move over time and attached them to the rocket’s tail to look like fire, to the death state, and to the win state as 
+		celebratory particles. Rocket animations are scripted hierarchical modeling animations. Based on their complexity, 
 		they are considered high performance. List of rocket animations:
 	</p>
 </div>
@@ -116,8 +117,10 @@
 		<li>Rocket wings rotate as the rocket moves forward </li>
 		<li>Gets fat before shooting</li>
 		<li>Shakes after shooting</li>
-		<li>Loses one wing upon collision with asteroids</li>
-		<li>Animation when player wins</li>
+		<li>One wing flies away in a spiral motion upon collision with an asteroid</li>
+		<li>Rocket deforms when it collides with an asteroid after losing all its wings</li>
+		<li>Rocket deforms and loses all its wings upon collision with a planet other than Pluto</li>
+		<li>Celebratory animation with spinning and particle effects plays when the player reaches Pluto, followed by the rocket flying to infinity</li>
 	</ul>
 </div>
 <h2>Collisions</h2>
@@ -133,8 +136,7 @@
 <hr>
 <div class="description">
 	<p>
-		Anna added shadow mapping as demoed in class. She is still working on it, but will have the asteroid shadows and 
-		rocket shadow appear on the planets by the 100% deadline. We are using regular rather than cascaded shadow mapping.
+		Anna added shadow mapping. Asteroid shadows and rocket shadows appear on the planets. Asteroid shadows are also visible on the rocket.
 	</p>
 </div>
 <h2>View Frustum Culling</h2>
@@ -155,15 +157,15 @@
 <hr>
 <div class="description">
 	<p>
-		Chris has added a GUI during gameplay that shows the user the state of the game (how many asteroids have been hit, how many lives the player has, etc). 
-		This is proposed as a substitute for the bounding sphere hierarchy shown above.
+		Chris has added a GUI during gameplay that shows the user the state of the game (how many asteroids have been hit, how many lives the player has, 
+		and level progress). This is proposed as a substitute for the bounding sphere hierarchy shown above.
 	</p>
 </div>
 <h2>Free Choice: Bloom Shading</h2>
 <hr>
 <div class="description">
 	<p>
-		Oren implemented bloom into the game, as seen on Pluto.
+		Oren implemented bloom into the game. It is used in the fire particle effect coming out of the Rocket.
 	</p>
 </div>
 <h2>Free Choice: Particle Systems</h2>
@@ -195,6 +197,7 @@
 		<li><a>https://www.shockwave-sound.com/free-sound-effects/explosion-sounds</a></li>
 		<li><a>https://www.soundboard.com/sb/sound/1001390</a></li>
 		<li><a>https://soundbible.com/tags-rocket.html</a></li>
+		<li>Professor Eckhardt's CSC 471 class: Noise and procedural generation function used for rocket animations</a></li>
 		<li>A HUGE thank you to Professor Wood for all of her help on this project!!</li>
 	</ul>
 </div>
