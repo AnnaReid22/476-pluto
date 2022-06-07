@@ -65,22 +65,22 @@ void GuiRenderPass::init() {
     //push 7 white outer circles for the lives
 
     std::vector<float> rectBuf;
+    //Outer Life Rings
+    float ringX = -0.8f;
+    float ringY = -0.6f;
+    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX, ringY + 0.123f, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX + 0.06f, ringY - 0.05f, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX - 0.06f, ringY - 0.05f, 0.06f, -0.8f);
     //Indicator of progress bar
     addRect(&rectBuf, 0.8f, 0.7f, 0.01f, 0.01f);
     addRect(&rectBuf, 0.8f, 0.7f, 0.0666f, 0.01f);
     //Top and bottom of progress bar
     addRect(&rectBuf, 0.8f, 0.7f, 0.1f, 0.01f);
     addRect(&rectBuf, 0.8f, -0.7f, 0.1f, 0.01f);
-    //Outer Life Rings
-    float ringX = -0.8f;
-    float ringY = -0.6f;
-    addRect(&rectBuf, ringX + 0.00f, ringY + 0.0f, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX + 0.08f, ringY + 0.0f, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX - 0.08f, ringY + 0.0f, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX + 0.04f, ringY + 0.123f, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX - 0.04f, ringY + 0.123f, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX + 0.04f, ringY - 0.123f, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX - 0.04f, ringY - 0.123f, 0.06f, -0.8f);
     //Points
     float pointsX = -0.93f;
     float pointsY = 0.9f;
@@ -91,13 +91,14 @@ void GuiRenderPass::init() {
         addRect(&rectBuf, pointsX + dx + 0.02f, pointsY - 0.03333f, 0.014f, 0.014f);
     }
     //Inner Life Rings
-    addRect(&rectBuf, ringX + 0.00f, ringY + 0.0f, 0.035f, 0.035f);
-    addRect(&rectBuf, ringX - 0.08f, ringY + 0.0f, 0.035f, 0.035f);
-    addRect(&rectBuf, ringX - 0.04f, ringY + 0.123f, 0.035f, 0.035f);
-    addRect(&rectBuf, ringX + 0.04f, ringY + 0.123f, 0.035f, 0.035f);
-    addRect(&rectBuf, ringX + 0.08f, ringY + 0.0f, 0.035f, 0.035f);
-    addRect(&rectBuf, ringX + 0.04f, ringY - 0.123f, 0.035f, 0.035f);
-    addRect(&rectBuf, ringX - 0.04f, ringY - 0.123f, 0.035f, 0.035f);
+    addRect(&rectBuf, ringX, ringY, 0.035f, 0.035f);
+    addRect(&rectBuf, ringX, ringY + 0.123f, 0.035f, 0.035f);
+    addRect(&rectBuf, ringX + 0.06f, ringY - 0.05f, 0.035f, 0.035f);
+    addRect(&rectBuf, ringX - 0.06f, ringY - 0.05f, 0.035f, 0.035f);
+    addRect(&rectBuf, ringX, ringY, 0.035f, 0.035f);
+    addRect(&rectBuf, ringX, ringY, 0.035f, 0.035f);
+    addRect(&rectBuf, ringX, ringY, 0.035f, 0.035f);
+
 
     //Full Circle
     addRect(&rectBuf, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -120,11 +121,11 @@ void GuiRenderPass::init() {
 
 
 void GuiRenderPass::setGeometry(int lives, int score, float distToGoal) {
-    this->numWhitePoints = 11 + score;
-    if (this->numWhitePoints > 111) {
-        this->numWhitePoints = 111;
-    }else if (this->numWhitePoints < 11) {
-        this->numWhitePoints = 11;
+    this->numWhitePoints = 8 + score;
+    if (this->numWhitePoints > 108) {
+        this->numWhitePoints = 108;
+    }else if (this->numWhitePoints < 8) {
+        this->numWhitePoints = 8;
     }
     this->numOrangePoints = lives;
     if (this->numOrangePoints > 7) {
@@ -194,7 +195,7 @@ void GuiRenderPass::execute(WindowManager* windowManager) {
     //Draw white artifacts
     glUniform1f(prog->getUniform("texAlpha"), -1.0f);
     glUniform3f(prog->getUniform("rgb"), 1.0f, 1.0f, 1.0f);
-    glDrawArrays(GL_POINTS, 0, this->numWhitePoints);
+    glDrawArrays(GL_POINTS, 3, this->numWhitePoints);
 
     //Draw orange artifacts
     glUniform1f(prog->getUniform("texAlpha"), -1.0f);
@@ -222,12 +223,12 @@ void GuiRenderPass::execute(WindowManager* windowManager) {
         glUniform1f(prog->getUniform("texAlpha"), sqrt(abs(sin(startTime))));
         glDrawArrays(GL_POINTS, 118, 1);
     }
-    else if (winTime >= 0.0f && winTime <= pi) {
+    else if (winTime >= 0.0f) {
         this->winTex.bind(prog->getUniform("tex"));
         glUniform1f(prog->getUniform("texAlpha"), sqrt(abs(sin(winTime))));
         glDrawArrays(GL_POINTS, 118, 1);
     }
-    else if (deathTime >= 0.0f && deathTime <= pi) {
+    else if (deathTime >= 0.0f) {
         this->deathTex.bind(prog->getUniform("tex"));
         glUniform1f(prog->getUniform("texAlpha"), sqrt(abs(sin(deathTime))));
         glDrawArrays(GL_POINTS, 118, 1);
