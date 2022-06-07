@@ -372,6 +372,7 @@ void Player::Shoot()
     physicsObject->acc = glm::vec3(0.0f);
 
     gameObject->world->addObject(bullet);
+    bsc->radius = 0.2f; 
     //https://www.soundfishing.eu/sound/laser-gun
     gWaveShoot.load("../resources/audio/shoot.mp3");
     gSoloudPlayer.play(gWaveShoot);
