@@ -66,4 +66,5 @@ void main()
     color.rgb += psCol.rgb*psCol.a + (gLight.rgb + bloomColor.rgb)*(1.0f-psCol.a);
     // color = gColor;
     color.rgb += texture(guiColorOutput, fragTex).rgb;
+
 }
