@@ -9,6 +9,8 @@ GameObject::GameObject(std::string d_Name)
     transform = Transform();
     name = d_Name;
     tag = "";
+    deform = false;
+    deformFactor = 0.05f;
 }
 
 GameObject::GameObject(std::string d_Name, Transform d_Transform)

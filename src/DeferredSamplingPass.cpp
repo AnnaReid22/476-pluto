@@ -64,6 +64,22 @@ void DeferredSamplingPass::init()
     prog->addAttribute("vertNor");
     prog->addAttribute("vertTex");
 
+    rocket_prog = std::make_shared<Program>();
+    rocket_prog->setVerbose(true);
+    rocket_prog->setShaderNames("../shaders/rocket_defer_samples_vert.glsl", "../shaders/rocket_defer_samples_frag.glsl");
+    rocket_prog->init();
+    rocket_prog->addUniform("P");
+    rocket_prog->addUniform("V");
+    rocket_prog->addUniform("M");
+    rocket_prog->addUniform("albedoMap");
+    rocket_prog->addUniform("deformFactor");
+    //prog->addUniform("normalMap");
+    rocket_prog->addAttribute("vertPos");
+    rocket_prog->addAttribute("vertNor");
+    rocket_prog->addAttribute("vertTex");
+
+    
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -98,9 +114,11 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
 
     for (GameObject* obj : renderables)
     {
-        if (obj->name == "lazer") {
+        if (obj->name == "lazer" || obj->deform) {
             continue;
         }
+
+
 
 
         glm::mat4 Mchild = obj->transform.genModelMatrix();
@@ -136,6 +154,49 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
     }
 
     prog->unbind();
+
+
+    // Render rocket
+    rocket_prog->bind();
+
+    glUniformMatrix4fv(rocket_prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P));
+    glUniformMatrix4fv(rocket_prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(V));
+
+    for (GameObject* obj : renderables)
+    {
+        if (!obj->deform) {
+            continue;
+        }
+
+        std::cout << "Loading Deform factor  " << obj->deformFactor << std::endl;
+        glUniform1f(rocket_prog->getUniform("deformFactor"), obj->deformFactor);
+        glm::mat4 Mchild = obj->transform.genModelMatrix();
+        if (obj->parent)
+        {
+            M = obj->parentObj->transform.genModelMatrix() * obj->transform.genHierarchicalMatrix();
+        }
+        else
+        {
+            M = Mchild;
+        }
+
+        MeshRenderer* mr = obj->getComponentByType<MeshRenderer>();
+
+        std::shared_ptr<Material> mat = mr->material;
+        std::shared_ptr<Shape> mesh = mr->mesh;
+
+        glUniformMatrix4fv(rocket_prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
+
+        mat->t_albedo->bind(rocket_prog->getUniform("albedoMap"));
+        //mat->t_normal->bind(prog->getUniform("normalMap"));
+
+        mesh->draw(rocket_prog);
+
+        mat->t_albedo->unbind();
+        //mat->t_normal->unbind();
+    }
+
+    rocket_prog->unbind();
 
     glDrawBuffers(1, buffers);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

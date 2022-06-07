@@ -12,7 +12,7 @@ private:
     GLuint depthRenderBuffer;
     GLuint gBuffer, gNormal, gColor;
 
-    std::shared_ptr<Program> prog;
+    std::shared_ptr<Program> prog, rocket_prog;
     ResourceManager* rm = nullptr;
 
 public:

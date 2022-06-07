@@ -100,6 +100,8 @@ void Player::Start()
     this->gameObject->transform.position = glm::vec3(0, 0, -4);
     this->gameObject->transform.scale = originalScale;
     time = time->getInstance();
+
+  
 }
 
 
@@ -133,6 +135,7 @@ void Player::Update()
     {
         KillRocket();
         dead = true;
+        // Chris, here si where you can add the " You Lose" Scene
 
     }
     if (prepareShootTime > 0)
@@ -171,6 +174,11 @@ void Player::WinAnimation()
         }
         
         gameObject->transform.position += glm::vec3(0, .2, 0);
+    }
+    std::cout << "wonTimer: " << wonTimer << std::endl;
+    if (wonTimer > 40)
+    {
+        //Chris, this is where you should add the won screen
     }
     
 }
@@ -260,7 +268,15 @@ glm::mat4 Player::rotationMatrix(glm::vec3 axis, float angle)
 
 // Make the different parts of the rocket fall apart. Used after the rocket crashes. //TODO: add random number generation
 void Player::DisassembleRocket()
-{
+{ 
+    std::cout << "DISASSEMBLING!!! " << this->gameObject->deform << "   " << this->gameObject->deformFactor << std::endl;
+    if (rocketBody->deformFactor < 0.09)
+    {
+        rocketBody->deformFactor += 0.0001;
+    }
+
+    
+
     if (!setOriginalDisassemblePositions)
     {
         vec3 rotation = normalize(snoiseRotation(normalize(finObjs[0]->transform.position)));
@@ -381,6 +397,7 @@ void Player::OnCollide(GameObject* other)
         else if(numLives <= 0 && !stop)
         {
             stop = true;
+            rocketBody->deform = true;
             //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
             gWaveDie.load("../resources/audio/losefin.wav");
             gSoloudPlayer.play(gWaveDie);
@@ -391,6 +408,7 @@ void Player::OnCollide(GameObject* other)
         if (loseFinsTime <= 0)
         {
             loseFinsTime = LOSE_FINS_TIME;
+            rocketBody->deform = true;
             Camera_Follow_Rocket* camFollowRocket = cam1->gameObject->getComponentByType<Camera_Follow_Rocket>();
             camFollowRocket->SetUpLoseFin();//Be careful with the wing index you are passing in here
              //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
