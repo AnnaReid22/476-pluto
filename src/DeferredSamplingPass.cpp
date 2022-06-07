@@ -188,7 +188,6 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
             continue;
         }
 
-        std::cout << "Loading Deform factor  " << obj->deformFactor << std::endl;
         glUniform1f(rocket_prog->getUniform("deformFactor"), obj->deformFactor);
         glm::mat4 Mchild = obj->transform.genModelMatrix();
         if (obj->parent)
