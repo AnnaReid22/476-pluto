@@ -140,7 +140,7 @@ void Player::Update()
     {
         KillRocket();
         dead = true;
-        // Chris, here si where you can add the " You Lose" Scene
+        ResourceManager::getInstance()->addNumericalValue("guiDeathTime", Time::getInstance()->getGlobalTime());
 
     }
     if (prepareShootTime > 0)
@@ -180,9 +180,11 @@ void Player::WinAnimation()
         
         gameObject->transform.position += glm::vec3(0, .2, 0);
     }
-    if (wonTimer > 40)
+    //std::cout << "wonTimer: " << wonTimer << std::endl;
+    ResourceManager* rm = ResourceManager::getInstance();
+    if (wonTimer > 20 && rm->getNumericalValue("guiWinTime") < 0)
     {
-        //Chris, this is where you should add the won screen
+        rm->addNumericalValue("guiWinTime", Time::getInstance()->getGlobalTime());
     }
     
 }
