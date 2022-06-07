@@ -44,7 +44,6 @@ Z. Wood + S. Sueda
 #include "PlutoBehavior.h"
 #include "Fin.h"
 #include "Camera_Follow_Rocket.h"
-#include "Camera_Lose_Fin.h"
 
 #include "soloud.h"
 #include "soloud_wav.h"

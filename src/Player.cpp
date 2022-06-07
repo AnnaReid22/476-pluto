@@ -7,7 +7,6 @@
 #include "PhysicsObject.h"
 #include "World.h"
 #include "Fin.h"
-#include "Camera_Lose_Fin.h"
 #include "Camera_Follow_Rocket.h"
 #include <iostream>
 #define PI 3.14159265
