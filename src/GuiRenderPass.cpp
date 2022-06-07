@@ -65,22 +65,19 @@ void GuiRenderPass::init() {
     //push 7 white outer circles for the lives
 
     std::vector<float> rectBuf;
-    //Outer Life Rings
-    float ringX = -0.8f;
-    float ringY = -0.6f;
-    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX, ringY + 0.123f, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX + 0.06f, ringY - 0.05f, 0.06f, -0.8f);
-    addRect(&rectBuf, ringX - 0.06f, ringY - 0.05f, 0.06f, -0.8f);
     //Indicator of progress bar
     addRect(&rectBuf, 0.8f, 0.7f, 0.01f, 0.01f);
     addRect(&rectBuf, 0.8f, 0.7f, 0.0666f, 0.01f);
     //Top and bottom of progress bar
     addRect(&rectBuf, 0.8f, 0.7f, 0.1f, 0.01f);
     addRect(&rectBuf, 0.8f, -0.7f, 0.1f, 0.01f);
+    //Outer Life Rings
+    float ringX = -0.8f;
+    float ringY = -0.6f;
+    addRect(&rectBuf, ringX, ringY, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX, ringY + 0.123f, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX + 0.06f, ringY - 0.05f, 0.06f, -0.8f);
+    addRect(&rectBuf, ringX - 0.06f, ringY - 0.05f, 0.06f, -0.8f);
     //Points
     float pointsX = -0.93f;
     float pointsY = 0.9f;
@@ -90,6 +87,10 @@ void GuiRenderPass::init() {
         addRect(&rectBuf, pointsX + dx, pointsY, 0.014f, 0.014f);
         addRect(&rectBuf, pointsX + dx + 0.02f, pointsY - 0.03333f, 0.014f, 0.014f);
     }
+    //Garbage
+    addRect(&rectBuf, 0, 0, 0.06f, -0.8f);
+    addRect(&rectBuf, 0, 0, 0.06f, -0.8f);
+    addRect(&rectBuf, 0, 0, 0.06f, -0.8f);
     //Inner Life Rings
     addRect(&rectBuf, ringX, ringY, 0.035f, 0.035f);
     addRect(&rectBuf, ringX, ringY + 0.123f, 0.035f, 0.035f);
@@ -195,7 +196,7 @@ void GuiRenderPass::execute(WindowManager* windowManager) {
     //Draw white artifacts
     glUniform1f(prog->getUniform("texAlpha"), -1.0f);
     glUniform3f(prog->getUniform("rgb"), 1.0f, 1.0f, 1.0f);
-    glDrawArrays(GL_POINTS, 3, this->numWhitePoints);
+    glDrawArrays(GL_POINTS, 0, this->numWhitePoints);
 
     //Draw orange artifacts
     glUniform1f(prog->getUniform("texAlpha"), -1.0f);
