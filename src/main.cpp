@@ -42,6 +42,8 @@ Z. Wood + S. Sueda
 #include "DeferredLightingPass.h"
 #include "BloomRenderPass.h"
 #include "PlutoBehavior.h"
+#include "Fin.h"
+#include "Camera_Follow_Rocket.h"
 
 #include "soloud.h"
 #include "soloud_wav.h"
@@ -268,11 +270,17 @@ public:
 		//player loader
 		GameObject* player = new GameObject("player");
 		Player* pl = player->addComponentOfType<Player>();
-		//pl->finMesh = theFin;
 		player->transform.scale = glm::vec3(1.0f);
-		GameObject* camera = new GameObject("camera");
-		Camera* cam = camera->addComponentOfType<Camera>();
-		cam->rocket = pl;
+
+		// Camera1 follows the player
+		GameObject* camera1 = new GameObject("camera");
+		Camera* cam1 = camera1->addComponentOfType<Camera>();
+		Camera_Follow_Rocket* camFollow = camera1->addComponentOfType<Camera_Follow_Rocket>();
+		camFollow->rocket = pl;
+	
+		pl->cam1 = cam1;
+
+
 
 		//MeshRenderer* rocket = player->addComponentOfType<MeshRenderer>();
 		//rocket->mesh = theRocket;
@@ -280,7 +288,7 @@ public:
 
 		rm->addOther("player_game_object", player);
 
-		w.mainCamera = cam;
+		w.mainCamera = cam1;
 
 		BoundingSphereCollider* bsc2 = player->addComponentOfType <BoundingSphereCollider>();
 
@@ -312,8 +320,9 @@ public:
 		fin1Mesh->material = finMat;
 		rm->addOther("fin1_game_object", fin1Object);
 		BoundingSphereCollider* fin1Collider = fin1Object->addComponentOfType <BoundingSphereCollider>();
+		fin1Object->addComponentOfType<Fin>();
 		w.addObject(fin1Object);
-		pl->fin1 = fin1Object;
+		pl->finObjs[0] = fin1Object;
 
 		// fin2
 		GameObject* fin2Object = new GameObject("fin2");
@@ -325,8 +334,9 @@ public:
 		fin2Mesh->mesh = theFin;
 		fin2Mesh->material = finMat;
 		BoundingSphereCollider* fin2Collider = fin2Object->addComponentOfType <BoundingSphereCollider>();
+		fin2Object->addComponentOfType<Fin>();
 		w.addObject(fin2Object);
-		pl->fin2 = fin2Object;
+		pl->finObjs[1] = fin2Object;
 
 		// fin3
 		GameObject* fin3Object = new GameObject("fin3");
@@ -338,8 +348,9 @@ public:
 		fin3Mesh->mesh = theFin;
 		fin3Mesh->material = finMat;
 		BoundingSphereCollider* fin3Collider = fin3Object->addComponentOfType <BoundingSphereCollider>();
+		fin3Object->addComponentOfType <Fin>();
 		w.addObject(fin3Object);
-		pl->fin3 = fin3Object;
+		pl->finObjs[2] = fin3Object;
 		
 
 		//enemy loader
@@ -377,11 +388,11 @@ public:
 		ParticleSystem* ps = player->addComponentOfType<ParticleSystem>();
 		ps->start = pl->getPosition()-pl->getForward();
 		ps->type = "moving";
-		ps->numParticles = 400;
+		ps->numParticles = 4000;//400;
 		ps->color = vec4(1.0, 0.7, 0.2, 1.0f);
 		ps->max_velocity = vec3(-0.05, -0.02, -0.04);
 		ps->min_velocity = vec3(-0.1, -0.05, -0.1);
-		ps->lifespan = 2.0f;
+		ps->lifespan = 10;//2.0f;
 		ps->GPUSetup();
 
 		GameObject* ps_death = new GameObject("ps_death");
@@ -472,7 +483,7 @@ public:
 		w.addObject(ps_celebrate5);
 		w.addObject(player);
 		w.addObject(spawner);
-		w.addObject(camera);
+		w.addObject(camera1);
 	}
 
 	void initPlanets(const std::string& resourceDirectory){
@@ -508,7 +519,11 @@ public:
 		earthMR->mesh = theEarth;
 		earthMR->material = earthMat;
 
+		BoundingSphereCollider* bsc_earth = earth->addComponentOfType<BoundingSphereCollider>();
+
 		w.addObject(earth);
+		bsc_earth->radius = 0.2;
+
 
 		//mars
 		theMars = make_shared<Shape>();

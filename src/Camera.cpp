@@ -9,13 +9,12 @@
 
 Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 {
-    // Distance between camera and rocket
-    camDist = 3.0f;
-
+    pos = glm::vec3(0, 0, 0);
+    target = glm::vec3(0, 0, 0);
     upVector = glm::vec3(0, 1, 0);
 
-    // Current camera position
-    pos = glm::vec3(0.f);
+    // Distance between camera and rocket
+    camDist = 3.0f;
 
     ResourceManager* rm = rm->getInstance();
     windowManager = (WindowManager*)rm->getOther("WindowManager");
@@ -27,27 +26,20 @@ Camera::Camera(GameObject* d_GameObject): Component(d_GameObject)
 void Camera::setUpCam()
 {
     float f = 0.08;//0.01;
-    pos = pos + ((rocket->getPosition() + rocket->getForward() * camDist + rocket->getUpVector()  * camDist/2.0f) - pos) * f;
 }
 
 
 void Camera::Update()
 {
     setUpCam();
-    //upVector = glm::vec4(0, 1, 0, 0) * glm::rotate(glm::mat4(1.f), rocket->getXRotation(), glm::vec3(1, 0, 0));
-
-}
+ }
 
 /*
 * Create View Matrix
 */
 glm::mat4 Camera::getCameraViewMatrix()
 {
-    glm::vec3 rocketPos = rocket->getPosition();
-    glm::vec3 rocketFwd = rocket->getForward();
-    glm::vec3 posAbove = rocket->getPosition() + rocket->getForward() * camDist;
-    posAbove = glm::vec3(posAbove.x, posAbove.y + 3.0f, posAbove.z + 3.0f);
-    return glm::lookAt(pos, rocketPos, upVector);
+    return glm::lookAt(pos, target, upVector);  
 }
 
 glm::mat4 Camera::getCameraProjectionMatrix()
@@ -64,5 +56,5 @@ glm::mat4 Camera::getCameraProjectionMatrix()
 */
 glm::mat4 Camera::getCameraRotationMatrix()
 {
-    return glm::lookAt(glm::vec3(0), rocket->getPosition() - pos, upVector);
+    return glm::lookAt(glm::vec3(0), target - pos, upVector);
 }

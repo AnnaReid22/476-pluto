@@ -4,7 +4,7 @@
 #include "Component.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "InputManager.h"
-#include "Player.h"
+//#include "Player.h"
 
 class Camera : public Component
 {
@@ -13,10 +13,12 @@ private:
     WindowManager* windowManager = nullptr;
 
 public:
+    //glm::vec3 camPos;
+    glm::vec3 target;
     glm::vec3 upVector;
     glm::vec3 pos;
 
-    Player* rocket;
+    //Player* rocket;
 
     Camera(GameObject* d_GameObject);
     void setUpCam();

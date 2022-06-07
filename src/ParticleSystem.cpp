@@ -4,7 +4,9 @@
 #include "GameObject.h"
 #include "GLSL.h"
 #include "ResourceManager.h"
+#include "Player.h"
 #include <iostream>
+
 
 //reference: https://learnopengl.com/In-Practice/2D-Game/Particles
 

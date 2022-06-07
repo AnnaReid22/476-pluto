@@ -6,6 +6,7 @@
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 #include "ShadowPass.h"
+#include "Player.h"
 
 void ShadowPass::init() 
 {

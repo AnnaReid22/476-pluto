@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "InputManager.h"
 #include "Shape.h"
+#include "Camera.h"
 
 class Player : public Component
 {
@@ -29,35 +30,29 @@ private:
     float stopTime;
     float prepareShootTime;
     bool alreadyShot;
-
+    float wonTimer;
     // Rocket movement vectors
     void updateMoveVars();
     void moveRocket();
+
 
 public:
     // How many asteroids can hit you before you die.
     int numLives;
     // Movement variables
     bool dollyF;
-    bool dollyB;
     float dollyFTime;
     bool prevDollyF;
     bool stop;
     bool shoot;
     bool dead;
+    bool won;
+    bool setOriginalDisassemblePositions;
     float shakeTime;
     float collideTime;
     glm::mat4 rotMat;
     Time* time;
     glm::vec4 posUpdate;
-    glm::vec3 originalFin1Pos;
-    glm::quat originalHierarchicalFin1Rot;
-
-    glm::vec3 originalFin2Pos;
-    glm::quat originalHierarchicalFin2Rot;
-
-    glm::vec3 originalFin3Pos;
-    glm::quat originalHierarchicalFin3Rot;
 
     glm::vec3 originalRocketBodyPos;
 
@@ -65,10 +60,10 @@ public:
     glm::mat4 fin1R;
 
     glm::vec3 originalPlayer;
-    bool setOriginalFinPositions;
 
     // Rotation variables
     bool initMousePosSet;
+    Camera* cam1;
 
 
     Player(GameObject* d_GameObject);
@@ -84,7 +79,11 @@ public:
     void DisassembleRocket();
     void PrepareShoot();
     void Shoot();
-    void LoseFins();
+    void LoseFin(int finNum);
+    void KillFin(int finNum);
+    void WinAnimation();
+    void UpdateFinFallOff(int finNum);
+
 
     // Helper functions for DisassembleRocket
     float hash(float n);
@@ -104,8 +103,11 @@ public:
     std::shared_ptr<Shape> finMesh;
 
     GameObject* rocketBody;
+    GameObject* finObjs[3] = {NULL, NULL, NULL};
+    GameObject* fin0;
     GameObject* fin1;
     GameObject* fin2;
-    GameObject* fin3;
+
+    
 };
 

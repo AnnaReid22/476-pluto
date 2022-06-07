@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
+#include "Player.h"
 
 void ParticleRenderPass::init()
 {

@@ -16,6 +16,10 @@ public:
     bool isEnabled = true;
     bool toBeDestroyed = false;
     bool parent = false;
+
+    // These two variables are used to deform the rocket in the vertex shader
+    bool deform;
+    float deformFactor;
     GameObject* parentObj;
     std::string tag;
 
