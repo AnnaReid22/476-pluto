@@ -136,7 +136,7 @@ void Shape::resize() {
     glm::vec3 center = this->getCenter();
     float radius = this->getRadius();
 
-    this->max = glm::vec3(1);
+    this->max = glm::normalize(glm::vec3(1));
     this->min = -this->max;
     
 
