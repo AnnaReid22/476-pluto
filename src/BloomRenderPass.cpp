@@ -86,7 +86,7 @@ void BloomRenderPass::execute(WindowManager* windowManager)
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    GLuint inTex = rm->getRenderTextureResource("gColor");
+    GLuint inTex = rm->getRenderTextureResource("psColorOutput");
 
     filterBrightProg->bind();
     glActiveTexture(GL_TEXTURE0);

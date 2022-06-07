@@ -219,8 +219,15 @@ public:
 		rocket_albedo->setUnit(0);
 		rocket_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
+		rocket_normal = make_shared<Texture>();
+		rocket_normal->setFilename(resourceDirectory + "/normals/rocketbody_normal.png");
+		rocket_normal->init();
+		rocket_normal->setUnit(1);
+		rocket_normal->setWrapModes(GL_REPEAT, GL_REPEAT);
+
 		rocketMat = make_shared<Material>();
 		rocketMat->t_albedo = rocket_albedo;
+		//rocketMat->t_normal = rocket_normal;
 
 		//rocket fin's loader
 		theFin = make_shared<Shape>();
@@ -503,11 +510,11 @@ public:
 		earth_normal->setFilename(resourceDirectory + "/normals/earth_normal.png");
 		earth_normal->init();
 		earth_normal->setUnit(1);
-		earth_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		earth_normal->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		earthMat = make_shared<Material>();
 		earthMat->t_albedo = earth_albedo;
-		earthMat->t_normal = earth_normal;
+		//earthMat->t_normal = earth_normal;
 
 		GameObject* earth = new GameObject("earth");
 		// earth->transform.position = glm::vec3(0, -30, 0);
@@ -541,11 +548,11 @@ public:
 		mars_normal->setFilename(resourceDirectory + "/normals/mars_normal.png");
 		mars_normal->init();
 		mars_normal->setUnit(1);
-		mars_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		mars_normal->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		marsMat = make_shared<Material>();
 		marsMat->t_albedo = mars_albedo;
-		marsMat->t_normal = mars_normal;
+		//marsMat->t_normal = mars_normal;
 
 		GameObject* mars = new GameObject("mars");
 		mars->transform.position = glm::vec3(190, 0, -200);
@@ -578,7 +585,7 @@ public:
 		jupiter_normal->setFilename(resourceDirectory + "/normals/jupiter_normal.png");
 		jupiter_normal->init();
 		jupiter_normal->setUnit(1);
-		jupiter_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		jupiter_normal->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		jupiterMat = make_shared<Material>();
 		jupiterMat->t_albedo = jupiter_albedo;
@@ -609,7 +616,7 @@ public:
 		saturn_albedo->setFilename(resourceDirectory + "/planets/saturn.jpg");
 		saturn_albedo->init();
 		saturn_albedo->setUnit(0);
-		saturn_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		saturn_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		saturnMat = make_shared<Material>();
 		saturnMat->t_albedo = saturn_albedo;
@@ -675,7 +682,7 @@ public:
 		neptune_normal->setFilename(resourceDirectory + "/normals/neptune_normal.png");
 		neptune_normal->init();
 		neptune_normal->setUnit(1);
-		neptune_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		neptune_normal->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		neptuneMat = make_shared<Material>();
 		neptuneMat->t_albedo = neptune_albedo;
@@ -703,7 +710,7 @@ public:
         thePluto->init(true);
 
 		pluto_albedo = make_shared<Texture>();
-		pluto_albedo->setFilename(resourceDirectory + "/bright.jpg");
+		pluto_albedo->setFilename(resourceDirectory + "/planets/pluto.png");
 		pluto_albedo->init();
 		pluto_albedo->setUnit(0);
 		pluto_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
@@ -712,7 +719,7 @@ public:
 		pluto_normal->setFilename(resourceDirectory + "/normals/pluto_normal.png");
 		pluto_normal->init();
 		pluto_normal->setUnit(1);
-		pluto_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		pluto_normal->setWrapModes(GL_REPEAT, GL_REPEAT);
 
 		plutoMat = make_shared<Material>();
 		plutoMat->t_albedo = pluto_albedo;

@@ -63,7 +63,7 @@ void main()
         color.r += lazerGlow;
     }
 
-    color.rgb += psCol.rgb*psCol.a + (gLight.rgb + bloomColor.rgb)*(1.0f-psCol.a);
+    color.rgb += (psCol.rgb+bloomColor.rgb)*psCol.a + (gLight.rgb)*(1.0f-psCol.a);
     // color = gColor;
     color.rgb += texture(guiColorOutput, fragTex).rgb;
 

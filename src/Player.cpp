@@ -509,6 +509,7 @@ void Player::updateMoveVars()
     //Time* time = time->getInstance();
     if (dollyF)// && dollyFTime < MAXDOLLYFTIME)
     {
+        this->gameObject->getComponentByType<ParticleSystem>()->Enable();
         if(fly_play == 0)
         {
             // https://soundbible.com/tags-rocket.html
@@ -521,6 +522,7 @@ void Player::updateMoveVars()
     }
     else if(!dollyF)
     {
+        this->gameObject->getComponentByType<ParticleSystem>()->Disable();
         fly_play = 0;
         gSoloudPlayer.stop(flying_handle);
         if (prevDollyF)
