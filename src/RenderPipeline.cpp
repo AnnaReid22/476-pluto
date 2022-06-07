@@ -78,6 +78,8 @@ void RenderPipeline::executePipeline()
 {
     Camera* cam = (Camera*)rm->getOther("activeCamera");
     std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
+    std::vector<GameObject*> lightrenderables = *(std::vector<GameObject*> *)rm->getOther("lightingRenderables");
+    rm->addOther("lightingRenderables", &lightrenderables);
     renderables = viewFrustumCull(renderables, cam);
 
     rm->addOther("renderables", &renderables);

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css">
+<title>Life on Pluto?</title>
+</head>
+<body>
+
+<div class="header">
+	<h1>Life on Pluto?</h1>
+</div>
+
+<div class="title">
+	<div>Description</div>
+</div>
+<hr>
+<div class="description">
+	<p>Our game is a one level adventure to get to Pluto! The player is a rocket, and their goal 
+		is to shoot as many asteroids as possible and avoid being hit by them along the 
+		way. In addition, on this journey the player will pass many planets, but must 
+		avoid crashing into those too!</p>
+</div>
+
+<div class="title">
+	<div>Team Members</div>
+</div>
+<hr>
+<div class="description">
+	<ul>
+		<li>Anna Reid</li>
+		<li>Chris Middleton</li>
+		<li>Oren Elrich</li>
+		<li>Sarah Aristazabal</li>
+	</ul>
+</div>
+
+<div class="title">
+	<div>Mini User Guide</div>
+</div>
+<hr>
+<div class="description">
+	<p>To build the game, the user must have CMake installed, as well as build packages.
+		Once installed properly, the user can begin gameplay. The mouse controls the direction
+		and the rotation of movement for the rocket. To go forward, the user simply presses the W key.
+		To shoot lazers at the asteroids, the user must press the space bar. Winning the game requires
+		that the player collide with Pluto, which can be seen at the start of the game and is the goal to get to
+		by the end of the game. With these simple controls, the user will be able to play Life on Pluto! 
+	</p>
+</div>
+
+
+<div class="header">
+	<h1>Images & Demo</h1>
+</div>
+
+
+<div class="header">
+	<h1>Technologies</h1>
+</div>
+<h2>Audio</h2>
+<hr>
+<div class="description">
+	<p>
+		Anna integrated audio into the game. She used SoLoud and MiniAudio, and added sound effects including background 
+		noise during gameplay, collisions with asteroids, collisions with planets, a death sound, a win sound, and a 
+		sound for when the rocket is flying.
+	</p>
+</div>
+<h2>Software Development & Design</h2>
+<hr>
+<div class="description">
+	<p>
+		Our engine is modeled similar to Unity, and is very well designed. The game simulation is based on an entity component 
+		model where the components of each GameObject are updated every frame according to their own behavior. At the end of 
+		each update cycle the render pipeline is executed which is constructed of individual render passes that are encapsulated 
+		from each other and are composited in one final render pass which outputs to the screen. This has allowed us to work 
+		on our own tasks without interfering with each other, and helping with seamless integration.
+	</p>
+</div>
+<h2>High Performance Camera</h2>
+<hr>
+<div class="description">
+	<p>
+		Sarah implemented a strong 3D camera that follows the player’s movement around the 3D space. It has a third person 
+		perspective view. It has a spring effect (created using linear interpolation) to smoothly follow the rocket’s rotations 
+		and translations.
+	</p>
+</div>
+<h2>Complex Environment</h2>
+<hr>
+<div class="description">
+	<p>
+		Anna placed all of the planets in the 3D environment and scaled it large, similar to space. The 3D world is on a large 
+		scale so that the game appears massive and spans wide. Chris added the skybox for the game and the asteroids. Collisions 
+		are in place for the rocket in the 3D space, also.
+	</p>
+</div>
+<h2>Animations</h2>
+<hr>
+<div class="description">
+	<p>
+		Sarah added animations to the rocket movement. Chris also added asteroid movement over time. Anna added particle 
+		systems that move over time and attached them to the rocket’s tail to look like fire, death state, and win state as 
+		celebratory particles. Rocket animations are scripted hierarchical modeling animations, but based on their complexity 
+		they are considered high performance. List of rocket animations:
+	</p>
+</div>
+<div class="description">
+	<ul>
+		<li>Squashes when rocket starts and stops moving forward </li>
+		<li>Stretches as it moves forward </li>
+		<li>Rocket wings rotate as the rocket moves forward </li>
+		<li>Gets fat before shooting</li>
+		<li>Shakes after shooting</li>
+		<li>Loses one wing upon collision with asteroids</li>
+		<li>Animation when player wins</li>
+	</ul>
+</div>
+<h2>Collisions</h2>
+<hr>
+<div class="description">
+	<p>
+		Oren implemented bounding spheres for the objects in the scene. In replacement for the bounding sphere hierarchy, 
+		we implemented the substitute of a UI that acts in response to collisions and positions of the player in space. 
+		Bloom was another potential substitute for the 3D bounding sphere hierarchy.
+	</p>
+</div>
+<h2>Shadows</h2>
+<hr>
+<div class="description">
+	<p>
+		Anna added shadow mapping as demoed in class. She is still working on it, but will have the asteroid shadows and 
+		rocket shadow appear on the planets by the 100% deadline. We are using regular rather than cascaded shadow mapping.
+	</p>
+</div>
+<h2>View Frustum Culling</h2>
+<hr>
+<div class="description">
+	<p>
+		Anna added view frustum culling with help from Chris.
+	</p>
+</div>
+<h2>Specialized Rendering Techniques: Deferred Shading & Normal Mapping</h2>
+<hr>
+<div class="description">
+	<p>
+		Oren added deferred shading to our code. In addition, Oren completed normal mapping for the objects that had normal maps available.
+	</p>
+</div>
+<h2>Free Choice: Sophisticated HUD</h2>
+<hr>
+<div class="description">
+	<p>
+		Chris has added a GUI during gameplay that shows the user the state of the game (how many asteroids have been hit, how many lives the player has, etc). 
+		This is proposed as a substitute for the bounding sphere hierarchy shown above.
+	</p>
+</div>
+<h2>Free Choice: Bloom Shading</h2>
+<hr>
+<div class="description">
+	<p>
+		Oren implemented bloom into the game, as seen on Pluto.
+	</p>
+</div>
+<h2>Free Choice: Particle Systems</h2>
+<hr>
+<div class="description">
+	<p>
+		Anna added particle systems to the game, as described above. She added a fire particle system, 
+		win state particle system, and a death state particle system.
+	</p>
+</div>
+<h2>Free Choice: Scripted Fracturing</h2>
+<hr>
+<div class="description">
+	<p>
+		Chris added fracturing asteroids to the game.
+	</p>
+</div>
+
+
+<h2>References</h2>
+<div class="description">
+	<ul>
+		<li><a>https://learnopengl.com/</a></li>
+		<li><a>https://learnopengl.com/In-Practice/2D-Game/Particles</a></li>
+		<li><a>https://sol.gfxile.net/soloud/</a></li>
+		<li><a>https://miniaud.io/</a></li>
+		<li><a>https://www.free-stock-music.com/savfk-deep.html</a></li>
+		<li><a>https://www.soundfishing.eu/sound/laser-gun</a></li>
+		<li><a>https://www.shockwave-sound.com/free-sound-effects/explosion-sounds</a></li>
+		<li><a>https://www.soundboard.com/sb/sound/1001390</a></li>
+		<li><a>https://soundbible.com/tags-rocket.html</a></li>
+		<li>A HUGE thank you to Professor Wood for all of her help on this project!!</li>
+	</ul>
+</div>
+</body>
+</html>

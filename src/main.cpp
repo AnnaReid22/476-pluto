@@ -84,6 +84,14 @@ public:
 	shared_ptr<Texture> neptune_albedo;
 	shared_ptr<Texture> pluto_albedo;
 	shared_ptr<Texture> particleTexture;
+
+	shared_ptr<Texture> rocket_normal;
+	shared_ptr<Texture> fin_normal;
+	shared_ptr<Texture> earth_normal;
+	shared_ptr<Texture> mars_normal;
+	shared_ptr<Texture> jupiter_normal;
+	shared_ptr<Texture> neptune_normal;
+	shared_ptr<Texture> pluto_normal;
 	
 	shared_ptr<Material> rocketMat;
 	shared_ptr<Material> finMat;
@@ -182,14 +190,17 @@ public:
 		rm->addOther("WindowManager", windowManager);
 
 		rp.addRenderPass(std::make_shared<DeferredSamplingPass>());
-		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
 		rp.addRenderPass(std::make_shared<SkyboxRenderPass>());
 		//rp.addRenderPass(std::make_shared<ForwardRenderPass>());
 		rp.addRenderPass(std::make_shared<ParticleRenderPass>());
 		rp.addRenderPass(std::make_shared<ShadowPass>());
+		rp.addRenderPass(std::make_shared<DeferredLightingPass>());
 		rp.addRenderPass(std::make_shared<BloomRenderPass>());
 		rp.addRenderPass(std::make_shared<LazerGlowRenderPass>());
 		rp.addRenderPass(std::make_shared<GuiRenderPass>());
+		rm->addNumericalValue("guiStartTime", -1.0f);
+		rm->addNumericalValue("guiWinTime", -1.0f);
+		rm->addNumericalValue("guiDeathTime", -1.0f);
 		// add render passes with more shaders here
 	}
 
@@ -201,7 +212,7 @@ public:
 		theRocket = make_shared<Shape>();
 		theRocket->loadMesh(resourceDirectory + "/rocketBody.obj");
         theRocket->resize();
-        theRocket->init();
+        theRocket->init(true);
 
 		rocket_albedo = make_shared<Texture>();
 		rocket_albedo->setFilename(resourceDirectory + "/rocketBody_albedo.jpg");
@@ -216,7 +227,7 @@ public:
 		theFin = make_shared<Shape>();
 		theFin->loadMesh(resourceDirectory + "/fin.obj");
 		theFin->resize();
-		theFin->init();
+		theFin->init(true);
 
 		fin_albedo = make_shared<Texture>();
 		fin_albedo->setFilename(resourceDirectory + "/fin_albedo.jpg");
@@ -224,8 +235,15 @@ public:
 		fin_albedo->setUnit(0);
 		fin_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
+		fin_normal = make_shared<Texture>();
+		fin_normal->setFilename(resourceDirectory + "/normals/rocketwing_normal.png");
+		fin_normal->init();
+		fin_normal->setUnit(1);
+		fin_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
 		finMat = make_shared<Material>();
 		finMat->t_albedo = fin_albedo;
+		finMat->t_normal = fin_normal;
 
 		//asteroid loader
 		string asteroid_tex_names[4] = {"/asteroid.jpg", "/asteroid2.jpg" ,"/asteroid3.jpg" ,"/asteroid4.jpg"};
@@ -474,7 +492,7 @@ public:
 		theEarth = make_shared<Shape>();
 		theEarth->loadMesh(resourceDirectory + "/planets/earth.obj");
         theEarth->resize();
-        theEarth->init();
+        theEarth->init(true);
 
 		earth_albedo = make_shared<Texture>();
 		earth_albedo->setFilename(resourceDirectory + "/planets/earth.png");
@@ -482,8 +500,15 @@ public:
 		earth_albedo->setUnit(0);
 		earth_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
+		earth_normal = make_shared<Texture>();
+		earth_normal->setFilename(resourceDirectory + "/normals/earth_normal.png");
+		earth_normal->init();
+		earth_normal->setUnit(1);
+		earth_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
 		earthMat = make_shared<Material>();
 		earthMat->t_albedo = earth_albedo;
+		earthMat->t_normal = earth_normal;
 
 		GameObject* earth = new GameObject("earth");
 		// earth->transform.position = glm::vec3(0, -30, 0);
@@ -505,7 +530,7 @@ public:
 		theMars = make_shared<Shape>();
 		theMars->loadMesh(resourceDirectory + "/planets/mars.obj");
         theMars->resize();
-        theMars->init();
+        theMars->init(true);
 
 		mars_albedo = make_shared<Texture>();
 		mars_albedo->setFilename(resourceDirectory + "/planets/mars.png");
@@ -513,8 +538,15 @@ public:
 		mars_albedo->setUnit(0);
 		mars_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
+		mars_normal = make_shared<Texture>();
+		mars_normal->setFilename(resourceDirectory + "/normals/mars_normal.png");
+		mars_normal->init();
+		mars_normal->setUnit(1);
+		mars_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
 		marsMat = make_shared<Material>();
 		marsMat->t_albedo = mars_albedo;
+		marsMat->t_normal = mars_normal;
 
 		GameObject* mars = new GameObject("mars");
 		mars->transform.position = glm::vec3(190, 0, -200);
@@ -535,7 +567,7 @@ public:
 		theJupiter = make_shared<Shape>();
 		theJupiter->loadMesh(resourceDirectory + "/planets/jupiter.obj");
         theJupiter->resize();
-        theJupiter->init();
+        theJupiter->init(true);
 
 		jupiter_albedo = make_shared<Texture>();
 		jupiter_albedo->setFilename(resourceDirectory + "/planets/jupiter.png");
@@ -543,8 +575,15 @@ public:
 		jupiter_albedo->setUnit(0);
 		jupiter_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
+		jupiter_normal = make_shared<Texture>();
+		jupiter_normal->setFilename(resourceDirectory + "/normals/jupiter_normal.png");
+		jupiter_normal->init();
+		jupiter_normal->setUnit(1);
+		jupiter_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
 		jupiterMat = make_shared<Material>();
 		jupiterMat->t_albedo = jupiter_albedo;
+		jupiterMat->t_normal = jupiter_normal;
 
 		GameObject* jupiter = new GameObject("jupiter");
 		jupiter->transform.position = glm::vec3(-280, 0, -300);
@@ -625,7 +664,7 @@ public:
 		theNeptune = make_shared<Shape>();
 		theNeptune->loadMesh(resourceDirectory + "/planets/neptune.obj");
         theNeptune->resize();
-        theNeptune->init();
+        theNeptune->init(true);
 
 		neptune_albedo = make_shared<Texture>();
 		neptune_albedo->setFilename(resourceDirectory + "/planets/neptune.png");
@@ -633,8 +672,15 @@ public:
 		neptune_albedo->setUnit(0);
 		neptune_albedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
+		neptune_normal = make_shared<Texture>();
+		neptune_normal->setFilename(resourceDirectory + "/normals/neptune_normal.png");
+		neptune_normal->init();
+		neptune_normal->setUnit(1);
+		neptune_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
 		neptuneMat = make_shared<Material>();
 		neptuneMat->t_albedo = neptune_albedo;
+		neptuneMat->t_normal = neptune_normal;
 
 		GameObject* neptune = new GameObject("neptune");
 		neptune->transform.position = glm::vec3(-120, 0, -800);
@@ -655,7 +701,7 @@ public:
 		thePluto = make_shared<Shape>();
 		thePluto->loadMesh(resourceDirectory + "/planets/pluto.obj");
         thePluto->resize();
-        thePluto->init();
+        thePluto->init(true);
 
 		pluto_albedo = make_shared<Texture>();
 		pluto_albedo->setFilename(resourceDirectory + "/bright.jpg");
@@ -663,8 +709,15 @@ public:
 		pluto_albedo->setUnit(0);
 		pluto_albedo->setWrapModes(GL_REPEAT, GL_REPEAT);
 
+		pluto_normal = make_shared<Texture>();
+		pluto_normal->setFilename(resourceDirectory + "/normals/pluto_normal.png");
+		pluto_normal->init();
+		pluto_normal->setUnit(1);
+		pluto_normal->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
 		plutoMat = make_shared<Material>();
 		plutoMat->t_albedo = pluto_albedo;
+		plutoMat->t_normal = pluto_normal;
 
 		GameObject* pluto = new GameObject("pluto");
 		pluto->transform.position = glm::vec3(0, 0, -1000);
@@ -703,11 +756,13 @@ public:
 
 		// Get vector of renderable gameobjects and submit to RenderPipeline
 		std::vector<GameObject*> renderables = w.getRenderables();
+		std::vector<GameObject*> lightRenderables = w.getRenderables();
 		std::vector<GameObject*> curPS = w.getParticleSystems();
 
 
 		rm->addOther("particleSystem", &curPS);
 		rm->addOther("renderables", &renderables);
+		rm->addOther("lightingRenderables", &lightRenderables);
 		rm->addOther("activeCamera", w.mainCamera);
 
 		rp.executePipeline();

@@ -59,10 +59,13 @@ void DeferredSamplingPass::init()
     prog->addUniform("V");
     prog->addUniform("M");
     prog->addUniform("albedoMap");
-    //prog->addUniform("normalMap");
+    prog->addUniform("normalMap");
+    prog->addUniform("useNormalMap");
     prog->addAttribute("vertPos");
     prog->addAttribute("vertNor");
     prog->addAttribute("vertTex");
+    prog->addAttribute("vertTan");
+    prog->addAttribute("vertBN");
 
     rocket_prog = std::make_shared<Program>();
     rocket_prog->setVerbose(true);
@@ -99,12 +102,17 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
     glViewport(0, 0, width, height);
 
     Camera* cam = (Camera*)rm->getOther("activeCamera");
-    std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("renderables");
+    std::vector<GameObject*> renderables = *(std::vector<GameObject*> *)rm->getOther("lightingRenderables");
 
     glm::mat4 M, V, P;
 
     P = cam->getCameraProjectionMatrix();
     V = cam->getCameraViewMatrix();
+    // glm::vec3 lightLA = glm::vec3(0.0, 0.0, -1000.0);
+    // glm::vec3 lightUp = glm::vec3(0, 1, 0);
+    // glm::vec3 g_light = glm::vec3(0.0, 5.0, 7.0);
+    // P = glm::ortho(-300.0f, 300.0f, -300.0f, 300.0f, 10.0f, 1000.0f);  
+    // V = glm::lookAt(g_light, lightLA, lightUp);
     M = glm::mat4(1);
 
     prog->bind();
@@ -145,12 +153,24 @@ void DeferredSamplingPass::execute(WindowManager* windowManager)
         glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(M));
 
         mat->t_albedo->bind(prog->getUniform("albedoMap"));
-        //mat->t_normal->bind(prog->getUniform("normalMap"));
 
-        mesh->draw(prog);
+        if (mat->t_normal != nullptr)
+        {
+            mat->t_normal->bind(prog->getUniform("normalMap"));
+            glUniform1i(prog->getUniform("useNormalMap"), true);
+            mesh->draw(prog, true);
+        }
+        else
+        {
+            glUniform1i(prog->getUniform("useNormalMap"), false);
+            mesh->draw(prog);
+        }
 
         mat->t_albedo->unbind();
-        //mat->t_normal->unbind();
+        if (mat->t_normal != nullptr)
+        {
+            mat->t_normal->unbind();
+        }   
     }
 
     prog->unbind();

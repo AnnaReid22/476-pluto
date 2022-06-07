@@ -33,7 +33,7 @@ void GuiRenderPass::init() {
 
     rm->addRenderTextureResource("guiColorOutput", colorBuffer);
 
-
+    // Load program
     prog = std::make_shared<Program>();
     prog->setVerbose(true);
     prog->setShaderNames("../shaders/guiVert.glsl", "../shaders/guiFrag.glsl", "../shaders/guiGeom.glsl");
@@ -41,6 +41,24 @@ void GuiRenderPass::init() {
     prog->addAttribute("rectArgs");
     prog->addUniform("aspect");
     prog->addUniform("rgb");
+    prog->addUniform("texAlpha");
+    prog->addUniform("tex");
+
+    //Load textures
+    this->winTex.setFilename("../resources/text/win.png");
+    this->winTex.init();
+    this->winTex.setUnit(0);
+    this->winTex.setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+    this->startTex.setFilename("../resources/text/start.png");
+    this->startTex.init();
+    this->startTex.setUnit(0);
+    this->startTex.setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+    this->deathTex.setFilename("../resources/text/death.png");
+    this->deathTex.init();
+    this->deathTex.setUnit(0);
+    this->deathTex.setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
     //Also initialize the shapes
     //push 7 orange circles for the lives
@@ -80,6 +98,9 @@ void GuiRenderPass::init() {
     addRect(&rectBuf, ringX + 0.08f, ringY + 0.0f, 0.035f, 0.035f);
     addRect(&rectBuf, ringX + 0.04f, ringY - 0.123f, 0.035f, 0.035f);
     addRect(&rectBuf, ringX - 0.04f, ringY - 0.123f, 0.035f, 0.035f);
+
+    //Full Circle
+    addRect(&rectBuf, 0.0f, 0.0f, 1.0f, 1.0f);
 
     glGenVertexArrays(1, &vaoID);
     glBindVertexArray(vaoID);
@@ -162,6 +183,7 @@ void GuiRenderPass::execute(WindowManager* windowManager) {
     // Bind vertex array object
     glBindVertexArray(vaoID);
 
+
     // Bind rect buffer
     GLuint rectArgs = prog->getAttribute("rectArgs");
     GLSL::enableVertexAttribArray(rectArgs);
@@ -169,10 +191,54 @@ void GuiRenderPass::execute(WindowManager* windowManager) {
     glVertexAttribPointer(rectArgs, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
 
     //Draw
+    //Draw white artifacts
+    glUniform1f(prog->getUniform("texAlpha"), -1.0f);
     glUniform3f(prog->getUniform("rgb"), 1.0f, 1.0f, 1.0f);
     glDrawArrays(GL_POINTS, 0, this->numWhitePoints);
+
+    //Draw orange artifacts
+    glUniform1f(prog->getUniform("texAlpha"), -1.0f);
     glUniform3f(prog->getUniform("rgb"), 0.71764f, 0.46666f, 0.1607843f);
     glDrawArrays(GL_POINTS, 111, this->numOrangePoints);
+
+    //Draw text
+    float curTime = Time::getInstance()->getGlobalTime();
+    float startTime = rm->getNumericalValue("guiStartTime");
+    if (startTime < 0) {
+        rm->addNumericalValue("guiStartTime", curTime);
+    }
+    startTime = startTime < 0 ? -1.0f : curTime - startTime;
+    float winTime = rm->getNumericalValue("guiWinTime");
+    winTime = winTime < 0 ? -1.0f : curTime - winTime;
+    float deathTime = rm->getNumericalValue("guiDeathTime");
+    deathTime = deathTime < 0 ? -1.0f : curTime - deathTime;
+
+    bool drawText = false;
+
+    float pi = 3.14159;
+
+    if (startTime >= 0.0f && startTime <= pi) {
+        this->startTex.bind(prog->getUniform("tex"));
+        glUniform1f(prog->getUniform("texAlpha"), sqrt(abs(sin(startTime))));
+        glDrawArrays(GL_POINTS, 118, 1);
+    }
+    else if (winTime >= 0.0f && winTime <= pi) {
+        this->winTex.bind(prog->getUniform("tex"));
+        glUniform1f(prog->getUniform("texAlpha"), sqrt(abs(sin(winTime))));
+        glDrawArrays(GL_POINTS, 118, 1);
+    }
+    else if (deathTime >= 0.0f && deathTime <= pi) {
+        this->deathTex.bind(prog->getUniform("tex"));
+        glUniform1f(prog->getUniform("texAlpha"), sqrt(abs(sin(deathTime))));
+        glDrawArrays(GL_POINTS, 118, 1);
+    }
+    
+    // For testing purposes
+    //if (InputManager::getInstance()->GetKey(GLFW_KEY_0)) {
+    //    rm->addNumericalValue("guiDeathTime", curTime);
+    //    rm->addNumericalValue("guiWinTime", curTime);
+    //}
+
 
     // Disable and unbind
     GLSL::disableVertexAttribArray(rectArgs);

@@ -11,6 +11,8 @@ uniform sampler2D skyColorOutput;
 uniform sampler2D lazerGlowOutput;
 uniform sampler2D bloomOutput;
 uniform sampler2D guiColorOutput;
+uniform sampler2D shadowOutput;
+uniform sampler2D gCol;
 uniform mat4 V;
 
 
@@ -41,6 +43,8 @@ void main()
     vec4 gPos = texture(gBuffer, fragTex);
     vec4 bloomColor = texture(bloomOutput, fragTex);
     vec4 skyCol = texture(skyColorOutput, fragTex);
+    vec4 depth = texture(shadowOutput, fragTex);
+    vec4 gColor = texture(gCol, fragTex);
     float lazerDepth = texture(lazerGlowOutput, fragTex).r;
     vec4 viewPos = V*vec4(gPos.xyz, 1.0);
 
@@ -60,6 +64,7 @@ void main()
     }
 
     color.rgb += psCol.rgb*psCol.a + (gLight.rgb + bloomColor.rgb)*(1.0f-psCol.a);
-
+    // color = gColor;
     color.rgb += texture(guiColorOutput, fragTex).rgb;
+
 }

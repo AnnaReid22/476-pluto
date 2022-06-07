@@ -25,6 +25,12 @@ SoLoud::Wav gWaveBG;
 SoLoud::Wav gWaveShoot;
 SoLoud::Wav gWaveLoseLife;
 SoLoud::Wav gWaveDie;
+SoLoud::Wav gWaveWin;
+SoLoud::Wav gWaveFly;
+int bg;
+int win_play = 0;
+int fly_play = 0;
+int flying_handle;
 
 Player::Player(GameObject* d_GameObject) : Component(d_GameObject)
 {
@@ -96,7 +102,7 @@ void Player::Start()
     gSoloudPlayer.init();  
     // //https://www.free-stock-music.com/savfk-deep.html
     gWaveBG.load("../resources/audio/bg.wav");
-    gSoloudPlayer.play(gWaveBG);
+    int bg = gSoloudPlayer.playBackground(gWaveBG);
     this->gameObject->transform.position = glm::vec3(0, 0, -4);
     this->gameObject->transform.scale = originalScale;
     time = time->getInstance();
@@ -334,8 +340,9 @@ void Player::KillRocket()
     ps->Enable();
     ParticleSystem* ps_obj = ps->getComponentByType<ParticleSystem>();
     ps_obj->start = this->gameObject->transform.position;
-
-    std::cout << "You crashed :(" << std::endl;
+    //https://www.shockwave-sound.com/free-sound-effects/explosion-sounds
+    gWaveDie.load("../resources/audio/die.wav");
+    gSoloudPlayer.play(gWaveDie);
 }
 
 // Rocket gets fact before it shoots
@@ -366,12 +373,10 @@ void Player::Shoot()
     physicsObject->vel = this->getForward() * -30.0f - glm::vec3(posUpdate.x, posUpdate.y, posUpdate.z);
     physicsObject->acc = glm::vec3(0.0f);
 
-        std::cout << "here!" << std::endl;
     gameObject->world->addObject(bullet);
     //https://www.soundfishing.eu/sound/laser-gun
     gWaveShoot.load("../resources/audio/shoot.mp3");
     gSoloudPlayer.play(gWaveShoot);
-
 }
 
 
@@ -457,10 +462,16 @@ void Player::OnCollide(GameObject* other)
         ps5->Enable();
         ParticleSystem* ps_obj5 = ps5->getComponentByType<ParticleSystem>();
         ps_obj5->start = this->gameObject->transform.position + vec3(-0.7f, -1.0f, 0.0f);
+        
+        if(win_play == 0)
+        {
+            // https://www.soundboard.com/sb/sound/1001390
+            gWaveWin.load("../resources/audio/win.mp3");
+            gSoloudPlayer.play(gWaveWin);
+            win_play = 1;
+        }
 
-        std::cout << "YOU WON!!" << std::endl;
     }
-    //stop = false;
 }
 
 
@@ -499,10 +510,20 @@ void Player::updateMoveVars()
     //Time* time = time->getInstance();
     if (dollyF)// && dollyFTime < MAXDOLLYFTIME)
     {
+        if(fly_play == 0)
+        {
+            // https://soundbible.com/tags-rocket.html
+            gWaveFly.load("../resources/audio/fly.mp3");
+            flying_handle = gSoloudPlayer.play(gWaveFly);
+            int flying_handle;
+            fly_play = 1;
+        }
         dollyFTime += time->getFrametime();
     }
     else if(!dollyF)
     {
+        fly_play = 0;
+        gSoloudPlayer.stop(flying_handle);
         if (prevDollyF)
         {
             stopTime = 1.3;
@@ -644,7 +665,6 @@ void Player::moveRocket()
     {
         prepareShootTime = 0.5f;
         alreadyShot = false;
-        std::cout << "here!" << std::endl;
     }
 }
 

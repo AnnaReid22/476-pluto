@@ -1,6 +1,7 @@
 #pragma once
 #include "IShader.h"
 #include "Program.h"
+#include "Texture.h"
 
 #include <memory>
 
@@ -18,6 +19,9 @@ private:
     GLuint vaoID;
 
     std::shared_ptr<Program> prog;
+    Texture winTex;
+    Texture startTex;
+    Texture deathTex;
 
     void setGeometry(int lives, int points, float distToGoal);
 public:
