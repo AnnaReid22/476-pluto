@@ -180,7 +180,6 @@ void Player::WinAnimation()
         
         gameObject->transform.position += glm::vec3(0, .2, 0);
     }
-    std::cout << "wonTimer: " << wonTimer << std::endl;
     if (wonTimer > 40)
     {
         //Chris, this is where you should add the won screen
@@ -274,7 +273,6 @@ glm::mat4 Player::rotationMatrix(glm::vec3 axis, float angle)
 // Make the different parts of the rocket fall apart. Used after the rocket crashes. //TODO: add random number generation
 void Player::DisassembleRocket()
 { 
-    std::cout << "DISASSEMBLING!!! " << this->gameObject->deform << "   " << this->gameObject->deformFactor << std::endl;
     if (rocketBody->deformFactor < 0.09)
     {
         rocketBody->deformFactor += 0.0001;
@@ -295,7 +293,6 @@ void Player::DisassembleRocket()
     }
     for (int i = numLives - 2; i >= 0; i--)
     {
-        std::cout << "Losing fin " << i << std::endl;
         UpdateFinFallOff(i);
     }
     
@@ -428,6 +425,7 @@ void Player::OnCollide(GameObject* other)
     if (other->name == "pluto")
     {
         won = true;
+        this->gameObject->getComponentByType<ParticleSystem>()->Enable();
         
         //stop = true; 
         rotation = glm::vec3(0, 0, 0);
@@ -522,7 +520,8 @@ void Player::updateMoveVars()
     }
     else if(!dollyF)
     {
-        this->gameObject->getComponentByType<ParticleSystem>()->Disable();
+        if(!won)
+            this->gameObject->getComponentByType<ParticleSystem>()->Disable();
         fly_play = 0;
         gSoloudPlayer.stop(flying_handle);
         if (prevDollyF)
