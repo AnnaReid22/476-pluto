@@ -654,6 +654,7 @@ public:
 		GameObject* uranus = new GameObject("uranus");
 		uranus->transform.position = glm::vec3(120, 0, -700);
 		uranus->transform.scale = glm::vec3(110);
+		uranus->transform.rotation = glm::vec3(0.0f, 160.0f, 0.0f);
 		// uranus->transform.position = glm::vec3(50, 0, -600);
 		// uranus->transform.scale = glm::vec3(25);
 		uranus->tag = "planet";
