@@ -65,7 +65,6 @@ void Enemy::Update()
             renderer1->mesh = asteroid_shapes[enemy1->type];
             renderer1->material = asteroid_material;
             BoundingSphereCollider* bsc1 = child1->addComponentOfType<BoundingSphereCollider>();
-            bsc1->radius = 0.65;
         
             GameObject* child2 = new GameObject("asteroid");
             child2->transform.position = gameObject->transform.position;
@@ -80,7 +79,6 @@ void Enemy::Update()
             renderer2->mesh = asteroid_shapes[enemy2->type];
             renderer2->material = asteroid_material;
             BoundingSphereCollider* bsc2 = child2->addComponentOfType<BoundingSphereCollider>();
-            bsc2->radius = 0.65;
 
             child1->transform.position += enemy1->travelDirection;
             child2->transform.position += enemy2->travelDirection;

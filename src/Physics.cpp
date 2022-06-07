@@ -9,18 +9,25 @@ void Physics::registerCollideable(GameObject* obj)
 
 bool Physics::isColliding(GameObject* obj1, GameObject* obj2)
 {
-    glm::vec3 p1, p2;
+    glm::vec3 p1, p2, s1, s2;
+    float r1, r2;
 
     BoundingSphereCollider* col1;
     BoundingSphereCollider* col2;
 
-    float test_r1 = glm::max(glm::max(obj1->transform.scale.x, obj1->transform.scale.y), obj1->transform.scale.z);
-    float test_r2 = glm::max(glm::max(obj2->transform.scale.x, obj2->transform.scale.y), obj2->transform.scale.z);
+
     p1 = obj1->transform.position;
     p2 = obj2->transform.position;
+    s1 = obj1->transform.scale;
+    s2 = obj2->transform.scale;
 
     col1 = obj1->getComponentByType<BoundingSphereCollider>();
     col2 = obj2->getComponentByType <BoundingSphereCollider>();
+    
+    r1 = col1->radius * glm::max(glm::max(s1.x, s1.y), s1.z);
+    r2 = col2->radius * glm::max(glm::max(s2.x, s2.y), s2.z);
+    //r1 = col1->radius;
+    //r2 = col2->radius;
 
     if (col1 == nullptr || col2 == nullptr)
         return false;
@@ -28,7 +35,8 @@ bool Physics::isColliding(GameObject* obj1, GameObject* obj2)
     glm::vec3 center1 = p1 + col1->centerOffset;
     glm::vec3 center2 = p2 + col2->centerOffset;
 
-    return 0.7*glm::distance(center1, center2) <= ((col1->radius)*test_r1 + (col2->radius)*test_r2);
+    //return 0.7*glm::distance(center1, center2) <= ((col1->radius)*test_r1 + (col2->radius)*test_r2);
+    return glm::distance(center1, center2) <= r1 + r2;
 }
 
 void Physics::clearCollideables()

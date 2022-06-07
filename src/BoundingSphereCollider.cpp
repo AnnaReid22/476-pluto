@@ -18,7 +18,7 @@ void BoundingSphereCollider::Start()
     else
     {
         this->centerOffset = glm::vec3(0, 0, 0);
-        this->radius = 1;
+        this->radius = 1.0f;
     }
 }
 
