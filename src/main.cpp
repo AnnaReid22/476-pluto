@@ -495,7 +495,11 @@ public:
 		earthMR->mesh = theEarth;
 		earthMR->material = earthMat;
 
+		BoundingSphereCollider* bsc_earth = earth->addComponentOfType<BoundingSphereCollider>();
+
 		w.addObject(earth);
+		bsc_earth->radius = 0.2;
+
 
 		//mars
 		theMars = make_shared<Shape>();
