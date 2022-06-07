@@ -236,13 +236,13 @@ void Player::ShakeRocket()
     this->gameObject->transform.position += this->getForward()*((float)(rand() % 7 - 3) / 20.0f);
 }
 
-
+// Professor Eckhardt's CSC 471 class
 float Player::hash(float n)
 {
     return fract(sin(n) * 753.5453123);
 }
 
-// Noise function used to disassemble rocket
+// Noise function used to disassemble rocket - Professor Eckhardt's CSC 471 class
 glm::vec3 Player::snoiseRotation(glm::vec3 x)
 {
     glm::vec3 rotation;
@@ -258,7 +258,7 @@ glm::vec3 Player::snoiseRotation(glm::vec3 x)
     rotation.z = sin(rotation.z * 111.);
     return rotation;
 }
-
+//Professor Eckhardt's CSC 471 class
 glm::mat4 Player::rotationMatrix(glm::vec3 axis, float angle)
 {
     axis = normalize(axis);
@@ -291,9 +291,11 @@ void Player::DisassembleRocket()
         originalRocketBodyPos = normalize(vec3(0, 0, -1));
 
         setOriginalDisassemblePositions = true;
+        numLivesUponDeath = numLives;
+        numLives = 0;
 
     }
-    for (int i = numLives - 2; i >= 0; i--)
+    for (int i = numLivesUponDeath - 2; i >= 0; i--)
     {
         UpdateFinFallOff(i);
     }

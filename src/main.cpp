@@ -1,5 +1,8 @@
-/* Hello triangle lab - intro OGL
-Z. Wood + S. Sueda
+/* 
+* Sarah Aristizabal
+* Oren Erlich
+* Chris Middleton
+* Anna Reid
 */
 
 #include <iostream>
@@ -529,7 +532,7 @@ public:
 		BoundingSphereCollider* bsc_earth = earth->addComponentOfType<BoundingSphereCollider>();
 
 		w.addObject(earth);
-		bsc_earth->radius = 0.2;
+		bsc_earth->radius = 0.4;
 
 
 		//mars

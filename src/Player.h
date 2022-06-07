@@ -9,7 +9,7 @@ class Player : public Component
 {
 private:
     InputManager* input;
-
+    int numLivesUponDeath;
     // Rocket rotation variables
     double currentXPos, currentYPos, initXPos, initYPos;
     double deltaXPos, deltaYPos;

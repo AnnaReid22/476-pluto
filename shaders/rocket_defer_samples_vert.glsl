@@ -12,11 +12,12 @@ out vec3 fragPos;
 out vec3 fragNor;
 out vec2 fragTex;
 
+//Professor Eckhardt's CSC 471 class
 float hash(float n)
 {
     return fract(sin(n) * 753.5453123);
 }
-
+//Professor Eckhardt's CSC 471 class
 vec3 snoiseRotation(vec3 x)
 {
     vec3 rotation;
